@@ -117,10 +117,10 @@
         IconUri = ""
 
         # The web address of this module's project or support homepage.
-        ProjectUri = ""
+        ProjectUri = "https://github.com/Microsoft/Reporting-Services-PowerShell/"
 
         # The web address of this module's license. Points to a page that's embeddable and linkable.
-        LicenseUri = ""
+        LicenseUri = "https://raw.githubusercontent.com/Microsoft/Reporting-Services-PowerShell/master/License.md"
 
         # Release notes for this particular version of the module
         # ReleaseNotes = False
