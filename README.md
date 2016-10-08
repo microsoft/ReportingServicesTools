@@ -1,4 +1,4 @@
-# Reporting-Services
+# Reporting Services PowerShell
 SQL Server Reporting Services PowerShell utilities 
 
 #
