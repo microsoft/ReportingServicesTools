@@ -18,7 +18,6 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
-|Link-RsDataSource|This command links a report or a dataset to a data source.|
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
@@ -35,6 +34,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsBasicAuth|This command configures the SQL Server Reporting Services email settings to use basic authentication.|
 |Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
+|Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source.|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 

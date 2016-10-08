@@ -68,7 +68,6 @@
 		'Get-RsItemReferences',
 		'Grant-AccessOnCatalogItem',
 		'Grant-AccessToRS',
-		'Link-RsDataSource',
 		'New-RSConfigurationSettingObject',
 		'New-RsDataSource',
 		'New-RSWebServiceProxy',
@@ -85,6 +84,7 @@
 		'Set-RSEmailSettingsAsBasicAuth',
 		'Set-RSEmailSettingsAsNoAuth',
 		'Set-RSEmailSettingsAsNTLMAuth',
+		'Set-RsSharedDataSource',		
 		'Write-RsCatalogItem',
 		'Write-RsFolderContent'
 	)

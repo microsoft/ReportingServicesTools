@@ -42,7 +42,7 @@
 #>
 
 
-function Link-RsDataSource
+function Set-RsSharedDataSource
 {
     param(
         [string]
