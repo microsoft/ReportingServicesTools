@@ -107,6 +107,10 @@ function Out-RsCatalogItem
     }
 
     $bytes = $Proxy.GetItemDefinition($Path)
-    Write-Output "Downloading $Path to $Destination\$fileName"
+    Write-Verbose "Downloading $Path to $Destination\$fileName"
+    if(!(Test-Path -Path $Destination)){
+        Write-Verbose "Creating Folder $Destination"
+        New-Item -ItemType directory -Path $Destination
+    }
     [System.IO.File]::WriteAllBytes("$Destination\$fileName", $bytes)
 }
