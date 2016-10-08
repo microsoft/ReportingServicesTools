@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Revoke-AccessToRS
+function Revoke-AccessToRs
 {
     <#
     .SYNOPSIS
@@ -23,19 +23,19 @@ function Revoke-AccessToRS
         Specify the user or group name to revoke access from.
 
     .EXAMPLE
-        Revoke-AccessToRS -UserOrGroupName 'johnd'
+        Revoke-AccessToRs -UserOrGroupName 'johnd'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and then revoke all access for user 'johnd'.
     
     .EXAMPLE
-        Revoke-AccessToRS -ReportServerUri 'http://localhost/reportserver_sql2012' -UserOrGroupName 'johnd'
+        Revoke-AccessToRs -ReportServerUri 'http://localhost/reportserver_sql2012' -UserOrGroupName 'johnd'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then revoke all access for user 'johnd'.
 
     .EXAMPLE
-        Revoke-AccessToRS -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd'
+        Revoke-AccessToRs -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then revoke all access for user 'johnd'.
@@ -59,7 +59,7 @@ function Revoke-AccessToRS
     )
 
     # creating proxy
-    $proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+    $proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
 
     # retrieving existing policies for the current item
     try

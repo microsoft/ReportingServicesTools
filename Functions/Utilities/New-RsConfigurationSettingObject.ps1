@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function New-RSConfigurationSettingObject
+function New-RsConfigurationSettingObject
 {
     <#
     .SYNOPSIS
@@ -17,25 +17,25 @@ function New-RSConfigurationSettingObject
         Specify the version of the SQL Server Reporting Services Instance. 13 for SQL Server 2016, 12 for SQL Server 2014, 11 for SQL Server 2012
 
     .EXAMPLE 
-        New-RSConfigurationSettingObject 
+        New-RsConfigurationSettingObject 
         Description
         -----------
         This command will retrieve and return WMI Object associated to the default instance (MSSQLSERVER) of SQL Server 2016 Reporting Services.
 
     .EXAMPLE 
-        New-RSConfigurationSettingObject -SqlServerInstance 'SQL2016' 
+        New-RsConfigurationSettingObject -SqlServerInstance 'SQL2016' 
         Description
         -----------
         This command will retrieve and return WMI Object associated to the named instance (SQL2016) of SQL Server 2016 Reporting Services.
 
     .EXAMPLE 
-        New-RSConfigurationSettingObject -SqlServerVersion '11' 
+        New-RsConfigurationSettingObject -SqlServerVersion '11' 
         Description
         -----------
         This command will retrieve and return WMI Object associated to the default instance (MSSQLSERVER) of SQL Server 2012 Reporting Services.
 
     .EXAMPLE 
-        New-RSConfigurationSettingObject -SqlServerInstance 'SQL2012' -SqlServerVersion '11' 
+        New-RsConfigurationSettingObject -SqlServerInstance 'SQL2012' -SqlServerVersion '11' 
         Description
         -----------
         This command will retrieve and return WMI Object associated to the named instance (SQL2012) of SQL Server 2012 Reporting Services.

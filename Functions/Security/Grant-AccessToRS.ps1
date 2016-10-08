@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Grant-AccessToRS
+function Grant-AccessToRs
 {
     <#
     .SYNOPSIS
@@ -26,19 +26,19 @@ function Grant-AccessToRS
         Specify the name of the role you want to grant on the catalog item.
 
     .EXAMPLE
-        Grant-AccessToRS -UserOrGroupName 'johnd' -RoleName 'System User'
+        Grant-AccessToRs -UserOrGroupName 'johnd' -RoleName 'System User'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and then grant 'System User' access to user 'johnd'.
     
     .EXAMPLE
-        Grant-AccessToRS -ReportServerUri 'http://localhost/reportserver_sql2012' -UserOrGroupName 'johnd' -RoleName 'System User'
+        Grant-AccessToRs -ReportServerUri 'http://localhost/reportserver_sql2012' -UserOrGroupName 'johnd' -RoleName 'System User'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then grant 'System User' access to user 'johnd'.
 
     .EXAMPLE
-        Grant-AccessToRS -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd' -RoleName 'System User'
+        Grant-AccessToRs -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd' -RoleName 'System User'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then grant 'System User' access to user 'johnd'.  
@@ -66,7 +66,7 @@ function Grant-AccessToRS
     )
 
     # creating proxy
-    $proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+    $proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
 
     # retrieving roles from the proxy 
     Write-Verbose 'Retrieving valid roles for System Policies...'

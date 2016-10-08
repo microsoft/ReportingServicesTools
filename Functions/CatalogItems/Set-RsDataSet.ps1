@@ -71,7 +71,7 @@ function Set-RsDataSet
 
     if(-not $Proxy)
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
     }
 
     $dataSets = $Proxy.GetItemReferences($ItemPath, "DataSet")
@@ -87,7 +87,7 @@ function Set-RsDataSet
     $dataSetReference.Name = $DataSetName
     $dataSetReference.Reference = $DataSetPath
 
-    Write-Output "Set dataSet reference '$DataSetName' of item $ItemPath to $DataSetPath"
+    Write-Verbose "Set dataSet reference '$DataSetName' of item $ItemPath to $DataSetPath"
     $Proxy.SetItemReferences($ItemPath, @($dataSetReference))
 }
 

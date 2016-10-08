@@ -53,7 +53,7 @@ function Restore-RSEncryptionKey
         $KeyPath    
     )
 
-    $rsWmiObject = New-RSConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
+    $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
     $reportServerService = 'ReportServer'
 
     if (![String]::IsNullOrEmpty($sqlServerInstance))

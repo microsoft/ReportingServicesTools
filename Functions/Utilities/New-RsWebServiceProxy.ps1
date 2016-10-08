@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function New-RSWebServiceProxy
+function New-RsWebServiceProxy
 {
     <#
     .SYNOPSIS
@@ -20,19 +20,19 @@ function New-RSWebServiceProxy
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .EXAMPLE 
-        New-RSWebServiceProxy 
+        New-RsWebServiceProxy 
         Description
         -----------
         This command will create and return a web service proxy to the Report Server located at http://localhost/reportserver using current user's credentials.
         
     .EXAMPLE 
-        New-RSWebServiceProxy -ReportServerUri http://myserver/reportserver_sql2012
+        New-RsWebServiceProxy -ReportServerUri http://myserver/reportserver_sql2012
         Description
         -----------
         This command will create and return a web service proxy to the Report Server located at http://myserver/reportserver_sql2012 using current user's credentials.
     
     .EXAMPLE 
-        New-RSWebServiceProxy -Username 'CaptainAwesome' -Password 'CaptainAwesomesPassword'
+        New-RsWebServiceProxy -Username 'CaptainAwesome' -Password 'CaptainAwesomesPassword'
         Description
         -----------
         This command will create and return a web service proxy to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials.

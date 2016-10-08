@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Set-RSEmailSettingsAsNoAuth
+function Set-RsEmailSettingsAsNoAuth
 {
     <#
     .SYNOPSIS
@@ -53,6 +53,6 @@ function Set-RSEmailSettingsAsNoAuth
         $SenderAddress
     )
 
-    $rsWmiObject = New-RSConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
+    $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
     $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, '', '', 0, $true)
 }

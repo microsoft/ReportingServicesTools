@@ -66,7 +66,7 @@ function Revoke-AccessOnCatalogItem
     )
 
     # creating proxy
-    $proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+    $proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
 
     # retrieving existing policies for the current item
     try

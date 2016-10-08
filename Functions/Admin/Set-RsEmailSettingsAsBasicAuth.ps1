@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Set-RSEmailSettingsAsBasicAuth
+function Set-RsEmailSettingsAsBasicAuth
 {
     <#
     .SYNOPSIS
@@ -70,6 +70,6 @@ function Set-RSEmailSettingsAsBasicAuth
         $EmailPassword
     )
 
-    $rsWmiObject = New-RSConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
+    $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
     $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $EmailUsername, $EmailPassword, 1, $true)
 }

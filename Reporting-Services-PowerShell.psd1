@@ -62,27 +62,31 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'New-RSConfigurationSettingObject',
-		'New-RSWebServiceProxy',
 		'Backup-RSEncryptionKey',
+		'Get-RsCatalogItems',
+		'Get-RsDataSource',
+		'Get-RsItemReferences',
+		'Grant-AccessOnCatalogItem',
+		'Grant-AccessToRS',
+		'Link-RsDataSource',
+		'New-RSConfigurationSettingObject',
+		'New-RsDataSource',
+		'New-RSWebServiceProxy',
+		'Out-RsCatalogItem',
+		'Out-RsFolderContent',
 		'Register-PowerBI',
+		'Remove-RsCatalogItem',
 		'Restore-RSEncryptionKey',
+		'Revoke-AccessOnCatalogItem',
+		'Revoke-AccessToRS',
+		'Set-RsDataSet',
+		'Set-RsDataSource',
+		'Set-RsDataSourcePassword',
 		'Set-RSEmailSettingsAsBasicAuth',
 		'Set-RSEmailSettingsAsNoAuth',
 		'Set-RSEmailSettingsAsNTLMAuth',
-		'Out-RsCatalogItem',
-		'Out-RsFolderContent',
-		'Set-RsDataSet',
-		'Set-RsDataSource',
-		'Get-RsCatalogItems',
-		'Get-RsItemReferences',
-		'Set-RsDataSourcePassword',
 		'Write-RsCatalogItem',
-		'Write-RsFolderContent',
-		'Grant-AccessOnCatalogItem',
-		'Grant-AccessToRS',
-		'Revoke-AccessOnCatalogItem',
-		'Revoke-AccessToRS'
+		'Write-RsFolderContent'
 	)
 	
 	# Cmdlets to export from this module

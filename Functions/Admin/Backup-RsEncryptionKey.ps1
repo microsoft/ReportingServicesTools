@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Backup-RSEncryptionKey
+function Backup-RsEncryptionKey
 {
     <#
     .SYNOPSIS
@@ -53,7 +53,7 @@ function Backup-RSEncryptionKey
         $KeyPath    
     )
 
-    $rsWmiObject = New-RSConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
+    $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
 
     Write-Verbose "Retrieving encryption key..."
     $encryptionKeyResult = $rsWmiObject.BackupEncryptionKey($Password)

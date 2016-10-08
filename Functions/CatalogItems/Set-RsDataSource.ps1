@@ -1,93 +1,122 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-<#
-
-.SYNOPSIS
-    Overrides the reference of a report or dataset to a shared data source. 
-
-.DESCRIPTION
-    Overrides the reference of a report or dataset to a shared data source. 
-
-.PARAMETER ReportServerUri (optional)
-    Specify the Report Server URL to your SQL Server Reporting Services Instance.
-    Has to be provided if proxy is not provided.
-
-.PARAMETER ReportServerUsername (optional)
-    Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER ReportServerPassword (optional)
-    Specify the password to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER Proxy (optional)
-    Report server proxy to use. 
-    Has to be provided if ReportServerUri is not provided.
-    
-.PARAMETER ItemPath 
-    Path of the report or dataset.
-
-.PARAMETER DataSourceName 
-    Name of the datasource reference to override. 
-
-.PARAMETER DataSourcePath
-    Path to the shared data source the reference will point to.
-
-.EXAMPLE
-    
-    Set-RsDataSet -ReportServerUri 'http://localhost/reportserver_sql2012' -ItemPath /DataSet -DataSourceName DataSource1 -DataSourcePath /Datasources/SampleSource
-
-    Description
-    -----------
-    Sets the dataset reference 'DataSource1' of dataset '/DataSet' to point to datasource '/Datasources/SampleSource'
-#>
-
-
 function Set-RsDataSource
 {
-    param(
+    <#
+    .SYNOPSIS
+        This script updates information about a data source on Report Server.
+
+    .DESCRIPTION
+        This script updates information about a data source on Report Server that was retrieved using Get-RsDataSource.  
+
+    .PARAMETER ReportServerUri (optional)
+        Specify the Report Server URL to your SQL Server Reporting Services Instance.
+
+    .PARAMETER ReportServerUsername (optional)
+        Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
+
+    .PARAMETER ReportServerPassword (optional)
+        Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+
+    .PARAMETER Proxy (optional)
+        Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
+
+    .PARAMETER Name
+        Specify the name of the the Data Source
+
+    .PARAMETER DataSourceDefinition
+        Specify the data source definition of the Data Source to update 
+
+    .EXAMPLE 
+        New-RsDataSource -Name 'My Data Source' -DataSourceDefinition $dataSourceDefinition 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will use not specify any credentials.
+    #>
+
+    [cmdletbinding()]
+    param
+    (
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
-        
+
         [string]
         $ReportServerUsername,
-        
+
         [string]
         $ReportServerPassword,
-        
+
         $Proxy,
 
-        [Parameter(Mandatory=$true)]
-        [string] 
-        $ItemPath,
-
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$True)]
         [string]
-        $DataSourceName,
+        $Name,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$True)]
         [string]
-        $DataSourcePath
+        $DataSourceDefinition
     )
 
-    if(-not $Proxy)
+    if (-not $Proxy)
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
     }
 
-    $dataSets = $Proxy.GetItemReferences($ItemPath, "DataSource")
-    $dataSourceReference = $dataSets | Where-Object {$_.Name -eq $DataSourceName} | Select-Object -First 1 
-
-    if(-not $dataSourceReference)
+    if ($DataSourceDefinition.GetType().Name -ne 'DataSourceDefinition')
     {
-        throw "$ItemPath does not contain a dataSource reference with name $DataSourceName"
+        throw 'Invalid object specified for DataSourceDefinition!'
     }
 
-    $proxyNamespace = $dataSourceReference.GetType().Namespace
-    $dataSourceReference = New-Object ("$($proxyNamespace).ItemReference")
-    $dataSourceReference.Name = $DataSourceName
-    $dataSourceReference.Reference = $DataSourcePath
+    if ($CredentialRetrieval.ToUpper() -eq 'STORE')
+    {
+        if ([System.String]::IsNullOrEmpty($DataSourceDefinition.UserName) -or [System.String]::IsNullOrEmpty($DataSourceDefinition.Password))
+        {
+            throw "Username and password must be specified when CredentialRetrieval is set to Store!"
+        }
+    }
+    else 
+    {
+        if (-not [System.String]::IsNullOrEmpty($DataSourceDefinition.UserName) -or
+            -not [System.String]::IsNullOrEmpty($DataSourceDefinition.Password))
+        {
+            throw "Username and/or password can be specified only when CredentialRetrieval is Store!"
+        }
 
-    Write-Output "Set dataSource reference '$DataSourceName' of item $ItemPath to $DataSourcePath"
-    $Proxy.SetItemReferences($ItemPath, @($dataSourceReference))
+        if ($DataSourceDefinition.ImpersonateUser)
+        {
+            throw "ImpersonateUser can be set to true only when CredentialRetrieval is Store!"
+        }
+    }
+
+    # validating extension specified by the user is supported
+    Write-Verbose "Retrieving data extensions..."
+    $dataExtensions = $Proxy.ListExtensions("Data")
+    $isExtensionValid = $false
+    foreach ($dataExtension in $dataExtensions)
+    {
+        Write-Verbose "`t$($dataExtension.Name)`n"
+        if ($dataExtension.Name -eq $DataSourceDefinition.Extension)
+        {
+            $isExtensionValid = $True
+            break
+        }
+    }
+
+    if (-not $isExtensionValid)
+    {
+        throw "Extension specified is not supported by the report server!"
+    }
+
+    try
+    {
+        Write-Verbose "Updating data source..."
+        $Proxy.SetDataSourceContents($Name, $DataSourceDefinition)
+        Write-Information "Data source updated successfully!"
+    }
+    catch
+    {
+       Write-Error "Exception occurred while updating data source! $($_.Exception.Message)"
+       break 
+    }
 }
-

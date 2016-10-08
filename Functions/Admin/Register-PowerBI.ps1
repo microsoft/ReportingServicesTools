@@ -91,7 +91,7 @@ function Register-PowerBI
         $RedirectUrls   
     )
 
-    $rsWmiObject = New-RSConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
+    $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
 
     Write-Verbose "Configuring Power BI ..."
     $configureResult = $rsWmiObject.SavePowerBIInformation($ClientId,

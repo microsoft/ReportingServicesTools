@@ -24,22 +24,25 @@
     Has to be provided if ReportServerUri is not provided.
     
 .PARAMETER ItemPath 
-    Path to DataSource.
+    Path of the report or dataset.
 
-.PARAMETER Password 
-    Password to set.
+.PARAMETER DataSourceName 
+    Name of the datasource reference to override. 
+
+.PARAMETER DataSourcePath
+    Path to the shared data source the reference will point to.
 
 .EXAMPLE
     
-    Set-RsDataSourcePassword -ReportServerUri 'http://localhost/reportserver_sql2012' -ItemPath /DataSource1 -Password SuperSecretPassword
+    Link-RsDataSet -ReportServerUri 'http://localhost/reportserver_sql2012' -ItemPath /DataSet -DataSourceName DataSource1 -DataSourcePath /Datasources/SampleSource
 
     Description
     -----------
-    Sets the password for the datasource /DataSource1 to 'SuperSecretPassword'
+    Sets the dataset reference 'DataSource1' of dataset '/DataSet' to point to datasource '/Datasources/SampleSource'
 #>
 
 
-function Set-RsDataSourcePassword
+function Link-RsDataSource
 {
     param(
         [string]
@@ -59,7 +62,11 @@ function Set-RsDataSourcePassword
 
         [Parameter(Mandatory=$true)]
         [string]
-        $Password
+        $DataSourceName,
+
+        [Parameter(Mandatory=$true)]
+        [string]
+        $DataSourcePath
     )
 
     if(-not $Proxy)
@@ -67,9 +74,20 @@ function Set-RsDataSourcePassword
         $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
     }
 
-    $dataSourceContent = $Proxy.GetDataSourceContents($ItemPath)
-    $dataSourceContent.Password = $Password
-    Write-Verbose "Setting password of datasource $ItemPath"
-    $Proxy.SetDataSourceContents($ItemPath, $dataSourceContent)
+    $dataSets = $Proxy.GetItemReferences($ItemPath, "DataSource")
+    $dataSourceReference = $dataSets | Where-Object {$_.Name -eq $DataSourceName} | Select-Object -First 1 
+
+    if(-not $dataSourceReference)
+    {
+        throw "$ItemPath does not contain a dataSource reference with name $DataSourceName"
+    }
+
+    $proxyNamespace = $dataSourceReference.GetType().Namespace
+    $dataSourceReference = New-Object ("$($proxyNamespace).ItemReference")
+    $dataSourceReference.Name = $DataSourceName
+    $dataSourceReference.Reference = $DataSourcePath
+
+    Write-Verbose "Set dataSource reference '$DataSourceName' of item $ItemPath to $DataSourcePath"
+    $Proxy.SetItemReferences($ItemPath, @($dataSourceReference))
 }
 
