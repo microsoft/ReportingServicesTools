@@ -6,7 +6,7 @@ Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft
 or 
 Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools)
 
-#
+# Microsoft Open Source Code of Conduct
 This project has adopted the [Microsoft Open Source Code of
 Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct
