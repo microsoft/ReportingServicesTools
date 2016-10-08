@@ -41,7 +41,7 @@
 
 #>
 
-function Read-RsFolderContent
+function Out-RsFolderContent
 {
     param(
         [string]

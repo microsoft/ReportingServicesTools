@@ -71,7 +71,7 @@
 		'Set-RSEmailSettingsAsNoAuth',
 		'Set-RSEmailSettingsAsNTLMAuth',
 		'Out-RsCatalogItem',
-		'Read-RsFolderContent',
+		'Out-RsFolderContent',
 		'Set-RsDataSet',
 		'Set-RsDataSource',
 		'Get-RsCatalogItems',
