@@ -2,8 +2,10 @@
 SQL Server Reporting Services PowerShell utilities 
 
 #Install
-Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Reporting-Services-PowerShell/master/Install.ps1)
-or 
+Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
+
+or
+
 Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools)
 
 ## List of commands
