@@ -1,7 +1,7 @@
 # Reporting-Services
-Git repo for SQL Server Reporting Services samples and community projects
+SQL Server Reporting Services PowerShell utilities 
 
-
+#
 This project has adopted the [Microsoft Open Source Code of
 Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct
