@@ -92,7 +92,7 @@ function Out-RsFolderContent
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains 
             $relativePath = $item.Path.Replace($Path, "").Replace("/" + $item.Name, "")
             $folder = $Destination + $relativePath.replace("/", "\")
-            Read-RsCatalogItem -proxy $proxy -Path $item.Path -Destination $folder
+            Out-RsCatalogItem -proxy $proxy -Path $item.Path -Destination $folder
         }
     }
 }
