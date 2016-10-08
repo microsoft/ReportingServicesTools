@@ -1,10 +1,10 @@
 #
-# Module manifest for module 'Reporting-Services-PowerShell'
+# Module manifest for module 'ReportingServicesTools'
 #
 #
 @{
 	# Script module or binary module file associated with this manifest.
-	RootModule = 'Reporting-Services-PowerShell.psm1'
+	RootModule = 'ReportingServicesTools.psm1'
 	
 	# Version number of this module.
 	ModuleVersion = '0.0.0.1'
@@ -96,7 +96,7 @@
 	VariablesToExport = '*'
 	
 	# Aliases to export from this module
-	# Aliases are stored in Reporting-Services.psm1
+	# Aliases are stored in ReportingServicesTools.psm1
 	AliasesToExport = '*'
 	
 	# List of all modules packaged with this module
@@ -121,10 +121,10 @@
         IconUri = ""
 
         # The web address of this module's project or support homepage.
-        ProjectUri = "https://github.com/Microsoft/Reporting-Services-PowerShell/"
+        ProjectUri = "https://github.com/Microsoft/ReportingServicesTools/"
 
         # The web address of this module's license. Points to a page that's embeddable and linkable.
-        LicenseUri = "https://raw.githubusercontent.com/Microsoft/Reporting-Services-PowerShell/master/License.md"
+        LicenseUri = "https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/License.md"
 
         # Release notes for this particular version of the module
         # ReleaseNotes = False
