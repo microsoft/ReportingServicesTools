@@ -3,7 +3,7 @@ param (
 	[string]$Path
 )
 
-$localpath = $(Join-Path -Path (Split-Path -Path $profile) -ChildPath '\Modules\Reporting-Services-PowerShell')
+$localpath = $(Join-Path -Path (Split-Path -Path $profile) -ChildPath '\Modules\ReportingServicesTools')
 
 try
 {
@@ -36,11 +36,11 @@ if ($path.length -eq 0)
 
 Write-Output "Installing module to $path"
 
-Remove-Module Reporting-Services -ErrorAction SilentlyContinue
-$url = 'https://github.com/Microsoft/Reporting-Services-PowerShell/archive/master.zip'
+Remove-Module ReportingServicesTools -ErrorAction SilentlyContinue
+$url = 'https://github.com/Microsoft/ReportingServicesTools/archive/master.zip'
 
 $temp = ([System.IO.Path]::GetTempPath()).TrimEnd("\")
-$zipfile = "$temp\Reporting-Services-PowerShell.zip"
+$zipfile = "$temp\ReportingServicesTools.zip"
 
 if (!(Test-Path -Path $path))
 {
@@ -92,11 +92,11 @@ Write-Output "Downloading archive from github"
 	$destinationFolder.CopyHere($zipPackage.Items())
 	
 	Write-Output "Cleaning up"
-	Move-Item -Path "$temp\Reporting-Services-PowerShell-master\*" $path
-	Remove-Item -Path "$temp\Reporting-Services-PowerShell-master"
+	Move-Item -Path "$temp\ReportingServicesTools-master\*" $path
+	Remove-Item -Path "$temp\ReportingServicesTools-master"
 	Remove-Item -Path $zipfile
 	
 	Write-Output "Done!"
-	if ((Get-Command -Module Reporting-Services).count -eq 0) { Import-Module "$path\Reporting-Services-PowerShell.psd1" -Force }
-	Get-Command -Module Reporting-Services
+	if ((Get-Command -Module ReportingServicesTools).count -eq 0) { Import-Module "$path\ReportingServicesTools.psd1" -Force }
+	Get-Command -Module ReportingServicesTools
 	Write-Output "`n`nIf you experience any function missing errors after update, please restart PowerShell or reload your profile."
