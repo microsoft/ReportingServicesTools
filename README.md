@@ -1,6 +1,12 @@
 # Reporting Services PowerShell
 SQL Server Reporting Services PowerShell utilities 
 
+## Synopsis
+
+This project contains PowerShell scripts that allows you to perform various operations with SQL Server Reporting Services. In order to use the scripts included in this project successfully, please download/clone the entire project as there are dependencies between the scripts. 
+
+All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.    
+
 #Install
 Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
 
@@ -40,11 +46,28 @@ The following is a list of commands which are available for you to use once you 
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source.|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 
+## SQL Server Versions
 
-# Microsoft Open Source Code of Conduct
-This project has adopted the [Microsoft Open Source Code of
-Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct
-FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com)
-with any additional questions or comments.
+Some of the commands listed above allow you to optionally specify the version of your SQL Server Reporting Services instance. The following is a list of versions associated to each SQL Server Reporting Services release.
+
+|SQL Server Release|Version|
+|------------------|-------|
+|SQL Server 2012|11|
+|SQL Server 2014|12|
+|SQL Server 2016|13|
+
+## Motivation
+
+The motivation behind this project was to help users perform SQL Server Reporting Services operations via the command line. 
+
+## API Reference
+
+All of the APIs used by this project are publicly available. There are 2 types of APIs used in this repository: SOAP and WMI. You can find more details about the SOAP API at https://msdn.microsoft.com/en-us/library/ms154052.aspx and the WMI API at https://msdn.microsoft.com/en-us/library/ms152836.aspx. In general, you will use SOAP API for operations you would perform using Report Server and Web Portal whereas you will use WMI API for operations you would perform using Reporting Services Configuration Manager. 
+
+## Style Guidelines
+
+If you have any scripts you would like to share, we request you to please format your scripts according to the guidelines created by the team behind the DSC Resource Kit. (https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md) and the PowerShell verbs https://msdn.microsoft.com/en-us/library/ms714428(v=vs.85).aspx
+
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
