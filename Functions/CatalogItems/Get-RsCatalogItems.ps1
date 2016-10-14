@@ -12,11 +12,8 @@
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
     Has to be provided if proxy is not provided.
 
-.PARAMETER ReportServerUsername (optional)
-    Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER ReportServerPassword (optional)
-    Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+.PARAMETER Credentials (optional)
+    Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
 .PARAMETER Proxy (optional)
     Report server proxy to use. 
@@ -44,11 +41,9 @@ function Get-RsCatalogItems
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
         
-        [string]
-        $ReportServerUsername,
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
-        [string]
-        $ReportServerPassword,
         $Proxy,
         
         [Parameter(Mandatory=$True)]
@@ -61,7 +56,7 @@ function Get-RsCatalogItems
 
     if(-not $Proxy)
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+		$Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
     }
 
     $Proxy.ListChildren($Path, $Recurse)    
