@@ -1,0 +1,26 @@
+# See http://www.appveyor.com/docs/appveyor-yml for many more options
+
+# Skip on updates to the readme.
+# We can force this by adding [skip ci] or [ci skip] anywhere in commit message
+skip_commits:
+  message: /updated readme.*/
+
+install:
+  - ps: Install-Module -Name PSScriptAnalyzer 
+
+build: false
+
+test_script:
+# Execute the script analyzer
+  - ps: $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse 
+# Format the results
+  - ps: $header = "<?xml version=`"1.0`" encoding=`"utf-8`"><test-results name=`"ScriptAnalyzer`" total=`"$($results.Count)`" failures=`"$($results.Count)`" not-run=`"0`"><test-suite name=`"ScriptAnalyzer`" success=`"True`" ><results>" 
+  - ps: $body = $results | ForEach-Object {"<test-case name=`"$($_.RuleName)`" executed=`"True`" success=`"False`"><reason><message><![CDATA[$($_.Message)]]></message></reason></test-case>"}
+  - ps: $footer = "</results></test-suite>"
+  - ps: $header + $body +$footer | out-file TestsResults.xml
+# Upload results
+  - ps: (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
+# Fail if thre are issues
+  - ps: if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
+
+
