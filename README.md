@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/github/microsoft/reportingservicestools?branch=master&svg=true)]
 # Reporting Services PowerShell
 SQL Server Reporting Services PowerShell utilities 
 
