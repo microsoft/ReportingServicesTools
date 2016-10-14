@@ -41,12 +41,9 @@ function Get-RsItemReferences
     param(
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
-        
-        [string]
-        $ReportServerUsername,
-        
-        [string]
-        $ReportServerPassword,
+                
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         $Proxy,
         
         [Parameter(Mandatory=$True)]

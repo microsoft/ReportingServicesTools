@@ -47,11 +47,8 @@ function Revoke-AccessOnCatalogItem
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
 
-        [string]
-        $ReportServerUsername,
-
-        [string]
-        $ReportServerPassword,
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
         [Parameter(Mandatory=$True)]
         [string]
