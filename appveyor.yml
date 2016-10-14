@@ -13,7 +13,7 @@ build: false
 
 test_script:
 # Execute the script analyzer
-  - ps: $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse 
+  - ps: $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse | where severity -eq "Error"
 # Format the results
   - ps: $header = "<testsuite tests=`"$($results.Count)`">" 
   - ps: $body = $results | ForEach-Object {"<testcase classname=`"analyzer`" name=`"$($_.RuleName)`"><failure type=`"$($_.ScriptName)`">$($_.Message)</failure></testcase>"}
