@@ -6,7 +6,7 @@ skip_commits:
   message: /updated readme.*/
 
 install:
-  - ps: Install-PackageProvider -Name NuGet
+  - ps: Install-PackageProvider -Name NuGet -Force
   - ps: Install-Module -Name PSScriptAnalyzer 
 
 build: false
