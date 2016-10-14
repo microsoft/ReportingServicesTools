@@ -14,7 +14,7 @@ function Set-RsDataSource
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
     .PARAMETER ReportServerCredentials (optional)
-        Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER Proxy (optional)
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.

@@ -29,7 +29,7 @@ function New-RsWebServiceProxy
         This command will create and return a web service proxy to the Report Server located at http://myserver/reportserver_sql2012 using current user's credentials.
     
     .EXAMPLE 
-        New-RsWebServiceProxy -Username 'CaptainAwesome' -Password 'CaptainAwesomesPassword'
+        New-RsWebServiceProxy -Credentials 'CaptainAwesome'
         Description
         -----------
         This command will create and return a web service proxy to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials.
