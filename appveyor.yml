@@ -15,13 +15,13 @@ test_script:
 # Execute the script analyzer
   - ps: $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse 
 # Format the results
-  - ps: $header = "<?xml version=`"1.0`" encoding=`"utf-8`"><test-results name=`"ScriptAnalyzer`" total=`"$($results.Count)`" failures=`"$($results.Count)`" not-run=`"0`"><test-suite name=`"ScriptAnalyzer`" success=`"True`" ><results>" 
-  - ps: $body = $results | ForEach-Object {"<test-case name=`"$($_.RuleName)`" executed=`"True`" success=`"False`"><reason><message><![CDATA[$($_.Message)]]></message></reason></test-case>"}
-  - ps: $footer = "</results></test-suite>"
+  - ps: $header = "<testsuite tests="$($results.Count)`">" 
+  - ps: $body = $results | ForEach-Object {"<testcase classname="analyzer" name=`"$($_.RuleName)`"><failure type="ruleFailed">$($_.Message)</failure></testcase>"}
+  - ps: $footer = "</testsuite>"
   - ps: $header + $body +$footer | out-file .\TestsResults.xml
 # Upload results
   - ps: $wc = New-Object 'System.Net.WebClient'
-  - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
+  - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
 # Fail if thre are issues
   - ps: if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
 
@@ -29,3 +29,5 @@ test_script:
 results to AppVeyor
   - ps: $wc = New-Object 'System.Net.WebClient'
   - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\xunit-results.xml))
+  
+  
