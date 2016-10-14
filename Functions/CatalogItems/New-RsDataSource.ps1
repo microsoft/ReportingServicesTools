@@ -14,7 +14,7 @@ function New-RsDataSource
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
     .PARAMETER ReportServerCredentials (optional)
-        Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER Proxy (optional)
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
@@ -37,11 +37,8 @@ function New-RsDataSource
     .PARAMETER Prompt (optional)
         Specify the prompt to display to user.  
 
-    .PARAMETER Username (optional)
-        Specify the username to use when connecting to the data source.
-
-    .PARAMETER Password (optional)
-        Specify the password to use when connecting to the data source.
+    .PARAMETER DatasourceCredentials (optional)
+        Specify the Credentials to use when connecting to the data source.
 
     .PARAMETER ImpersonateUser (optional)
         Specify whether to impersonate using the credentials specify when connecting to the data source. You must specify Username and Password if you specify this switch.
@@ -127,11 +124,8 @@ function New-RsDataSource
         [string]
         $CredentialRetrieval,
 
-        [string]
-        $Username,
-
-        [string]
-        $Password,
+		[System.Management.Automation.PSCredential]
+        $DatasourceCredentials,
 
         [string]
         $Prompt,
@@ -153,9 +147,9 @@ function New-RsDataSource
 
     if ($CredentialRetrieval.ToUpper() -eq 'STORE')
     {
-        if ([System.String]::IsNullOrEmpty($Username) -or [System.String]::IsNullOrEmpty($Password))
+        if ($DatasourceCredentials.UserName -eq $null)
         {
-            throw "Username and password must be specified when CredentialRetrieval is Store!"
+            throw "Username and password (Credentials) must be specified when CredentialRetrieval is Store!"
         }
     }
 
@@ -191,8 +185,8 @@ function New-RsDataSource
 
     if ($CredentialRetrieval.ToUpper().Equals('STORE'))
     {
-        $datasource.UserName = $Username
-        $datasource.Password = $Password
+        $datasource.UserName = $DatasourceCredentials.UserName
+        $datasource.Password = $DatasourceCredentials.GetNetworkCredential().Password
         $datasource.ImpersonateUser = $ImpersonateUser
     }
 
