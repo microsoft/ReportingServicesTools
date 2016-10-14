@@ -56,7 +56,7 @@ function Revoke-AccessToRs
     )
 
     # creating proxy
-    $proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+    $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
 
     # retrieving existing policies for the current item
     try

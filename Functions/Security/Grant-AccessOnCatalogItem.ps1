@@ -70,7 +70,7 @@ function Grant-AccessOnCatalogItem
     )
 
     # creating proxy
-    $proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+    $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
 
     # retrieving roles from the proxy 
     Write-Verbose "Retrieving valid roles for Catalog items..."

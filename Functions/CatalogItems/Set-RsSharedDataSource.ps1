@@ -71,7 +71,7 @@ function Set-RsSharedDataSource
 
     if(-not $Proxy)
     {
-        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
     }
 
     $dataSets = $Proxy.GetItemReferences($ItemPath, "DataSource")
