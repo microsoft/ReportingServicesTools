@@ -12,7 +12,7 @@
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
     Has to be provided if proxy is not provided.
 
-.PARAMETER Credentials (optional)
+.PARAMETER ReportServerCredentials (optional)
     Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
 .PARAMETER Proxy (optional)
