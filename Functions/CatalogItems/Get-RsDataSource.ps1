@@ -13,7 +13,7 @@ function Get-RsDataSource
     .PARAMETER ReportServerUri (optional)
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerPassword (optional)
+    .PARAMETER ReportServerCredentials (optional)
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER Proxy (optional)
