@@ -15,7 +15,7 @@ test_script:
 # Execute the script analyzer
   - ps: $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse 
 # Format the results
-  - ps: $header = "<testsuite tests="$($results.Count)`">" 
+  - ps: $header = "<testsuite tests=`"$($results.Count)`">" 
   - ps: $body = $results | ForEach-Object {"<testcase classname="analyzer" name=`"$($_.RuleName)`"><failure type="ruleFailed">$($_.Message)</failure></testcase>"}
   - ps: $footer = "</testsuite>"
   - ps: $header + $body +$footer | out-file .\TestsResults.xml
