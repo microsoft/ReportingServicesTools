@@ -13,9 +13,6 @@ function New-RsDataSource
     .PARAMETER ReportServerUri (optional)
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerUsername (optional)
-        Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
     .PARAMETER ReportServerPassword (optional)
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
