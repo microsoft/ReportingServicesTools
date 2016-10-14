@@ -13,10 +13,7 @@ function Revoke-AccessOnCatalogItem
     .PARAMETER ReportServerUri (optional)
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerUsername (optional)
-        Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-    .PARAMETER ReportServerPassword (optional)
+    .PARAMETER ReportServerCredentials (optional)
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER UserOrGroupName
@@ -38,7 +35,7 @@ function Revoke-AccessOnCatalogItem
         This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then revoke all access granted to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
 
     .EXAMPLE
-        Revoke-AccessOnCatalogItem -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd' -ItemPath '/My Folder/SalesReport'
+        Revoke-AccessOnCatalogItem -ReportServerCredentials 'CaptainAwesome' -UserOrGroupName 'johnd' -ItemPath '/My Folder/SalesReport'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then revoke all access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
@@ -50,11 +47,8 @@ function Revoke-AccessOnCatalogItem
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
 
-        [string]
-        $ReportServerUsername,
-
-        [string]
-        $ReportServerPassword,
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
         [Parameter(Mandatory=$True)]
         [string]
@@ -66,7 +60,7 @@ function Revoke-AccessOnCatalogItem
     )
 
     # creating proxy
-    $proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+    $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
 
     # retrieving existing policies for the current item
     try

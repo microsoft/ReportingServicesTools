@@ -13,10 +13,7 @@ function Get-RsDataSource
     .PARAMETER ReportServerUri (optional)
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerUsername (optional)
-        Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-    .PARAMETER ReportServerPassword (optional)
+    .PARAMETER ReportServerCredentials (optional)
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER Proxy (optional)
@@ -38,7 +35,7 @@ function Get-RsDataSource
         This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and retrieve details of data source found at '/path/to/my/datasource'.
 
     .EXAMPLE 
-        Get-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -DataSourcePath '/path/to/my/datasource'
+        Get-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -ReportServerCredentials 'CaptainAwesome' -DataSourcePath '/path/to/my/datasource'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using CaptainAwesome's credentials and retrieve details of data source found at '/path/to/my/datasource'.
@@ -50,11 +47,8 @@ function Get-RsDataSource
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
 
-        [string]
-        $ReportServerUsername,
-
-        [string]
-        $ReportServerPassword,
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
 
         $Proxy,
 
@@ -65,7 +59,7 @@ function Get-RsDataSource
 
     if (-not $Proxy) 
     {
-        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
     }
     
     try

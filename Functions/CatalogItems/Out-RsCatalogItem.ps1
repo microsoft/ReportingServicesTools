@@ -42,12 +42,9 @@ function Out-RsCatalogItem
     param(
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
-        
-        [string]
-        $ReportServerUsername,
-        
-        [string]
-        $ReportServerPassword,
+                
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
         $Proxy,
 
@@ -86,7 +83,7 @@ function Out-RsCatalogItem
 
     if(-not $Proxy)
     {
-        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
     }
 
     $itemType = $Proxy.GetItemType($Path)

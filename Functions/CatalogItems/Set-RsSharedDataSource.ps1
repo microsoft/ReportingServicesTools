@@ -13,11 +13,8 @@
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
     Has to be provided if proxy is not provided.
 
-.PARAMETER ReportServerUsername (optional)
-    Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER ReportServerPassword (optional)
-    Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+.PARAMETER ReportServerCredentials (optional)
+    Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
 .PARAMETER Proxy (optional)
     Report server proxy to use. 
@@ -47,12 +44,9 @@ function Set-RsSharedDataSource
     param(
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
-        
-        [string]
-        $ReportServerUsername,
-        
-        [string]
-        $ReportServerPassword,
+                
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
         $Proxy,
 
@@ -71,7 +65,7 @@ function Set-RsSharedDataSource
 
     if(-not $Proxy)
     {
-        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
     }
 
     $dataSets = $Proxy.GetItemReferences($ItemPath, "DataSource")

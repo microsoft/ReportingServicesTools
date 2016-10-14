@@ -13,10 +13,7 @@ function Revoke-AccessToRs
     .PARAMETER ReportServerUri (optional)
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerUsername (optional)
-        Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-    .PARAMETER ReportServerPassword (optional)
+    .PARAMETER ReportServerCredentials (optional)
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER UserOrGroupName
@@ -35,7 +32,7 @@ function Revoke-AccessToRs
         This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then revoke all access for user 'johnd'.
 
     .EXAMPLE
-        Revoke-AccessToRs -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd'
+        Revoke-AccessToRs -ReportServerCredentials 'CaptainAwesome' -UserOrGroupName 'johnd'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then revoke all access for user 'johnd'.
@@ -47,11 +44,8 @@ function Revoke-AccessToRs
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
 
-        [string]
-        $ReportServerUsername,
-
-        [string]
-        $ReportServerPassword,
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
         [Parameter(Mandatory=$True)]
         [string]
@@ -59,7 +53,7 @@ function Revoke-AccessToRs
     )
 
     # creating proxy
-    $proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+    $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
 
     # retrieving existing policies for the current item
     try

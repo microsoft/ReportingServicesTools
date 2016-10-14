@@ -13,11 +13,8 @@ function New-RsWebServiceProxy
     .PARAMETER ReportServerUri (optional)
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER Username (optional)
-        Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-    .PARAMETER Password (optional)
-        Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+	.PARAMETER Credentials (optional)
+		Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
     .EXAMPLE 
         New-RsWebServiceProxy 
@@ -32,7 +29,7 @@ function New-RsWebServiceProxy
         This command will create and return a web service proxy to the Report Server located at http://myserver/reportserver_sql2012 using current user's credentials.
     
     .EXAMPLE 
-        New-RsWebServiceProxy -Username 'CaptainAwesome' -Password 'CaptainAwesomesPassword'
+        New-RsWebServiceProxy -Credentials 'CaptainAwesome'
         Description
         -----------
         This command will create and return a web service proxy to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials.
@@ -44,11 +41,8 @@ function New-RsWebServiceProxy
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
 
-        [string]
-        $Username,
-
-        [string]
-        $Password
+        [System.Management.Automation.PSCredential]
+        $Credentials
     )
 
     # forming the full URL to the SOAP Proxy of ReportServerUri 
@@ -61,10 +55,9 @@ function New-RsWebServiceProxy
     $ReportServerUri = $soapEndPointUriObject.ToString()
 
     # creating proxy either using specified credentials or default credentials
-    if (![string]::IsNullOrEmpty($Username) -and ![string]::IsNullOrEmpty($Password)) 
+    if ($sqlcredential.Username -ne $null)
     {
-        $credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $username, (ConvertTo-SecureString $password -AsPlainText -Force)
-        return New-WebServiceProxy -Uri $ReportServerUri -Credential $credentials -ErrorAction Stop   
+        return New-WebServiceProxy -Uri $ReportServerUri -Credential $Credentials -ErrorAction Stop   
     }
     else
     {

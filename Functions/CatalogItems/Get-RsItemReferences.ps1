@@ -41,12 +41,9 @@ function Get-RsItemReferences
     param(
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
-        
-        [string]
-        $ReportServerUsername,
-        
-        [string]
-        $ReportServerPassword,
+                
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         $Proxy,
         
         [Parameter(Mandatory=$True)]
@@ -56,7 +53,7 @@ function Get-RsItemReferences
 
     if(-not $Proxy)
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
     }
 
     $itemType = $Proxy.GetItemType($ItemPath)

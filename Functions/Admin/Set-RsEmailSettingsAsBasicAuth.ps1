@@ -22,23 +22,20 @@ function Set-RsEmailSettingsAsBasicAuth
     .PARAMETER SenderAddress 
         Specify sender email address for the email. 
     
-    .PARAMETER EmailUsername 
-        Specify username to specify when connecting to the SMTP server.
-    
-    .PARAMETER EmailPassword 
-        Specify password to specify when connecting to the SMTP server.
+    .PARAMETER EmailCredentials
+        Specify credentials to specify when connecting to the SMTP server.
 
     .LINK
         https://blogs.msdn.microsoft.com/sqlrsteamblog/2016/07/15/deliver-reports-via-email-using-an-email-server-outside-your-network/
 
     .EXAMPLE
-        Set-RSEmailSettingsAsBasicAuth -SmtpServer outlook.office365.com -SenderAddress johndoe@microsoft.com -EmailUsername johndoe@microsoft.com -EmailPassword <enter password>
+        Set-RSEmailSettingsAsBasicAuth -SmtpServer outlook.office365.com -SenderAddress johndoe@microsoft.com -EmailCredentials johndoe@microsoft.com
         Description
         -----------
         This command will configure the default instance from SQL Server 2016 Reporting Services to use Basic Auth with the specified SMTP Server, Sender Address, Username and Password when sending emails.
 
     .EXAMPLE
-        Set-RSEmailSettingsAsBasicAuth -SqlServerInstance 'MySQL2016' -SqlServerVersion '13' -SmtpServer smtp.gmail.com -SenderAddress johndoe@gmail.com -EmailUsername johndoe@gmail.com -EmailPassword <enter password>
+        Set-RSEmailSettingsAsBasicAuth -SqlServerInstance 'MySQL2016' -SqlServerVersion '13' -SmtpServer smtp.gmail.com -SenderAddress johndoe@gmail.com -EmailCredentials johndoe@gmail.com 
         Description
         -----------
         This command will configure the named instance (SQL2016) from SQL Server 2016 Reporting Services to use Basic Auth with the specified SMTP Server, Sender Address, Username and Password when sending emails.
@@ -62,14 +59,10 @@ function Set-RsEmailSettingsAsBasicAuth
         $SenderAddress,
 
         [Parameter(Mandatory=$True)]
-        [string]
-        $EmailUsername,
-
-        [Parameter(Mandatory=$True)]
-        [string]
-        $EmailPassword
+        [System.Management.Automation.PSCredential]
+        $EmailCredentials
     )
 
     $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
-    $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $EmailUsername, $EmailPassword, 1, $true)
+    $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $EmailCredentials.Username, $EmailCredentials.GetNetworkCredential().Password, 1, $true)
 }

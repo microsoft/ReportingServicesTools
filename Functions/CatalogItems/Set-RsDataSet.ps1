@@ -47,12 +47,9 @@ function Set-RsDataSet
     param(
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
-        
-        [string]
-        $ReportServerUsername,
-        
-        [string]
-        $ReportServerPassword,
+                
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
         $Proxy,
 
@@ -71,7 +68,7 @@ function Set-RsDataSet
 
     if(-not $Proxy)
     {
-        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
     }
 
     $dataSets = $Proxy.GetItemReferences($ItemPath, "DataSet")

@@ -13,11 +13,8 @@ function New-RsDataSource
     .PARAMETER ReportServerUri (optional)
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerUsername (optional)
-        Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-    .PARAMETER ReportServerPassword (optional)
-        Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+    .PARAMETER ReportServerCredentials (optional)
+        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER Proxy (optional)
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
@@ -40,17 +37,14 @@ function New-RsDataSource
     .PARAMETER Prompt (optional)
         Specify the prompt to display to user.  
 
-    .PARAMETER Username (optional)
-        Specify the username to use when connecting to the data source.
-
-    .PARAMETER Password (optional)
-        Specify the password to use when connecting to the data source.
+    .PARAMETER DatasourceCredentials (optional)
+        Specify the Credentials to use when connecting to the data source.
 
     .PARAMETER ImpersonateUser (optional)
-        Specify whether to impersonate using the credentials specify when connecting to the data source. You must specify Username and Password if you specify this switch.
+        Specify whether to impersonate using the credentials specify when connecting to the data source. You must specify DatasourceCredentials if you specify this switch.
 
     .PARAMETER WindowsCredentials (optional)
-        Specify whether the credentials specified are Windows credentials or not. You must specify Username and Password if you specify this switch.
+        Specify whether the credentials specified are Windows credentials or not. You must specify DatasourceCredentials if you specify this switch.
 
     .PARAMETER Overwrite (optional)
         Specify whether to overwrite data source if an existing data source with same name exists at the specified destination 
@@ -80,13 +74,13 @@ function New-RsDataSource
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will prompt user for Windows credentials.
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -Username 'sa' -Password '<Enter Password>' -ImpersonateUser 
+        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser 
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, the specified credentials will be treated as Database credentials.
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -Username 'sa' -Password '<Enter Password>' -ImpersonateUser -WindowsCredentials
+        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser -WindowsCredentials
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, the specified credentials will be treated as Windows credentials.
@@ -104,11 +98,8 @@ function New-RsDataSource
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
 
-        [string]
-        $ReportServerUsername,
-
-        [string]
-        $ReportServerPassword,
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
 
         $Proxy,
 
@@ -133,11 +124,8 @@ function New-RsDataSource
         [string]
         $CredentialRetrieval,
 
-        [string]
-        $Username,
-
-        [string]
-        $Password,
+		[System.Management.Automation.PSCredential]
+        $DatasourceCredentials,
 
         [string]
         $Prompt,
@@ -154,14 +142,14 @@ function New-RsDataSource
 
     if (-not $Proxy)
     {
-        $Proxy = New-RsWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
     }
 
     if ($CredentialRetrieval.ToUpper() -eq 'STORE')
     {
-        if ([System.String]::IsNullOrEmpty($Username) -or [System.String]::IsNullOrEmpty($Password))
+        if ($DatasourceCredentials.UserName -eq $null)
         {
-            throw "Username and password must be specified when CredentialRetrieval is Store!"
+            throw "Username and password (Credentials) must be specified when CredentialRetrieval is Store!"
         }
     }
 
@@ -197,8 +185,8 @@ function New-RsDataSource
 
     if ($CredentialRetrieval.ToUpper().Equals('STORE'))
     {
-        $datasource.UserName = $Username
-        $datasource.Password = $Password
+        $datasource.UserName = $DatasourceCredentials.UserName
+        $datasource.Password = $DatasourceCredentials.GetNetworkCredential().Password
         $datasource.ImpersonateUser = $ImpersonateUser
     }
 

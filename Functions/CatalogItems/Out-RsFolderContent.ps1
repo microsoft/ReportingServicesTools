@@ -46,12 +46,9 @@ function Out-RsFolderContent
     param(
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
-        
-        [string]
-        $ReportServerUsername,
-        
-        [string]
-        $ReportServerPassword,
+                
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
         
         $Proxy,
 
@@ -69,7 +66,7 @@ function Out-RsFolderContent
 
     if(-not $Proxy)
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Username $ReportServerUsername -Password $ReportServerPassword 
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
     }
     
     if($Recurse) { $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path -Recurse } else { $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path }
