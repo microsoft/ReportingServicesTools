@@ -7,7 +7,7 @@ skip_commits:
 
 install:
   - ps: Install-PackageProvider -Name NuGet -Force
-  - ps: Install-Module -Name PSScriptAnalyzer 
+  - ps: Install-Module -Name PSScriptAnalyzer -Force
 
 build: false
 
