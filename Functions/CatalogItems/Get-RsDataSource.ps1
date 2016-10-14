@@ -35,7 +35,7 @@ function Get-RsDataSource
         This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and retrieve details of data source found at '/path/to/my/datasource'.
 
     .EXAMPLE 
-        Get-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -DataSourcePath '/path/to/my/datasource'
+        Get-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -ReportServerCredentials 'CaptainAwesome' -DataSourcePath '/path/to/my/datasource'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using CaptainAwesome's credentials and retrieve details of data source found at '/path/to/my/datasource'.

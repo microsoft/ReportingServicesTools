@@ -35,7 +35,7 @@ function Grant-AccessToRs
         This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then grant 'System User' access to user 'johnd'.
 
     .EXAMPLE
-        Grant-AccessToRs -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd' -RoleName 'System User'
+        Grant-AccessToRs -ReportServerCredentials 'CaptainAwesome' -UserOrGroupName 'johnd' -RoleName 'System User'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then grant 'System User' access to user 'johnd'.  

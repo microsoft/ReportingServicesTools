@@ -29,13 +29,13 @@ function Set-RsEmailSettingsAsBasicAuth
         https://blogs.msdn.microsoft.com/sqlrsteamblog/2016/07/15/deliver-reports-via-email-using-an-email-server-outside-your-network/
 
     .EXAMPLE
-        Set-RSEmailSettingsAsBasicAuth -SmtpServer outlook.office365.com -SenderAddress johndoe@microsoft.com -EmailUsername johndoe@microsoft.com -EmailPassword <enter password>
+        Set-RSEmailSettingsAsBasicAuth -SmtpServer outlook.office365.com -SenderAddress johndoe@microsoft.com -EmailCredentials johndoe@microsoft.com
         Description
         -----------
         This command will configure the default instance from SQL Server 2016 Reporting Services to use Basic Auth with the specified SMTP Server, Sender Address, Username and Password when sending emails.
 
     .EXAMPLE
-        Set-RSEmailSettingsAsBasicAuth -SqlServerInstance 'MySQL2016' -SqlServerVersion '13' -SmtpServer smtp.gmail.com -SenderAddress johndoe@gmail.com -EmailUsername johndoe@gmail.com -EmailPassword <enter password>
+        Set-RSEmailSettingsAsBasicAuth -SqlServerInstance 'MySQL2016' -SqlServerVersion '13' -SmtpServer smtp.gmail.com -SenderAddress johndoe@gmail.com -EmailCredentials johndoe@gmail.com 
         Description
         -----------
         This command will configure the named instance (SQL2016) from SQL Server 2016 Reporting Services to use Basic Auth with the specified SMTP Server, Sender Address, Username and Password when sending emails.

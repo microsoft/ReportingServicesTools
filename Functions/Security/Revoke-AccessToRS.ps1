@@ -32,7 +32,7 @@ function Revoke-AccessToRs
         This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then revoke all access for user 'johnd'.
 
     .EXAMPLE
-        Revoke-AccessToRs -ReportServerUsername 'CaptainAwesome' -ReportServerPassword 'CaptainAwesomesPassword' -UserOrGroupName 'johnd'
+        Revoke-AccessToRs -ReportServerCredentials 'CaptainAwesome' -UserOrGroupName 'johnd'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then revoke all access for user 'johnd'.
