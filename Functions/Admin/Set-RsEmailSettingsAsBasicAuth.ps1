@@ -64,5 +64,5 @@ function Set-RsEmailSettingsAsBasicAuth
     )
 
     $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
-    $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $EmailUsername.Username, $EmailPassword.GetNetworkCredential().Password, 1, $true)
+    $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $EmailCredentials.Username, $EmailCredentials.GetNetworkCredential().Password, 1, $true)
 }
