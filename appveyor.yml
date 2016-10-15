@@ -3,6 +3,8 @@
 environment:
   galleryPublishingKey:
     secure: 0PgkUpRd+qAfL0WFe5pFmOE/KasEJY19wogMfkRzk1NFqFqfDGLIU+CPbd1ZoR+1  
+  access_token:
+    secure: kGlQZapsnS3J41iYVKMP4kqeYcSeFRPI3rXNxl5GwgkcnPiGJxQmU+HO30xaegQq
 # Skip on updates to the readme.
 # We can force this by adding [skip ci] or [ci skip] anywhere in commit message
 skip_commits:
@@ -27,8 +29,23 @@ test_script:
   - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
 # Fail if thre are issues
   - ps: if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
-# Deploy to Powershell Gallery 
-  - ps: $deploy = $results.Count -eq 0 -and $env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish"
-  #- ps: if($deploy) {Import-Module .\ReportingServicesTools.psd1 -Verbose} 
-  - ps: if($deploy) {Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey}	
+# Deploy to Powershell Gallery only where there is a tag which will have the version number
+  - ps: $deploy = $results.Count -eq 0 -and $env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish" -and $env:APPVEYOR_REPO_TAG
    
+deploy_script:
+  if ($deploy)
+  {
+    $moduleName = "ReportingServicesTools"
+    $currentVersion = (Import-PowerShellDataFile .\$moduleName.psd1).ModuleVersion
+    ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($data.ModuleVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
+    Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey
+  }
+
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+  - git config --global user.email ""
+  - git config --global user.name "Jaime Tarquino"
+  - git add ReportingServicesTools.psd1  
+  - git commit -m "Automatic Version Update from CI"
+  - git push ...
