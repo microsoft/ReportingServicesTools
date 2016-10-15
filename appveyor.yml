@@ -53,9 +53,9 @@ deploy_script:
 - git config --global user.email "reportingservices@hotmail.com"
 - git config --global user.name "Jaime Tarquino"
 - git add ReportingServicesTools.psd1  
-- git commit -m "Automatic Version Update from CI"
-- git status
-- ps: if($deploy){Push to Git}
+- ps: if($deploy -eq $false){git add testresults.xml}
+- ps: if($deploy -eq $false){git commit -m "Automatic Version Update from CI"}
+- ps: if($deploy){write-host Push to Git}
 
 
   
