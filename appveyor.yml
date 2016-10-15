@@ -40,6 +40,7 @@ deploy_script:
     write-host ($env:APPVEYOR_REPO_TAG -eq $True)
     write-host ($env:APPVEYOR_REPO_TAG -eq "true")
     $deploy = ($env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish") -and ($env:APPVEYOR_REPO_TAG -eq $true)
+    $deploy = $true
     if ($deploy)
     {
       Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
