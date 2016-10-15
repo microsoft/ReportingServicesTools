@@ -9,7 +9,6 @@ skip_commits:
   message: /updated readme.*/
 
 install:
-  - ps: Write-Host $env:APPVEYOR_REPO_BRANCH $env:galleryPublishingKey
   - ps: Install-PackageProvider -Name NuGet -Force
   - ps: Install-Module -Name PSScriptAnalyzer -Force
 
@@ -29,4 +28,5 @@ test_script:
 # Fail if thre are issues
   - ps: if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
 # Deploy to Powershell Gallery  
-  - ps: if($results.Count -eq 0 -and $env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish"){Write-Host $env:APPVEYOR_REPO_BRANCH $env:galleryPublishingKey}	
+  - ps: if($results.Count -eq 0 -and $env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish"){Publish-Module -Name ReportingServicesTools -NuGetApiKey $env:galleryPublishingKey}	
+   
