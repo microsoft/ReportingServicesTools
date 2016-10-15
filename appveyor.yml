@@ -11,8 +11,8 @@ skip_commits:
   message: /updated readme.*/
 
 install:
-  - ps: Install-PackageProvider -Name NuGet -Force
-  - ps: Install-Module -Name PSScriptAnalyzer -Force
+- ps: Install-PackageProvider -Name NuGet -Force
+- ps: Install-Module -Name PSScriptAnalyzer -Force
 
 build: false
 
@@ -39,7 +39,7 @@ deploy_script:
     write-host ($env:APPVEYOR_REPO_TAG)
     write-host ($env:APPVEYOR_REPO_TAG -eq $True)
     write-host ($env:APPVEYOR_REPO_TAG -eq "true")
-    $deploy = ($env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish") -and ($env:APPVEYOR_REPO_TAG)
+    $deploy = ($env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish") -and ($env:APPVEYOR_REPO_TAG -eq $true)
     if ($deploy)
     {
       Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
@@ -48,14 +48,14 @@ deploy_script:
       ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($data.ModuleVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
       Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey
     }
+- git config --global credential.helper store
+- ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+- git config --global user.email "reportingservices@hotmail.com"
+- git config --global user.name "Jaime Tarquino"
+- git add ReportingServicesTools.psd1  
+- git commit -m "Automatic Version Update from CI"
+- git status
+- ps: if($deploy){Push to Git}
 
-on_success:
-  - ps: if($deploy){write-host hola mundo}
-  - git config --global credential.helper store
-  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-  - git config --global user.email "reportingservices@hotmail.com"
-  - git config --global user.name "Jaime Tarquino"
-  - git add ReportingServicesTools.psd1  
-  - git commit -m "Automatic Version Update from CI"
-  - git status
+
   
