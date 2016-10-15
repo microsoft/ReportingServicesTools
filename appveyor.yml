@@ -40,7 +40,6 @@ deploy_script:
     write-host ($env:APPVEYOR_REPO_TAG -eq $True)
     write-host ($env:APPVEYOR_REPO_TAG -eq "true")
     $deploy = ($env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish") -and ($env:APPVEYOR_REPO_TAG -eq $true)
-    $deploy = $true
     if ($deploy)
     {
       Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
@@ -52,9 +51,10 @@ deploy_script:
       git config --global core.safecrlf false
       git config --global credential.helper store
       Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-      git config --global user.email "reportingservices@hotmail.com"
+      git config --global user.email "jaimeta@microsoft.com"
       git config --global user.name "Jaime Tarquino"
       git add ReportingServicesTools.psd1  
       git commit -m "Automatic Version Update from CI"
+      git push
     }
  
