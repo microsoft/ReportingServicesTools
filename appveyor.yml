@@ -34,12 +34,7 @@ test_script:
 deploy_script:
 - ps: |
     # Deploy to Powershell Gallery only where there is a tag which will have the version number
-    write-host $env:APPVEYOR_REPO_BRANCH
-    write-host $env:APPVEYOR_REPO_TAG
-    write-host ($env:APPVEYOR_REPO_TAG)
-    write-host ($env:APPVEYOR_REPO_TAG -eq $True)
-    write-host ($env:APPVEYOR_REPO_TAG -eq "true")
-    $deploy = ($env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish") -and ($env:APPVEYOR_REPO_TAG -eq $true)
+    $deploy = ($env:APPVEYOR_REPO_TAG -eq $true)
     if ($deploy)
     {
       Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
