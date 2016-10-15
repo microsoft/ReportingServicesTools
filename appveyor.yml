@@ -30,11 +30,11 @@ test_script:
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
     # Fail if thre are issues
     if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
-    # Deploy to Powershell Gallery only where there is a tag which will have the version number
-    $deploy = $results.Count -eq 0 -and $env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish" -and $env:APPVEYOR_REPO_TAG
    
 deploy_script:
 - ps: |
+    # Deploy to Powershell Gallery only where there is a tag which will have the version number
+    $deploy = $env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish" -and $env:APPVEYOR_REPO_TAG
     if ($deploy)
     {
       $moduleName = "ReportingServicesTools"
@@ -44,10 +44,10 @@ deploy_script:
     }
 
 on_success:
+  - ps: if($deploy){write-host hola mundo}
   - git config --global credential.helper store
   - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-  - git config --global user.email ""
+  - git config --global user.email "reportingservices@hotmail.com"
   - git config --global user.name "Jaime Tarquino"
   - git add ReportingServicesTools.psd1  
   - git commit -m "Automatic Version Update from CI"
-  - git push ...
