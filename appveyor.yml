@@ -30,5 +30,5 @@ test_script:
 # Deploy to Powershell Gallery 
   - ps: $deploy = $results.Count -eq 0 -and $env:APPVEYOR_REPO_BRANCH -eq "jtarquino/autopublish"
   #- ps: if($deploy) {Import-Module .\ReportingServicesTools.psd1 -Verbose} 
-  - ps: if($deploy) {Publish-Module -Name .\ -NuGetApiKey $env:galleryPublishingKey}	
+  - ps: if($deploy) {Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey}	
    
