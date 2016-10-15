@@ -47,15 +47,13 @@ deploy_script:
       $currentVersion = (Import-PowerShellDataFile .\$moduleName.psd1).ModuleVersion
       ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($data.ModuleVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
       Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey
+      
+      git config --global credential.helper store
+      Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+      git config --global user.email "reportingservices@hotmail.com"
+      git config --global user.name "Jaime Tarquino"
+      git add ReportingServicesTools.psd1  
+      git add TestsResults.xml
+      git commit -m "Automatic Version Update from CI"
     }
-- git config --global credential.helper store
-- ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-- git config --global user.email "reportingservices@hotmail.com"
-- git config --global user.name "Jaime Tarquino"
-- git add ReportingServicesTools.psd1  
-- ps: if($deploy -eq $false){git add testsresults.xml}
-- ps: if($deploy -eq $false){git commit -m "Automatic Version Update from CI"}
-- ps: if($deploy){write-host Push to Git}
-
-
-  
+ 
