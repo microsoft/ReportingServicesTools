@@ -37,10 +37,11 @@ deploy_script:
     $deploy = ($env:APPVEYOR_REPO_TAG -eq $true)
     if ($deploy)
     {
+      git checkout jtarquino/autopublish
       Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
       $moduleName = "ReportingServicesTools"
       $currentVersion = (Import-PowerShellDataFile .\$moduleName.psd1).ModuleVersion
-      ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($data.ModuleVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
+      ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
       Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey
       
       git config --global core.safecrlf false
