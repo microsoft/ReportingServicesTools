@@ -49,6 +49,7 @@ deploy_script:
       ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($data.ModuleVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
       Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey
       
+      git config --global core.safecrlf false
       git config --global credential.helper store
       Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
       git config --global user.email "reportingservices@hotmail.com"
