@@ -9,6 +9,7 @@ skip_commits:
   message: /updated readme.*/
 
 install:
+  - ps: Write-Host $env.Branch $env.galleryPublishingKey
   - ps: Install-PackageProvider -Name NuGet -Force
   - ps: Install-Module -Name PSScriptAnalyzer -Force
 
