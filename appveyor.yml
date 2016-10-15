@@ -54,7 +54,6 @@ deploy_script:
       git config --global user.email "reportingservices@hotmail.com"
       git config --global user.name "Jaime Tarquino"
       git add ReportingServicesTools.psd1  
-      git add TestsResults.xml
       git commit -m "Automatic Version Update from CI"
     }
  
