@@ -9,11 +9,16 @@ This project contains PowerShell scripts that allows you to perform various oper
 All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.    
 
 #Install
-Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
+
+    Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
 
 or
 
-Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools)
+    Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools)
+
+or
+
+    Install-Module -Name ReportingServicesTools
 
 ## List of commands
 
@@ -64,6 +69,17 @@ The motivation behind this project was to help users perform SQL Server Reportin
 ## API Reference
 
 All of the APIs used by this project are publicly available. There are 2 types of APIs used in this repository: SOAP and WMI. You can find more details about the SOAP API at https://msdn.microsoft.com/en-us/library/ms154052.aspx and the WMI API at https://msdn.microsoft.com/en-us/library/ms152836.aspx. In general, you will use SOAP API for operations you would perform using Report Server and Web Portal whereas you will use WMI API for operations you would perform using Reporting Services Configuration Manager. 
+
+## Local testing and development
+
+To verify the versions installed
+
+    Get-Module -ListAvailable | where Name -eq "reportingservicestools"
+
+After you clone the repo you can make local changes and install them in your local machine with
+
+    Remove-Module ReportingServicesTools
+    Import-Module .\ReportingServicesTools.psd1
 
 ## Style Guidelines
 
