@@ -19,17 +19,23 @@ function Set-RsDataSource
     .PARAMETER Proxy (optional)
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
 
-    .PARAMETER Name
-        Specify the name of the the Data Source
+    .PARAMETER DataSourcePath
+        Specify the path to the data source.
 
     .PARAMETER DataSourceDefinition
         Specify the data source definition of the Data Source to update 
 
     .EXAMPLE 
-        New-RsDataSource -Name 'My Data Source' -DataSourceDefinition $dataSourceDefinition 
+        Set-RsDataSource -DataSourcePath '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition 
         Description
         -----------
-        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will use not specify any credentials.
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
+
+    .EXAMPLE 
+        Set-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -DataSourcePath '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and update the details of data source found at '/path/to/my/datasource'.		
     #>
 
     [cmdletbinding()]
@@ -45,10 +51,9 @@ function Set-RsDataSource
 
         [Parameter(Mandatory=$True)]
         [string]
-        $Name,
+        $DataSourcePath,
 
         [Parameter(Mandatory=$True)]
-        [string]
         $DataSourceDefinition
     )
 
@@ -62,7 +67,7 @@ function Set-RsDataSource
         throw 'Invalid object specified for DataSourceDefinition!'
     }
 
-    if ($CredentialRetrieval.ToUpper() -eq 'STORE')
+    if ($DataSourceDefinition.CredentialRetrieval.ToString().ToUpper() -eq 'STORE')
     {
         if ([System.String]::IsNullOrEmpty($DataSourceDefinition.UserName) -or [System.String]::IsNullOrEmpty($DataSourceDefinition.Password))
         {
@@ -105,7 +110,7 @@ function Set-RsDataSource
     try
     {
         Write-Verbose "Updating data source..."
-        $Proxy.SetDataSourceContents($Name, $DataSourceDefinition)
+        $Proxy.SetDataSourceContents($DataSourcePath, $DataSourceDefinition)
         Write-Information "Data source updated successfully!"
     }
     catch
