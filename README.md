@@ -6,7 +6,10 @@ SQL Server Reporting Services PowerShell utilities
 
 This project contains PowerShell scripts that allows you to perform various operations with SQL Server Reporting Services. In order to use the scripts included in this project successfully, please download/clone the entire project as there are dependencies between the scripts. 
 
-All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.    
+All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.   
+
+#PowerShell Version
+Please ensure you're running PowerShell version 3.0+
 
 #Install
 
