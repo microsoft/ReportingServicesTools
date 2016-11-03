@@ -74,7 +74,7 @@ function Out-RsFolderContent
     {
         if(($item.TypeName -eq 'Folder') -and $Recurse)
         {
-            $relativePath = $item.Path.Replace($Path, "")
+            $relativePath = $item.Path.Replace($Path, "\")
             $newFolder = $Destination + $relativePath.Replace("/", "\")
             Write-Verbose "Creating folder $newFolder"
             mkdir $newFolder -Force| Out-Null
@@ -87,7 +87,7 @@ function Out-RsFolderContent
         {
             # We're relying on the fact that the implementation of Get-RsCatalogItems will show us the folder before their content, 
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains 
-            $relativePath = $item.Path.Replace($Path, "").Replace("/" + $item.Name, "")
+            $relativePath = $item.Path.Replace($Path, "\").Replace("/" + $item.Name, "")
             $folder = $Destination + $relativePath.replace("/", "\")
             Out-RsCatalogItem -proxy $proxy -Path $item.Path -Destination $folder
         }
