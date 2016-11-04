@@ -86,7 +86,16 @@ function Write-RsFolderContent()
            $item.Extension -eq ".rsd")
         {
             $relativePath = $item.FullName.Replace($sourceFolder.FullName.TrimEnd("\"), "").Replace("\" + $item.Name, "")
-            $parentFolder = $DestinationFolder + $relativePath.replace("\", "/")
+            
+            if($DestinationFolder -eq "/")
+            {
+                $parentFolder = $relativePath.replace("\", "/")
+            }
+            else 
+            {
+                $parentFolder = $DestinationFolder + $relativePath.replace("\", "/")                
+            }
+            
             Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder
         }
     }
