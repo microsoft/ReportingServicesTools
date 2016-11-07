@@ -78,10 +78,16 @@ function Write-RsFolderContent()
             $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
             $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
             $relativePath = $relativePath.replace("\", "/")
-            
-            $parentFolder = $DestinationFolder + $relativePath
+            if($DestinationFolder -eq "/" -and $relativePath -ne "")
+            {
+                $parentFolder = $relativePath
+            }
+            else 
+            {
+                $parentFolder = $DestinationFolder + $relativePath               
+            }
 
-            Write-Output "Creating folder $parentFolder/$($item.Name)"
+            Write-Verbose "Creating folder $parentFolder/$($item.Name)"
             $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null
         }
 

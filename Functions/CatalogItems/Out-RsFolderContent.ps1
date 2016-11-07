@@ -74,7 +74,11 @@ function Out-RsFolderContent
     {
         if(($item.TypeName -eq 'Folder') -and $Recurse)
         {
-            $relativePath = Clear-Substring -string $item.Path -substring $Path -position front
+            $relativePath = $item.Path
+            if($Path -ne "/")
+            {
+                $relativePath = Clear-Substring -string $relativePath -substring $Path -position front
+            }
             $relativePath = $relativePath.Replace("/", "\")
             
             $newFolder = $Destination + $relativePath
@@ -88,8 +92,12 @@ function Out-RsFolderContent
            $item.TypeName -eq "DataSet")
         {
             # We're relying on the fact that the implementation of Get-RsCatalogItems will show us the folder before their content, 
-            # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains 
-            $relativePath = Clear-Substring -string $item.Path -substring $Path -position front
+            # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains
+            $relativePath = $item.Path
+            if($Path -ne "/")
+            {
+                $relativePath = Clear-Substring -string $relativePath -substring $Path -position front
+            }
             $relativePath = Clear-Substring -string $relativePath -substring ("/" + $item.Name) -position back
             $relativePath = $relativePath.replace("/", "\")
 
