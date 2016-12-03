@@ -45,6 +45,8 @@ The following is a list of commands which are available for you to use once you 
 |Restore-RsEncryptionKey|This command restores encryption key on to the SQL Server Reporting Services.|
 |Revoke-AccessOnCatalogItem|This command revokes access on catalog item from users or groups.|
 |Revoke-AccessToRs|This command revokes access on SQL Server Reporting Services from users or groups.|
+|Set-RsDatabase|This command configures the database used by SQL Server Reporting Services.|
+|Set-RsDatabaseCredentials|This command configures the credentials to use when connection to the database used by SQL Server Reporting Services.|
 |Set-RsDataSet|This command links a report to  a dataset.|
 |Set-RsDataSource|This command updates information associated to a data source.|
 |Set-RsDataSourcePassword|This command sets the password associated with a data source.|
