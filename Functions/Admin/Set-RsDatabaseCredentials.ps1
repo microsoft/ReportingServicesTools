@@ -23,7 +23,7 @@ function Set-RsDatabaseCredentials
             Specify the credentials to use when connecting to the SQL Server. 
             Note: This parameter will be ignored whenever DatabaseCredentialType is set to 2!
 
-        .PARAMETER IsDatabaseServerRemote
+        .PARAMETER IsRemoteDatabaseServer
             Specify this parameter when the database server is on a different machine than the machine Reporting Services is on.
 
         .EXAMPLE
@@ -53,49 +53,63 @@ function Set-RsDatabaseCredentials
         $ReportServerVersion ='13',
 
         [Parameter(Mandatory=$True)]
-        [ValidateRange(0, 2)]
-        [int]
+        [ValidateSet('Windows','SQL','ServiceAccount')]
+        [string]
         $DatabaseCredentialType,
 
         [System.Management.Automation.CredentialAttribute()]
         $DatabaseCredential,
 
         [switch]
-        $IsDatabaseServerRemote
+        $IsRemoteDatabaseServer
     )
 
     $wmi = New-RsConfigurationSettingObject -SqlServerInstance $ReportServerInstance -SqlServerVersion $ReportServerVersion 
 
+    # converting database credential type into its appropriate number
+    $databaseCredentialTypeInt = 0
     $username = ''
     $password = $null
-    if ($DatabaseCredentialType -eq 2)
+    switch ($DatabaseCredentialType.ToLower())
     {
-        $username = $wmi.WindowsServiceIdentityActual
-        $password = ''
+        'windows' { $databaseCredentialTypeInt = 0 }
+        'sql' { $databaseCredentialTypeInt = 1}
+        'serviceaccount' 
+        {
+            $databaseCredentialTypeInt = 2
+            $username = $wmi.WindowsServiceIdentityActual
+            $password = ''
+        }
+        default 
+        { 
+            Write-Error "Invalid Database Credential Type specified! Valid database credential types are: Windows, SQL or Service Account." 
+            Exit 1 
+        }
     }
-    else
+
+    if ($databaseCredentialTypeInt -ne 2)
     {
         if ($DatabaseCredential -eq $null)
         {
             Write-Error "No Database Credential specified! Database credential must be specified."
-            Exit -1 
+            Exit 1 
         }
         $username = $DatabaseCredential.UserName
-        $password = $DatabaseCredential.GetNetworkCredential().password
+        $password = $DatabaseCredential.GetNetworkCredential().Password
     }
 
     $databaseName = $wmi.DatabaseName
     $databaseServerName = $wmi.DatabaseServerName
-    $isWindowsAccount = ($DatabaseCredentialType -eq 0) -or ($DatabaseCredentialType -eq 2)
+    $isWindowsAccount = ($databaseCredentialTypeInt -eq 0) -or ($databaseCredentialTypeInt -eq 2)
 
     # Step 1 - Generate database rights script
     Write-Verbose "###### Generating database rights script..."
-    $result = $wmi.GenerateDatabaseRightsScript($username, $databaseName, $IsDatabaseServerRemote, $isWindowsAccount)
+    $result = $wmi.GenerateDatabaseRightsScript($username, $databaseName, $IsRemoteDatabaseServer, $isWindowsAccount)
     $script = ''
     if ($result.HRESULT -ne 0) 
     {
         Write-Error "###### Fail!"
-        Exit -1
+        Exit 1
     }
     else
     {
@@ -105,16 +119,16 @@ function Set-RsDatabaseCredentials
 
     # Step 2 - Run Database rights script
     Write-Verbose "###### Executing database rights script..."
-    Invoke-Sqlcmd -Query $script
+    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $script
     Write-Verbose "###### Complete!"
 
     # Step 3 -  Update Reporting Services to connect to new database now
     Write-Verbose "###### Updating Reporting Services to connect to new database..."
-    $result = $wmi.SetDatabaseConnection($databaseServerName, $databaseName, $DatabaseCredentialType, $username, $password)
+    $result = $wmi.SetDatabaseConnection($databaseServerName, $databaseName, $databaseCredentialTypeInt, $username, $password)
     if ($result.HRESULT -ne 0) 
     {
         Write-Error "###### Fail!"
-        Exit -1
+        Exit 1
     }
     else
     {
