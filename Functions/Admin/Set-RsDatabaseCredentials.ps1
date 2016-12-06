@@ -8,7 +8,7 @@ function Set-RsDatabaseCredentials
             This script configures the credentials used to connect to the database used by SQL Server Reporting Services.
 
         .DESCRIPTION
-            This script configures the credentials used to connect to the database used by SQL Server Reporting Services.
+            This script configures the credentials used to connect to the database used by SQL Server Reporting Services. You must be an admin in RS and SQL Server in order to perform this operation successfully.
             
         .PARAMETER ReportServerInstance (optional)
             Specify the name of the SQL Server Reporting Services Instance.
@@ -57,7 +57,7 @@ function Set-RsDatabaseCredentials
         [string]
         $DatabaseCredentialType,
 
-        [System.Management.Automation.CredentialAttribute()]
+        [System.Management.Automation.PSCredential]
         $DatabaseCredential,
 
         [switch]
