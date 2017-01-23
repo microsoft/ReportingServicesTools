@@ -89,7 +89,7 @@ function Revoke-AccessToRs
     {
         Write-Verbose "Revoking all access from $UserOrGroupName..." 
         $proxy.SetSystemPolicies($policyList.ToArray())
-        Write-Verbose "Revoked all access from $UserOrGroupName!"
+        Write-Information "Revoked all access from $UserOrGroupName!"
     }
     catch [System.Web.Services.Protocols.SoapException]
     {

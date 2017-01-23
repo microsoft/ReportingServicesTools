@@ -33,7 +33,7 @@
     Folder to download catalog items to.
 
 .EXAMPLE
-    Read-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /MonthlyReports -Destination C:\reports\MonthlyReports
+    Out-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /MonthlyReports -Destination C:\reports\MonthlyReports
    
     Description
     -----------
@@ -64,15 +64,23 @@ function Out-RsFolderContent
         $Destination
     )
 
-    if(-not $Proxy)
+    if (-not $Proxy)
     {
         $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
     }
     
-    if($Recurse) { $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path -Recurse } else { $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path }
-    foreach($item in $items)
+    if ($Recurse) 
     {
-        if(($item.TypeName -eq 'Folder') -and $Recurse)
+        $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path -Recurse
+    }
+    else 
+    {
+        $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path
+    }
+
+    foreach ($item in $items)
+    {
+        if (($item.TypeName -eq 'Folder') -and $Recurse)
         {
             $relativePath = $item.Path
             if($Path -ne "/")
@@ -83,13 +91,14 @@ function Out-RsFolderContent
             
             $newFolder = $Destination + $relativePath
             Write-Verbose "Creating folder $newFolder"
-            mkdir $newFolder -Force| Out-Null
+            mkdir $newFolder -Force | Out-Null
+            Write-Information "Folder: $newFolder was created successfully."
         }
         
-        if($item.TypeName -eq "Resource" -or
-           $item.TypeName -eq "Report" -or 
-           $item.TypeName -eq "DataSource" -or 
-           $item.TypeName -eq "DataSet")
+        if ($item.TypeName -eq "Resource" -or 
+            $item.TypeName -eq "Report" -or 
+            $item.TypeName -eq "DataSource" -or 
+            $item.TypeName -eq "DataSet")
         {
             # We're relying on the fact that the implementation of Get-RsCatalogItems will show us the folder before their content, 
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains

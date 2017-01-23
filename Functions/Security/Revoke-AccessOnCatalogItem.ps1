@@ -97,7 +97,7 @@ function Revoke-AccessOnCatalogItem
     {
         Write-Verbose "Revoking all access from $UserOrGroupName on $ItemPath..." 
         $proxy.SetPolicies($ItemPath, $policyList.ToArray())
-        Write-Verbose "Revoked all access from $UserOrGroupName on $ItemPath!"
+        Write-Information "Revoked all access from $UserOrGroupName on $ItemPath!"
     }
     catch [System.Web.Services.Protocols.SoapException]
     {

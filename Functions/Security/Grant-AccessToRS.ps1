@@ -157,7 +157,7 @@ function Grant-AccessToRs
     {
         Write-Verbose "Granting $($role.Name) to $($policy.GroupUserName)..." 
         $proxy.SetSystemPolicies($policies)
-        Write-Verbose "Granted $($role.Name) to $($policy.GroupUserName)!"
+        Write-Information "Granted $($role.Name) to $($policy.GroupUserName)!"
     }
     catch [System.Web.Services.Protocols.SoapException]
     {
