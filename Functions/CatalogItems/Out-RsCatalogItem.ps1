@@ -115,14 +115,14 @@ function Out-RsCatalogItem
 
     $DestinationFullPath = Resolve-Path $Destination
     Write-Verbose "Writing $itemType content to $DestinationFullPath\$fileName..."
-    if ($itemType -eq 'Resource')
-    {
-        [System.IO.File]::WriteAllBytes("$DestinationFullPath\$fileName", $bytes)
-    }
-    else 
+    if ($itemType -eq 'DataSource')
     {
         $content = [System.Text.Encoding]::Unicode.GetString($bytes)
         [System.IO.File]::WriteAllText("$DestinationFullPath\$fileName", $content)
+    }
+    else 
+    {
+        [System.IO.File]::WriteAllBytes("$DestinationFullPath\$fileName", $bytes)
     }
 
     Write-Information "$Path was downloaded to $DestinationFullPath\$fileName successfully!"

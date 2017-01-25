@@ -94,26 +94,27 @@ function Write-RsCatalogItem
         throw "No item found at the specified path: $Path!"
     }
 
-    $item = Get-Item $Path 
+    $EntirePath = Resolve-Path $Path
+    $item = Get-Item $EntirePath 
     $itemType = Get-ItemType $item.Extension
     $itemName = $item.BaseName
     
     
     if($Destination -eq "/")
     {
-        Write-Verbose "Uploading $Path to /$($itemName)"
+        Write-Verbose "Uploading $EntirePath to /$($itemName)"
     }
     else 
     {
-        Write-Verbose "Uploading $Path to $Destination/$($itemName)"        
+        Write-Verbose "Uploading $EntirePath to $Destination/$($itemName)"        
     }
     
     if ($itemType -eq 'DataSource') 
     {
-        [xml] $content = Get-Content -Path $Path
+        [xml] $content = Get-Content -Path $EntirePath
         if ($content.DataSourceDefinition -eq $null)
         {
-            throw "Data Source Definition not found in the specified file: $Path!"
+            throw "Data Source Definition not found in the specified file: $EntirePath!"
         }
 
         $extension = $content.DataSourceDefinition.Extension
@@ -153,10 +154,10 @@ function Write-RsCatalogItem
     } 
     else 
     {
-        $bytes = [System.IO.File]::ReadAllBytes($Path)
+        $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
         $warnings = $null
         $Proxy.CreateCatalogItem($itemType, $itemName, $Destination, $override, $bytes, $null, [ref]$warnings) | Out-Null
     }
 
-    Write-Information "$Path was uploaded to $Destination successfully!"
+    Write-Information "$EntirePath was uploaded to $Destination successfully!"
 }
