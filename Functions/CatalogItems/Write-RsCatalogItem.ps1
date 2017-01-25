@@ -132,22 +132,22 @@ function Write-RsCatalogItem
         {
             if ($enabled -eq $false)
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval -Disabled -Overwrite | Out-Null
+                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled -Overwrite | Out-Null
             }
             else 
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval -Overwrite | Out-Null
+                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Overwrite | Out-Null
             }
         }
         else 
         {
             if ($enabled -eq $false)
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval -Disabled | Out-Null
+                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled | Out-Null
             }
             else 
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval | Out-Null
+                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval | Out-Null
             }  
         }
     } 

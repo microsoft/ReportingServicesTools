@@ -110,19 +110,20 @@ function Out-RsCatalogItem
     if (!(Test-Path -Path $Destination))
     {
         Write-Verbose "Creating Folder $Destination..."
-        New-Item -ItemType directory -Path $Destination
+        New-Item -ItemType directory -Path $Destination | Out-Null
     }
 
-    Write-Verbose "Writing $itemType content to $Destination\$fileName..."
+    $DestinationFullPath = Resolve-Path $Destination
+    Write-Verbose "Writing $itemType content to $DestinationFullPath\$fileName..."
     if ($itemType -eq 'Resource')
     {
-        [System.IO.File]::WriteAllBytes("$Destination\$fileName", $bytes)
+        [System.IO.File]::WriteAllBytes("$DestinationFullPath\$fileName", $bytes)
     }
     else 
     {
         $content = [System.Text.Encoding]::Unicode.GetString($bytes)
-        [System.IO.File]::WriteAllText("$Destination\$fileName", $content)
+        [System.IO.File]::WriteAllText("$DestinationFullPath\$fileName", $content)
     }
 
-    Write-Information "$Path was downloaded to $Destination\$fileName successfully!"
+    Write-Information "$Path was downloaded to $DestinationFullPath\$fileName successfully!"
 }
