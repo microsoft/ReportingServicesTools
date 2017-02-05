@@ -2,20 +2,23 @@
 # Licensed under the MIT License (MIT)
 
 
-function Set-RsDataSourcePassword
+function Set-RsDataSourceReference
 {
     <#
         .SYNOPSIS
-            Overwrites the password on a Datasource.
+            Overrides the reference of a report or dataset to a shared data source.
         
         .DESCRIPTION
-            Overwrites the password on a Datasource.
+            Overrides the reference of a report or dataset to a shared data source.
         
         .PARAMETER Path
-            Path to DataSource.
+            Path of the report or dataset.
         
-        .PARAMETER Password
-            Password to set.
+        .PARAMETER DataSourceName
+            Name of the datasource reference to override.
+        
+        .PARAMETER DataSourcePath
+            Path to the shared data source the reference will point to.
         
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -31,11 +34,11 @@ function Set-RsDataSourcePassword
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Set-RsDataSourcePassword -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /DataSource1 -Password SuperSecretPassword
+            Set-RsDataSourceReference -Path /DataSet -DataSourceName DataSource1 -DataSourcePath /Datasources/SampleSource
             
             Description
             -----------
-            Sets the password for the datasource /DataSource1 to 'SuperSecretPassword'
+            Sets the dataset reference 'DataSource1' of dataset '/DataSet' to point to datasource '/Datasources/SampleSource'
         
         .NOTES
             Author:      ???
@@ -45,17 +48,15 @@ function Set-RsDataSourcePassword
             Version:     1.1
             
             Release 1.1 (04.02.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
+            - Renamed function from "Set-RsSharedDataSource" to "Set-RsDataSourceReference", in order to conform to naming standards. Introduced an alias with the old name for backwards compatibility.
             - Renamed the parameter 'ItemPath' to 'Path', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
             - Changed type of parameter 'Path' to System.String[], to better facilitate pipeline & nonpipeline use
             - Redesigned to accept pipeline input from 'Path'
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
     
             Release 1.0 (???, ???)
             - Initial Release
     #>
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding()]
     param (
         [Alias('ItemPath')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -64,7 +65,11 @@ function Set-RsDataSourcePassword
 
         [Parameter(Mandatory = $true)]
         [string]
-        $Password,
+        $DataSourceName,
+
+        [Parameter(Mandatory = $true)]
+        [string]
+        $DataSourcePath,
         
         [string]
         $ReportServerUri,
@@ -100,16 +105,29 @@ function Set-RsDataSourcePassword
     {
         foreach ($item in $Path)
         {
-            if ($PSCmdlet.ShouldProcess($item, "Overwrite the password"))
+            # For when running on Windows 6.1 with a permissive erroraction setting
+            $dataSets = $null
+            $dataSourceReference = $null
+            
+            try { $dataSets = $Proxy.GetItemReferences($item, "DataSource") }
+            catch { throw (New-Object System.Exception("Failed to retrieve datasource item references for '$item': $($_.Exception.Message)", $_.Exception)) }
+            $dataSourceReference = $dataSets | Where-Object { $_.Name -eq $DataSourceName } | Select-Object -First 1
+            
+            if (-not $dataSourceReference)
             {
-                try { $dataSourceContent = $Proxy.GetDataSourceContents($item) }
-                catch { throw (New-Object System.Exception("Failed to retrieve Datasource content: $($_.Exception.Message)", $_.Exception))}
-                $dataSourceContent.Password = $Password
-                Write-Verbose "Setting password of datasource $item"
-                try { $Proxy.SetDataSourceContents($item, $dataSourceContent) }
-                catch { throw (New-Object System.Exception("Failed to update Datasource content: $($_.Exception.Message)", $_.Exception)) }
+                throw "$item does not contain a dataSource reference with name $DataSourceName"
             }
+            
+            $proxyNamespace = $dataSourceReference.GetType().Namespace
+            $dataSourceReference = New-Object "$($proxyNamespace).ItemReference"
+            $dataSourceReference.Name = $DataSourceName
+            $dataSourceReference.Reference = $DataSourcePath
+            
+            Write-Verbose "Set dataSource reference '$DataSourceName' of item $item to $DataSourcePath"
+            try { $Proxy.SetItemReferences($item, @($dataSourceReference)) }
+            catch { throw (New-Object System.Exception("Failed to update datasource item references for '$item': $($_.Exception.Message)", $_.Exception)) }
         }
     }
 }
 
+New-Alias -Name "Set-RsSharedDataSource" -Value Set-RsDataSourceReference -Scope Global

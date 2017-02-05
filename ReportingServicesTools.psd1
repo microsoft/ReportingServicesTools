@@ -7,7 +7,7 @@
 	RootModule = 'ReportingServicesTools.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '0.0.0.8'
+	ModuleVersion = '0.1.0.9'
 	
 	# ID used to uniquely identify this module
 	GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -62,44 +62,55 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Backup-RsEncryptionKey',
-		'Get-RsCatalogItems',
+        'Backup-RsEncryptionKey',
+        'Connect-RsReportServer',
+        'Get-RsCatalogChildItem',
 		'Get-RsDataSource',
-		'Get-RsItemReferences',
-		'Grant-AccessOnCatalogItem',
-		'Grant-AccessToRS',
+		'Get-RsItemReference',
+        'Grant-RsCatalogItemRole',
+		'Grant-RsSystemRole',
 		'New-RsConfigurationSettingObject',
 		'New-RsDataSource',
 		'New-RsWebServiceProxy',
 		'Out-RsCatalogItem',
 		'Out-RsFolderContent',
-		'Register-PowerBI',
+		'Register-RsPowerBI',
 		'Remove-RsCatalogItem',
-		'Restore-RsEncryptionKey',
-		'Revoke-AccessOnCatalogItem',
-		'Revoke-AccessToRS',
-		'Set-RsDatabase',
+        'Restore-RsEncryptionKey',
+        'Revoke-RsCatalogItemAccess',
+        'Revoke-RsSystemAccess',
+        'Set-RsDatabase',
 		'Set-RsDatabaseCredentials',
 		'Set-RsDataSet',
 		'Set-RsDataSource',
-		'Set-RsDataSourcePassword',
-		'Set-RsEmailSettingsAsBasicAuth',
-		'Set-RsEmailSettingsAsNoAuth',
-		'Set-RsEmailSettingsAsNTLMAuth',
-		'Set-RsSharedDataSource',		
-		'Write-RsCatalogItem',
+        'Set-RsDataSourcePassword',
+        'Set-RsDataSourceReference',
+		'Set-RsEmailConfiguration',
+        'Write-RsCatalogItem',
 		'Write-RsFolderContent'
 	)
 	
 	# Cmdlets to export from this module
-	CmdletsToExport = '*'
+	CmdletsToExport = ''
 	
 	# Variables to export from this module
-	VariablesToExport = '*'
+	VariablesToExport = ''
 	
 	# Aliases to export from this module
 	# Aliases are stored in ReportingServicesTools.psm1
-	AliasesToExport = '*'
+    AliasesToExport = @(
+        'Get-RsCatalogItems',
+        'Get-RsItemReferences',
+        'Grant-AccessOnCatalogItem',
+        'Grant-AccessToRS',
+        'Register-PowerBI',
+        'Revoke-AccessOnCatalogItem',
+        'Revoke-AccessToRS',
+        'Set-RsEmailSettingsAsBasicAuth',
+        'Set-RsEmailSettingsAsNoAuth',
+        'Set-RsEmailSettingsAsNTLMAuth',
+        'Set-RsSharedDataSource'
+    )
 	
 	# List of all modules packaged with this module
 	ModuleList = @()
@@ -108,34 +119,34 @@
 	FileList = ''
 	
 	PrivateData = @{
-    # PSData is module packaging and gallery metadata embedded in PrivateData
-    # It's for rebuilding PowerShellGet (and PoshCode) NuGet-style packages
-    # We had to do this because it's the only place we're allowed to extend the manifest
-    # https://connect.microsoft.com/PowerShell/feedback/details/421837
-    PSData = @{
-        # The primary categorization of this module (from the TechNet Gallery tech tree).
-        Category = "Databases"
+        # PSData is module packaging and gallery metadata embedded in PrivateData
+        # It's for rebuilding PowerShellGet (and PoshCode) NuGet-style packages
+        # We had to do this because it's the only place we're allowed to extend the manifest
+        # https://connect.microsoft.com/PowerShell/feedback/details/421837
+        PSData = @{
+            # The primary categorization of this module (from the TechNet Gallery tech tree).
+            Category = "Databases"
 
-        # Keyword tags to help users find this module via navigations and search.
-        Tags = @('sqlserver','reportingservices','sql','dba','databases','reporting')
+            # Keyword tags to help users find this module via navigations and search.
+            Tags = @('sqlserver','reportingservices','sql','dba','databases','reporting')
 
-        # The web address of an icon which can be used in galleries to represent this module
-        IconUri = ""
+            # The web address of an icon which can be used in galleries to represent this module
+            IconUri = ""
 
-        # The web address of this module's project or support homepage.
-        ProjectUri = "https://github.com/Microsoft/ReportingServicesTools/"
+            # The web address of this module's project or support homepage.
+            ProjectUri = "https://github.com/Microsoft/ReportingServicesTools/"
 
-        # The web address of this module's license. Points to a page that's embeddable and linkable.
-        LicenseUri = "https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/License.md"
+            # The web address of this module's license. Points to a page that's embeddable and linkable.
+            LicenseUri = "https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/License.md"
 
-        # Release notes for this particular version of the module
-        # ReleaseNotes = False
+            # Release notes for this particular version of the module
+            # ReleaseNotes = False
 
-        # If true, the LicenseUrl points to an end-user license (not just a source license) which requires the user agreement before use.
-        # RequireLicenseAcceptance = ""
+            # If true, the LicenseUrl points to an end-user license (not just a source license) which requires the user agreement before use.
+            # RequireLicenseAcceptance = ""
 
-        # Indicates this is a pre-release/testing version of the module.
-        IsPrerelease = 'True'
+            # Indicates this is a pre-release/testing version of the module.
+            IsPrerelease = 'True'
 		}
 	}
 }

@@ -1,114 +1,153 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-<#
-.SYNOPSIS
-    Uploads all items in a folder on disk to a report server.
 
-.DESCRIPTION
-    Uploads all items in a folder on disk to a report server.
-    Currently, we are only supporting Report, DataSource and DataSet for uploads
-
-.PARAMETER ReportServerUri (optional)
-    Specify the Report Server URL to your SQL Server Reporting Services Instance.
-    Has to be provided if proxy is not provided.
-
-.PARAMETER ReportServerCredentials (optional)
-    Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER proxy (optional)
-    Report server proxy to use. 
-    Has to be provided if ReportServerUri is not provided.
-
-.PARAMETER Path
-    Path to folder which contains items to upload on disk.
-
-.PARAMETER DestinationFolder
-    Folder on reportserver to upload the item to.
-
-.EXAMPLE
-    Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -DestinationFolder /monthlyReports
-   
-    Description
-    -----------
-    Uploads all reports under c:\monthlyreports to folder /monthlyReports.
-#>
-
-function Write-RsFolderContent()
+function Write-RsFolderContent
 {
-    param(
-        [string]
-        $ReportServerUri = 'http://localhost/reportserver',
-                
-        [System.Management.Automation.PSCredential]
-        $ReportServerCredentials,
-        $Proxy,
+    <#
+        .SYNOPSIS
+            Uploads all items in a folder on disk to a report server.
         
+        .DESCRIPTION
+            Uploads all items in a folder on disk to a report server.
+            Currently, we are only supporting Report, DataSource and DataSet for uploads
+        
+        .PARAMETER Recurse
+            A description of the Recurse parameter.
+        
+        .PARAMETER Path
+            Path to folder which contains items to upload on disk.
+        
+        .PARAMETER Destination
+            Folder on reportserver to upload the item to.
+        
+        .PARAMETER ReportServerUri
+            Specify the Report Server URL to your SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER Credential
+            Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER Proxy
+            Report server proxy to use.
+            Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
+            Useful when repeatedly having to connect to multiple different Report Server.
+        
+        .EXAMPLE
+            Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -Destination /monthlyReports
+            
+            Description
+            -----------
+            Uploads all reports under c:\monthlyreports to folder /monthlyReports.
+        
+        .NOTES
+            Author:      ???
+            Editors:     Friedrich Weinmann
+            Created on:  ???
+            Last Change: 05.02.2017
+            Version:     1.1
+            
+            Release 1.1 (05.02.2017, Friedrich Weinmann)
+            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
+            - Standardized the parameters governing the Report Server connection for consistent user experience.
+            - Renamed the parameter 'DestinationFolder' to 'Destination', for consistency's sake. Added the previous name as an alias, for backwards compatiblity.
+            - Implemented ShouldProcess (-WhatIf, -Confirm)
+    
+            Release 1.0 (???, ???)
+            - Initial Release
+    #>
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    param(
         [switch]
         $Recurse,
         
-        [Parameter(Mandatory=$True)]
+        [Parameter(Mandatory = $True)]
         [string]
         $Path,
         
-        [Parameter(Mandatory=$True)]
+        [Alias('DestinationFolder')]
+        [Parameter(Mandatory = $True)]
         [string]
-        $DestinationFolder
+        $Destination,
+        
+        [string]
+        $ReportServerUri,
+        
+        [Alias('ReportServerCredentials')]
+        [System.Management.Automation.PSCredential]
+        $Credential,
+        
+        $Proxy
     )
-
-    if(-not $Proxy)
-    {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
-    }
-
-    $sourceFolder = Get-Item $Path
-    if($sourceFolder.GetType().Name -ne "DirectoryInfo")
-    {
-        throw "$Path is not a folder"
-    } 
     
-    # Write-Verbose "Creating folder $DestinationFolder"
-    # $Proxy.CreateFolder($sourceFolder.Name, $Destination, $null) | Out-Null
-
-    if($Recurse) { $items = Get-ChildItem $Path -Recurse } else { $items = Get-ChildItem $Path }
-    foreach($item in $items)
+    if ($PSCmdlet.ShouldProcess($Path, "Upload all contents in folder $(if ($Recurse) { "and subfolders " })to $Destination"))
     {
-        if(($item.GetType().Name -eq "DirectoryInfo") -and $Recurse)
+        #region Connect to Report Server using Web Proxy
+        if (-not $Proxy)
         {
-            $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
-            $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
-            $relativePath = $relativePath.replace("\", "/")
-            if($DestinationFolder -eq "/" -and $relativePath -ne "")
+            try
             {
-                $parentFolder = $relativePath
+                $splat = @{ }
+                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
+                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
+                $Proxy = New-RSWebServiceProxy @splat
             }
-            else 
+            catch
             {
-                $parentFolder = $DestinationFolder + $relativePath               
+                throw
             }
-
-            Write-Verbose "Creating folder $parentFolder/$($item.Name)"
-            $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null
         }
-
-        if($item.Extension -eq ".rdl" -or
-           $item.Extension -eq ".rsds" -or
-           $item.Extension -eq ".rsd")
+        #endregion Connect to Report Server using Web Proxy
+        
+        if(-not (Test-Path $Path -PathType Container))
         {
-            $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
-            $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
-            $relativePath = $relativePath.replace("\", "/")
-
-            if($DestinationFolder -eq "/" -and $relativePath -ne "")
+            throw "$Path is not a folder"
+        }
+        $sourceFolder = Get-Item $Path
+        
+        if($Recurse) { $items = Get-ChildItem $Path -Recurse } else { $items = Get-ChildItem $Path }
+        foreach ($item in $items)
+        {
+            if (($item.PSIsContainer) -and $Recurse)
             {
-                $parentFolder = $relativePath
-            }
-            else 
-            {
-                $parentFolder = $DestinationFolder + $relativePath               
+                $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
+                $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
+                $relativePath = $relativePath.replace("\", "/")
+                if ($Destination -eq "/" -and $relativePath -ne "")
+                {
+                    $parentFolder = $relativePath
+                }
+                else
+                {
+                    $parentFolder = $Destination + $relativePath
+                }
+                
+                Write-Verbose "Creating folder $parentFolder/$($item.Name)"
+                try { $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null }
+                catch { throw (New-Object System.Exception("Failed to create folder '$($item.Name)' in '$parentFolder': $($_.Exception.Message)", $_.Exception))}
             }
             
-            Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder
+            if ($item.Extension -eq ".rdl" -or
+                $item.Extension -eq ".rsds" -or
+                $item.Extension -eq ".rsd")
+            {
+                $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
+                $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
+                $relativePath = $relativePath.replace("\", "/")
+                
+                if ($Destination -eq "/" -and $relativePath -ne "")
+                {
+                    $parentFolder = $relativePath
+                }
+                else
+                {
+                    $parentFolder = $Destination + $relativePath
+                }
+                
+                try { Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder -ErrorAction Stop }
+                catch { throw (New-Object System.Exception("Failed to create catalog item from '$($item.FullName)' in '$parentFolder': $($_.Exception)", $_.Exception))}
+            }
         }
     }
 }
