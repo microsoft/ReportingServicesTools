@@ -46,6 +46,9 @@ function New-RsDataSource
     .PARAMETER WindowsCredentials (optional)
         Specify whether the credentials specified are Windows credentials or not. You must specify DatasourceCredentials if you specify this switch.
 
+    .PARAMETER Disabled (optional)
+        Specify whether this data source should be disabled.
+
     .PARAMETER Overwrite (optional)
         Specify whether to overwrite data source if an existing data source with same name exists at the specified destination 
 
@@ -115,7 +118,6 @@ function New-RsDataSource
         [string]
         $Extension,
 
-        [Parameter(Mandatory=$True)]
         [string]
         $ConnectionString,
 
@@ -135,6 +137,9 @@ function New-RsDataSource
 
         [switch]
         $WindowsCredentials,
+
+        [switch]
+        $Disabled,
 
         [Switch]
         $Overwrite
@@ -159,7 +164,6 @@ function New-RsDataSource
     $isExtensionValid = $false
     foreach ($dataExtension in $dataExtensions)
     {
-        Write-Verbose "`t$($dataExtension.Name)`n"
         if ($dataExtension.Name -eq $Extension)
         {
             $isExtensionValid = $True
@@ -178,10 +182,15 @@ function New-RsDataSource
 
     $datasource = New-Object ($datasourceDataType)
     $datasource.ConnectString = $ConnectionString
-    $datasource.Enabled = $true
+    $datasource.Enabled = $true    
     $datasource.Extension = $Extension
     $datasource.WindowsCredentials = $WindowsCredentials
     $datasource.Prompt = $Prompt
+
+    if ($Disabled -eq $true)
+    {
+        $datasource.Enabled = $false
+    }
 
     if ($CredentialRetrieval.ToUpper().Equals('STORE'))
     {

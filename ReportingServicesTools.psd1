@@ -7,7 +7,7 @@
 	RootModule = 'ReportingServicesTools.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '0.0.0.6'
+	ModuleVersion = '0.0.0.8'
 	
 	# ID used to uniquely identify this module
 	GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -62,28 +62,30 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Backup-RSEncryptionKey',
+		'Backup-RsEncryptionKey',
 		'Get-RsCatalogItems',
 		'Get-RsDataSource',
 		'Get-RsItemReferences',
 		'Grant-AccessOnCatalogItem',
 		'Grant-AccessToRS',
-		'New-RSConfigurationSettingObject',
+		'New-RsConfigurationSettingObject',
 		'New-RsDataSource',
-		'New-RSWebServiceProxy',
+		'New-RsWebServiceProxy',
 		'Out-RsCatalogItem',
 		'Out-RsFolderContent',
 		'Register-PowerBI',
 		'Remove-RsCatalogItem',
-		'Restore-RSEncryptionKey',
+		'Restore-RsEncryptionKey',
 		'Revoke-AccessOnCatalogItem',
 		'Revoke-AccessToRS',
+		'Set-RsDatabase',
+		'Set-RsDatabaseCredentials',
 		'Set-RsDataSet',
 		'Set-RsDataSource',
 		'Set-RsDataSourcePassword',
-		'Set-RSEmailSettingsAsBasicAuth',
-		'Set-RSEmailSettingsAsNoAuth',
-		'Set-RSEmailSettingsAsNTLMAuth',
+		'Set-RsEmailSettingsAsBasicAuth',
+		'Set-RsEmailSettingsAsNoAuth',
+		'Set-RsEmailSettingsAsNTLMAuth',
 		'Set-RsSharedDataSource',		
 		'Write-RsCatalogItem',
 		'Write-RsFolderContent'

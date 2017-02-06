@@ -164,7 +164,7 @@ function Grant-AccessOnCatalogItem
     {
         Write-Verbose "Granting $($role.Name) to $($policy.GroupUserName) on $ItemPath..." 
         $proxy.SetPolicies($ItemPath, $policies)
-        Write-Verbose "Granted $($role.Name) to $($policy.GroupUserName) on $ItemPath!"
+        Write-Information "Granted $($role.Name) to $($policy.GroupUserName) on $ItemPath!"
     }
     catch [System.Web.Services.Protocols.SoapException]
     {

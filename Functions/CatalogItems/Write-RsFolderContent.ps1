@@ -75,8 +75,18 @@ function Write-RsFolderContent()
     {
         if(($item.GetType().Name -eq "DirectoryInfo") -and $Recurse)
         {
-            $relativePath = $item.FullName.Replace($sourceFolder.FullName.TrimEnd("\"), "").Replace("\" + $item.Name, "")
-            $parentFolder = $DestinationFolder + $relativePath.replace("\", "/")
+            $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
+            $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
+            $relativePath = $relativePath.replace("\", "/")
+            if($DestinationFolder -eq "/" -and $relativePath -ne "")
+            {
+                $parentFolder = $relativePath
+            }
+            else 
+            {
+                $parentFolder = $DestinationFolder + $relativePath               
+            }
+
             Write-Verbose "Creating folder $parentFolder/$($item.Name)"
             $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null
         }
@@ -85,8 +95,19 @@ function Write-RsFolderContent()
            $item.Extension -eq ".rsds" -or
            $item.Extension -eq ".rsd")
         {
-            $relativePath = $item.FullName.Replace($sourceFolder.FullName.TrimEnd("\"), "").Replace("\" + $item.Name, "")
-            $parentFolder = $DestinationFolder + $relativePath.replace("\", "/")
+            $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
+            $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
+            $relativePath = $relativePath.replace("\", "/")
+
+            if($DestinationFolder -eq "/" -and $relativePath -ne "")
+            {
+                $parentFolder = $relativePath
+            }
+            else 
+            {
+                $parentFolder = $DestinationFolder + $relativePath               
+            }
+            
             Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder
         }
     }
