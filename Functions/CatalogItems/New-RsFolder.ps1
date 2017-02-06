@@ -56,14 +56,14 @@ function New-RsFolder
         $ReportServerUri = 'http://localhost/reportserver',
 
         [System.Management.Automation.PSCredential]
-        $ReportServerCredential,
+        $ReportServerCredentials,
 
         $Proxy
     )
 
     if (-not $Proxy)
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredential
+        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
     }
 
     try
