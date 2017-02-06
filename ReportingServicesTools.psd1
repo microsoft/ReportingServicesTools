@@ -70,6 +70,7 @@
 		'Grant-AccessToRS',
 		'New-RsConfigurationSettingObject',
 		'New-RsDataSource',
+		'New-RsFolder',
 		'New-RsWebServiceProxy',
 		'Out-RsCatalogItem',
 		'Out-RsFolderContent',
