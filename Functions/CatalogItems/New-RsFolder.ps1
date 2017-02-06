@@ -19,7 +19,7 @@ function New-RsFolder
     .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER Credential
+    .PARAMETER ReportServerCredentials
         Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER Proxy
