@@ -10,29 +10,29 @@ function New-RsFolder
     .DESCRIPTION
         This script creates a new folder in the Report Server
 
-    .PARAMETER ReportServerUri (optional)
-        Specify the Report Server URL to your SQL Server Reporting Services Instance.
-
-    .PARAMETER ReportServerCredentials (optional)
-        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
-
-    .PARAMETER Proxy (optional)
-        Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
-
-    .PARAMETER Destination
+    .PARAMETER Path
         Specify the location where the folder should be created 
 
-    .PARAMETER Name
+    .PARAMETER FolderName
         Specify the name of the the new data folder
 
+    .PARAMETER ReportServerUri
+        Specify the Report Server URL to your SQL Server Reporting Services Instance.
+
+    .PARAMETER ReportServerCredentials
+        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
+
+    .PARAMETER Proxy
+        Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
+
     .EXAMPLE 
-        New-RsFolder -Destination '/' -Name 'My new folder'
+        New-RsFolder -Path '/' -FolderName 'My new folder'
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new folder 'My new folder' at the root folder.
 
     .EXAMPLE 
-        New-RsFolder -ReportServerUri 'http://remoteServer/reportserver' -Destination '/existingfolder' -Name 'My new folder'	
+        New-RsFolder -ReportServerUri 'http://remoteServer/reportserver' -Path '/existingfolder' -FolderName 'My new folder'	
         Description
         -----------
         This command will establish a connection to the Report Server located at http://remoteServer/reportserver using current user's credentials and create a new folder 'My new folder' at the folder existingfolder in the root.	
@@ -42,21 +42,20 @@ function New-RsFolder
     [cmdletbinding()]
     param
     (
+        [Parameter(Mandatory=$True)]
+        [string]
+        $Path,
+
+        [Parameter(Mandatory=$True)]
+        [string]
+        $FolderName,
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
 
         [System.Management.Automation.PSCredential]
         $ReportServerCredentials,
 
-        $Proxy,
-
-        [Parameter(Mandatory=$True)]
-        [string]
-        $Destination,
-
-        [Parameter(Mandatory=$True)]
-        [string]
-        $Name
+        $Proxy
     )
 
     if (-not $Proxy)
@@ -67,12 +66,12 @@ function New-RsFolder
     try
     {
         Write-Verbose "Creating folder..."
-        $Proxy.CreateFolder($Name, $Destination, $null)
+        $Proxy.CreateFolder($FolderName, $Path, $null)
         Write-Information "folder created successfully!"
     }
     catch
     {
        Write-Error "Exception occurred while creating folder! $($_.Exception.Message)"
-       break 
+       throw 
     }
 }
