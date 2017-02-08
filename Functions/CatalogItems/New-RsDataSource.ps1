@@ -10,13 +10,13 @@ function New-RsDataSource
     .DESCRIPTION
         This script creates a new data source on Report Server. 
 
-    .PARAMETER ReportServerUri (optional)
+    .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerCredentials (optional)
+    .PARAMETER ReportServerCredentials
         Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
-    .PARAMETER Proxy (optional)
+    .PARAMETER Proxy
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
 
     .PARAMETER Destination
@@ -34,22 +34,22 @@ function New-RsDataSource
     .PARAMETER CredentialRetrieval
         Specify the type of authentication to use: None, Prompt, Integrated, Store. Please view https://msdn.microsoft.com/en-us/library/reportservice2010.datasourcedefinition.credentialretrieval.aspx for more details on each option. 
 
-    .PARAMETER Prompt (optional)
+    .PARAMETER Prompt
         Specify the prompt to display to user.  
 
-    .PARAMETER DatasourceCredentials (optional)
+    .PARAMETER DatasourceCredentials
         Specify the Credentials to use when connecting to the data source.
 
-    .PARAMETER ImpersonateUser (optional)
+    .PARAMETER ImpersonateUser
         Specify whether to impersonate using the credentials specify when connecting to the data source. You must specify DatasourceCredentials if you specify this switch.
 
-    .PARAMETER WindowsCredentials (optional)
+    .PARAMETER WindowsCredentials
         Specify whether the credentials specified are Windows credentials or not. You must specify DatasourceCredentials if you specify this switch.
 
-    .PARAMETER Disabled (optional)
+    .PARAMETER Disabled
         Specify whether this data source should be disabled.
 
-    .PARAMETER Overwrite (optional)
+    .PARAMETER Overwrite
         Specify whether to overwrite data source if an existing data source with same name exists at the specified destination 
 
     .EXAMPLE 

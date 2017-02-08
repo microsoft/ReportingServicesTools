@@ -10,10 +10,10 @@ function New-RsWebServiceProxy
     .DESCRIPTION
         This script creates a web service proxy object to the Reporting Services SOAP endpoint associated to the Report Server URI specified by the user. 
 
-    .PARAMETER ReportServerUri (optional)
+    .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-	.PARAMETER Credentials (optional)
+	.PARAMETER Credentials
 		Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
     .EXAMPLE 

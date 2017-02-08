@@ -10,21 +10,21 @@ function Get-RsCatalogItems
 	.DESCRIPTION
 		List all catalog items under a given path.
 
-	.PARAMETER ReportServerUri (optional)
+	.PARAMETER ReportServerUri
 		Specify the Report Server URL to your SQL Server Reporting Services Instance.
 		Has to be provided if proxy is not provided.
 
-	.PARAMETER ReportServerCredentials (optional)
+	.PARAMETER ReportServerCredentials
 		Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
-	.PARAMETER Proxy (optional)
+	.PARAMETER Proxy
 		Report server proxy to use. 
 		Has to be provided if ReportServerUri is not provided.
 
 	.PARAMETER Path
 		Path to folder.
 
-	.PARAMETER Recurse (optional)
+	.PARAMETER Recurse
 		Recursively list subfolders with content.
 
 

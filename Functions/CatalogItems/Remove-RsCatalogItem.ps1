@@ -10,13 +10,13 @@ function Remove-RsCatalogItem
     .DESCRIPTION
         This script creates a new data source on Report Server. 
 
-    .PARAMETER ReportServerUri (optional)
+    .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerCredentials (optional)
+    .PARAMETER ReportServerCredentials
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
-    .PARAMETER Proxy (optional)
+    .PARAMETER Proxy
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
     
     .PARAMETER Path

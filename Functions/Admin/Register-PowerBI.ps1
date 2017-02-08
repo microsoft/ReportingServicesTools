@@ -10,10 +10,10 @@ function Register-PowerBI
     .DESCRIPTION
         This script configures Power BI integration by providing details about a previously configured Azure Active Directory Web App
 
-    .PARAMETER SqlServerInstance (optional)
+    .PARAMETER SqlServerInstance
         Specify the name of the SQL Server Reporting Services Instance. The default Reporting Services instance is typically named 'MSSQLSERVER'.
 
-    .PARAMETER SqlServerVersion (optional)
+    .PARAMETER SqlServerVersion
         Specify the version of the SQL Server Reporting Services Instance. 13 for SQL Server 2016, 12 for SQL Server 2014, 11 for SQL Server 2012
         (Power BI integration was introduced in SQL Server 2016)
 
@@ -32,13 +32,13 @@ function Register-PowerBI
     .PARAMETER TenantId 
         Azure AD Tenant ID
 
-    .PARAMETER ResourceUrl (optional)
+    .PARAMETER ResourceUrl
         Overrides the default Power BI endpoint. Generally 'https://analysis.windows.net/powerbi/api'.
 
-    .PARAMETER AuthUrl (optional)
+    .PARAMETER AuthUrl
         Overrides the default Azure AD authentication URL. Generally 'https://login.windows.net/common/oauth2/authorize'.
 
-    .PARAMETER TokenUrl (optional)
+    .PARAMETER TokenUrl
         Overrides the default Azure AD token URL. Generally 'https://login.microsoftonline.com/common/oauth2/token'.
 
     .PARAMETER RedirectUrls 

@@ -10,17 +10,14 @@
     For a paginated report, it lists all references to shared datasets and shared data sources.
     For a dataset, it lists all references to shared data sources.
 
-.PARAMETER ReportServerUri (optional)
+.PARAMETER ReportServerUri
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
     Has to be provided if proxy is not provided.
 
-.PARAMETER ReportServerUsername (optional)
-    Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
+.PARAMETER ReportServerCredentials
+        Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
-.PARAMETER ReportServerPassword (optional)
-    Specify the password to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER Proxy (optional)
+.PARAMETER Proxy
     Report server proxy to use. 
     Has to be provided if ReportServerUri is not provided.
 

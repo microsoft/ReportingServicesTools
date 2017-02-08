@@ -10,10 +10,10 @@ function Backup-RsEncryptionKey
     .DESCRIPTION
         This script creates a back up of the encryption key for SQL Server Reporting Services. This key is needed in order to read all the encrypted content stored in the Reporting Services Catalog database.
 
-    .PARAMETER SqlServerInstance (optional)
+    .PARAMETER SqlServerInstance
         Specify the name of the SQL Server Reporting Services Instance.
 
-    .PARAMETER SqlServerVersion (optional)
+    .PARAMETER SqlServerVersion
         Specify the version of the SQL Server Reporting Services Instance. 13 for SQL Server 2016, 12 for SQL Server 2014, 11 for SQL Server 2012
 
     .PARAMETER Password

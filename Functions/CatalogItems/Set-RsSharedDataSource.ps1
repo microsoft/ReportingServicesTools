@@ -9,14 +9,14 @@
 .DESCRIPTION
     Overrides the reference of a report or dataset to a shared data source. 
 
-.PARAMETER ReportServerUri (optional)
+.PARAMETER ReportServerUri
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
     Has to be provided if proxy is not provided.
 
-.PARAMETER ReportServerCredentials (optional)
+.PARAMETER ReportServerCredentials
     Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
-.PARAMETER Proxy (optional)
+.PARAMETER Proxy
     Report server proxy to use. 
     Has to be provided if ReportServerUri is not provided.
     

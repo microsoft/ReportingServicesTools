@@ -10,10 +10,10 @@ function Revoke-AccessOnCatalogItem
     .DESCRIPTION
         This script revokes all access on the specified catalog item from the specified user/group. 
 
-    .PARAMETER ReportServerUri (optional)
+    .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerCredentials (optional)
+    .PARAMETER ReportServerCredentials
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER UserOrGroupName

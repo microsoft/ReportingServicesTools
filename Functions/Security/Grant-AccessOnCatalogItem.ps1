@@ -10,10 +10,10 @@ function Grant-AccessOnCatalogItem
     .DESCRIPTION
         This script grants the specified role access to the specified user/group on the specified catalog item using either current user's credentials or specified credentials. 
 
-    .PARAMETER ReportServerUri (optional)
+    .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerCredentials (optional)
+    .PARAMETER ReportServerCredentials
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER UserOrGroupName

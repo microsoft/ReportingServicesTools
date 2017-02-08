@@ -10,13 +10,13 @@ function Set-RsDataSource
     .DESCRIPTION
         This script updates information about a data source on Report Server that was retrieved using Get-RsDataSource.  
 
-    .PARAMETER ReportServerUri (optional)
+    .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerCredentials (optional)
+    .PARAMETER ReportServerCredentials
         Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
-    .PARAMETER Proxy (optional)
+    .PARAMETER Proxy
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
 
     .PARAMETER DataSourcePath

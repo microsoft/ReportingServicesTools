@@ -10,10 +10,10 @@ function New-RsConfigurationSettingObject
     .DESCRIPTION
         This script creates a new WMI Object that is connected to Reporting Services WMI Provider. 
 
-    .PARAMETER SqlServerInstance (optional)
+    .PARAMETER SqlServerInstance
         Specify the name of the SQL Server Reporting Services Instance.
     
-    .PARAMETER SqlServerVersion (optional)
+    .PARAMETER SqlServerVersion
         Specify the version of the SQL Server Reporting Services Instance. 13 for SQL Server 2016, 12 for SQL Server 2014, 11 for SQL Server 2012
 
     .EXAMPLE 

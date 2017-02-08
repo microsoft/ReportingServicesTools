@@ -10,10 +10,10 @@ function Grant-AccessToRs
     .DESCRIPTION
         This script grants the specified role access to the specified user/group to the SQL Server Reporting Services Instance located at the specified Report Server URI. 
 
-    .PARAMETER ReportServerUri (optional)
+    .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
 
-    .PARAMETER ReportServerCredentials (optional)
+    .PARAMETER ReportServerCredentials
         Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
     .PARAMETER UserOrGroupName

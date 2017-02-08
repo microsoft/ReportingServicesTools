@@ -9,21 +9,18 @@
     This downloads catalog items from a folder server to disk.
     Currently the script only downloads reports, datasources, datasets and resources.
 
-.PARAMETER ReportServerUri (optional)
+.PARAMETER ReportServerUri
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
     Has to be provided if proxy is not provided.
 
-.PARAMETER ReportServerUsername (optional)
-    Specify the user name to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER ReportServerPassword (optional)
+.PARAMETER ReportServerCredentials
     Specify the password to use when connecting to your SQL Server Reporting Services Instance.
 
-.PARAMETER proxy (optional)
+.PARAMETER proxy
     Report server proxy to use. 
     Has to be provided if ReportServerUri is not provided.
 
-.PARAMETER Recurse (optional)
+.PARAMETER Recurse
     Recursively download subfolders.
 
 .PARAMETER Path

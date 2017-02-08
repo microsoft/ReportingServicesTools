@@ -9,14 +9,14 @@
     Uploads an item from disk to a repot server.
     Currently, we are only supporting Report, DataSource and DataSet for uploads
 
-.PARAMETER ReportServerUri (optional)
+.PARAMETER ReportServerUri
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
     Has to be provided if proxy is not provided.
 
-.PARAMETER ReportServerCredentials (optional)
+.PARAMETER ReportServerCredentials
     Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
-.PARAMETER proxy (optional)
+.PARAMETER proxy
     Report server proxy to use. 
     Has to be provided if ReportServerUri is not provided.
 
@@ -26,7 +26,7 @@
 .PARAMETER Destination
     Folder on reportserver to upload the item to.
 
-.PARAMETER override (optional)
+.PARAMETER override
     Override existing catalog item.
 
 .EXAMPLE

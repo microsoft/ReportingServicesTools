@@ -10,10 +10,10 @@ function Set-RsDatabase
         .DESCRIPTION
             This script configures SQL Server Reporting Services to either create and use a new RS database or use an existing RS database. You must be an admin in RS and SQL Server in order to perform this operation successfully.
             
-        .PARAMETER ReportServerInstance (optional)
+        .PARAMETER ReportServerInstance
             Specify the name of the SQL Server Reporting Services Instance.
 
-        .PARAMETER ReportServerVersion (optional)
+        .PARAMETER ReportServerVersion
             Specify the version of the SQL Server Reporting Services Instance.
 
         .PARAMETER DatabaseServerName
