@@ -15,7 +15,7 @@
     Has to be provided if proxy is not provided.
 
 .PARAMETER ReportServerCredentials
-        Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+    Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
 
 .PARAMETER Proxy
     Report server proxy to use. 
