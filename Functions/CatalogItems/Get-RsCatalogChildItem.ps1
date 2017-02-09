@@ -54,8 +54,8 @@ function Get-RsCatalogChildItem
             Release 1.0 (???, ???)
             - Initial Release
     #>
-	
-	[cmdletbinding()]
+    
+    [cmdletbinding()]
     param(
         [Alias('ItemPath')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]

@@ -62,8 +62,8 @@ function Revoke-RsCatalogItemAccess
             - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
             - Standardized the parameters governing the Report Server connection for consistent user experience.
             - Implemented ShouldProcess (-WhatIf, -Confirm)
-			- Replaced calling exit with throwing a terminating error (exit is a bit of an overkill when failing a simple execution)
-			- Improved error message on failure.
+            - Replaced calling exit with throwing a terminating error (exit is a bit of an overkill when failing a simple execution)
+            - Improved error message on failure.
             - Renamed the parameter 'UserOrGroupName' to 'Identity', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
             - Renamed the parameter 'ItemPath' to 'Path', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
             - New parameter: 'Strict'. Using this, the function will throw a terminating error when trying to revoke all permissions when there are none assigned to the target identity.

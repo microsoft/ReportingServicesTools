@@ -58,7 +58,7 @@ function Register-RsPowerBI
             Use the "Connect-RsReportServer" function to set/update a default value.
         
         .EXAMPLE
-            PS C:\> Register-RsPowerBI -ClientId 'value1' -ClientSecret 'value2' -AppObjectId 'value3' -TenantName 'value4' -TenantId 'value5' -RedirectUrls 'value6'
+            Register-RsPowerBI -ClientId 'value1' -ClientSecret 'value2' -AppObjectId 'value3' -TenantName 'value4' -TenantId 'value5' -RedirectUrls 'value6'
     
             <Insert description here>
         
@@ -134,11 +134,16 @@ function Register-RsPowerBI
         
         [System.Management.Automation.PSCredential]
         $Credential
-	)
-	
-	if ($PSCmdlet.ShouldProcess($ReportServerInstance, "Registering PowerBI for SQL Server Instance"))
-	{
-	    #region Connect to Report Server using WMI
+    )
+    
+    if ($ComputerName) { $tempComputerName = $ComputerName }
+    else { $tempComputerName = ([ReportingServicesTools.ConnectionHost]::ComputerName) }
+    if ($ReportServerInstance) { $tempInstanceName = $ReportServerInstance }
+    else { $tempInstanceName = ([ReportingServicesTools.ConnectionHost]::Instance) }
+    
+    if ($PSCmdlet.ShouldProcess("$tempComputerName \ $tempInstanceName", "Registering PowerBI for SQL Server Instance"))
+    {
+        #region Connect to Report Server using WMI
         try
         {
             $splat = @{ }
@@ -154,25 +159,25 @@ function Register-RsPowerBI
         }
         #endregion Connect to Report Server using WMI
 
-	    Write-Verbose "Configuring Power BI ..."
-	    $configureResult = $rsWmiObject.SavePowerBIInformation($ClientId,
-					                                           $ClientSecret,
-					                                           $AppObjectId,
-					                                           $TenantName,
-					                                           $TenantId,
-					                                           $ResourceUrl,
-					                                           $AuthUrl,
-					                                           $TokenUrl,
-					                                           $RedirectUrls)
-		
-		if ($configureResult.HRESULT -eq 0)
-		{
+        Write-Verbose "Configuring Power BI ..."
+        $configureResult = $rsWmiObject.SavePowerBIInformation($ClientId,
+                                                               $ClientSecret,
+                                                               $AppObjectId,
+                                                               $TenantName,
+                                                               $TenantId,
+                                                               $ResourceUrl,
+                                                               $AuthUrl,
+                                                               $TokenUrl,
+                                                               $RedirectUrls)
+        
+        if ($configureResult.HRESULT -eq 0)
+        {
             Write-Verbose "Configuring Power BI ... Success!"
-		}
-		else
-		{
-			throw "Failed to register PowerBI for server instance: $ReportServerInstance. Errors: $($configureResult.ExtendedErrors)"
-		}
-	}
+        }
+        else
+        {
+            throw "Failed to register PowerBI for server instance: $ReportServerInstance. Errors: $($configureResult.ExtendedErrors)"
+        }
+    }
 }
 New-Alias -Name "Register-PowerBI" -Value "Register-RsPowerBI" -Scope Global

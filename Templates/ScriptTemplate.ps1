@@ -4,44 +4,44 @@
 
 function DoSomeThingTo-RSCatalogItem
 {
-	<#
-		.SYNOPSIS
-			A brief description of the DoSomeThingTo-RSCatalogItem function.
-		
-		.DESCRIPTION
-			A detailed description of the DoSomeThingTo-RSCatalogItem function.
-		
-		.PARAMETER ReportServerUri
+    <#
+        .SYNOPSIS
+            A brief description of the DoSomeThingTo-RSCatalogItem function.
+
+        .DESCRIPTION
+            A detailed description of the DoSomeThingTo-RSCatalogItem function.
+
+        .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Credential
             Specify the password to use when connecting to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Proxy
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
-		
-		.EXAMPLE
-			PS C:\> DoSomeThingTo-RSCatalogItem
-	
-			Does something to an RS Catalog Item
-		
-		.NOTES
-			Author:      (Original Author)
-			Editors:     (Additional Contributors)
-			Created on:  (Date)
-			Last Change: (Date)
-			Version:     1.0
-	
-			Release 1.0 (Date, Author)
-			- Initial Release
-	#>
-	
-	[CmdletBinding()]
-    param(
+
+        .EXAMPLE
+            PS C:\> DoSomeThingTo-RSCatalogItem
+
+            Does something to an RS Catalog Item
+
+        .NOTES
+            Author:      (Original Author)
+            Editors:     (Additional Contributors)
+            Created on:  (Date)
+            Last Change: (Date)
+            Version:     1.0
+
+            Release 1.0 (Date, Author)
+            - Initial Release
+    #>
+    
+    [CmdletBinding()]
+    param (
         [string]
         $ReportServerUri,
         
@@ -51,10 +51,10 @@ function DoSomeThingTo-RSCatalogItem
         
         $Proxy
     )
-	
-	Begin
-	{
-		#region Connect to Report Server using Web Proxy
+    
+    Begin
+    {
+        #region Connect to Report Server using Web Proxy
         if (-not $Proxy)
         {
             try
@@ -70,16 +70,16 @@ function DoSomeThingTo-RSCatalogItem
             }
         }
         #endregion Connect to Report Server using Web Proxy
-	}
-	
-	Process
-	{
-		
-	}
-	
-	End
-	{
-		
-	}
+    }
+    
+    Process
+    {
+        
+    }
+    
+    End
+    {
+        
+    }
 }
 

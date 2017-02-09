@@ -99,13 +99,13 @@ function New-RsConfigurationSettingObject
     }
     
     $splat = @{
-		ErrorAction = "Stop"
-		Namespace = "root\Microsoft\SqlServer\ReportServer\RS_$ReportServerInstance\v$($ReportServerVersion.Value__)\Admin"
-		Class = "MSReportServer_ConfigurationSetting"
-	}
-	
-	if ($ComputerName) { $splat["ComputerName"] = $ComputerName }
-	if ($Credential) { $splat["Credential"] = $Credential }
-	
-	Get-WmiObject @splat
+        ErrorAction = "Stop"
+        Namespace = "root\Microsoft\SqlServer\ReportServer\RS_$ReportServerInstance\v$($ReportServerVersion.Value__)\Admin"
+        Class = "MSReportServer_ConfigurationSetting"
+    }
+    
+    if ($ComputerName) { $splat["ComputerName"] = $ComputerName }
+    if ($Credential) { $splat["Credential"] = $Credential }
+    
+    Get-WmiObject @splat
 }

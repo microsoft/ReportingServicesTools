@@ -90,21 +90,21 @@ function Set-RsDatabase
 
         [switch]
         $IsRemoteDatabaseServer,
-		
-		[Parameter(Mandatory = $True)]
-		[Alias('DatabaseName')]
+        
+        [Parameter(Mandatory = $True)]
+        [Alias('DatabaseName')]
         [string]
         $Name,
 
         [switch]
         $IsExistingDatabase,
-		
-		[Parameter(Mandatory = $true)]
-		[Alias('DatabaseCredentialType')]
+        
+        [Parameter(Mandatory = $true)]
+        [Alias('DatabaseCredentialType')]
         [ReportingServicesTools.SqlServerAuthentication]
         $Authentication,
-		
-		[System.Management.Automation.PSCredential]
+        
+        [System.Management.Automation.PSCredential]
         $DatabaseCredential,
         
         [Alias('SqlServerInstance')]
