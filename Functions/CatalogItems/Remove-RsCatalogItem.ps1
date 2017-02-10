@@ -29,6 +29,15 @@ function Remove-RsCatalogItem
         -----------
         Removes the monthlyreports folder, located directly at the root of the SSRS instance, and all objects below it.
 
+    .EXAMPLE
+        Get-RsCatalogItems -ReportServerUri http://localhost/ReportServer_SQL2016 -Path '/SQL Server Performance Dashboard' |
+        Out-GridView -PassThru |
+        Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer_SQL2016
+   
+        Description
+        -----------
+        Gets a list of items from the SQL Server Performance Dashboard folder in a GridView from an SSRS instance names SQL2016 and allows the user to select items to be removed, after clicking "OK", only the items selected will be removed.
+
     #>
 
     [cmdletbinding()]
