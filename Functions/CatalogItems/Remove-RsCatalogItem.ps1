@@ -25,7 +25,6 @@ function Remove-RsCatalogItem
 
     [cmdletbinding()]
     param(
-        [Parameter(mandatory,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
         [string]
         $ReportServerUri = 'http://localhost/reportserver',
                 
