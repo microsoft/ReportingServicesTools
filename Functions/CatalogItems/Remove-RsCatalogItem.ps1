@@ -5,10 +5,10 @@ function Remove-RsCatalogItem
 {
     <#
     .SYNOPSIS
-        This script creates a new data source on Report Server.
+        This function removes an item from the Report Server Catalog.
 
     .DESCRIPTION
-        This script creates a new data source on Report Server. 
+        This function removes an item from the Report Server Catalog. 
 
     .PARAMETER ReportServerUri
         Specify the Report Server URL to your SQL Server Reporting Services Instance.
