@@ -54,23 +54,24 @@ function Remove-RsCatalogItem
         [string]
         $Path
     )
- process {
+process 
+    {
 
-    if(-not $Proxy)
-    {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
-    }
+        if(-not $Proxy)
+        {
+            $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
+        }
 
-    try
-    {
-        Write-Verbose "Deleting catalog item $Path..."
-        $Proxy.DeleteItem($Path)
-        Write-Information "Catalog item deleted successfully!"
-    }
-    catch
-    {
-        Write-Error "Exception occurred while deleting catalog item! $($_.Exception.Message)"
-        break
-    }
+        try
+        {
+            Write-Verbose "Deleting catalog item $Path..."
+            $Proxy.DeleteItem($Path)
+            Write-Information "Catalog item deleted successfully!"
+        }
+        catch
+        {
+            Write-Error "Exception occurred while deleting catalog item! $($_.Exception.Message)"
+            break
+        }
     }
 }
