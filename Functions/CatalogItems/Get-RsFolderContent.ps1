@@ -33,15 +33,7 @@ function Get-RsFolderContent
 	   
 		Description
 		-----------
-		List all items directly at the root of the SSRS instance
-
-	.EXAMPLE
-		Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path / -Recurse
-	   
-		Description
-		-----------
-		List all items directly at the root of the SSRS instance and under every folder below the root
-
+		List all items under the root folder
 	#>
 	
 	[cmdletbinding()]
