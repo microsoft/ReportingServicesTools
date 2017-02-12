@@ -30,7 +30,7 @@ The following is a list of commands which are available for you to use once you 
 |Command|Description|
 |-------|-----------|
 |Backup-RsEncryptionKey|This command backs up the encryption key used by SQL Server Reporting Services to protect sensitive content.|
-|Get-RsCatalogItems|This command lists all catalog items under a folder.|
+|Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
 |Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
