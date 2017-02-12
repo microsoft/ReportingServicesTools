@@ -118,7 +118,7 @@
         Category = "Databases"
 
         # Keyword tags to help users find this module via navigations and search.
-        Tags = @('sqlserver','reportingservices','sql','dba','databases','reporting')
+        Tags = @('sqlserver','reportingservices', 'SSRS','sql','dba','databases','reporting', 'Migrations')
 
         # The web address of an icon which can be used in galleries to represent this module
         IconUri = ""
