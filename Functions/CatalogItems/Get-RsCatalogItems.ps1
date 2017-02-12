@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Get-RsFolderContent
+function Get-RsCatalogItems
 {
 	<#
 	.SYNOPSIS
@@ -29,19 +29,11 @@ function Get-RsFolderContent
 
 
 	.EXAMPLE
-		Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /
+		Get-RsCatalogItems -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /
 	   
 		Description
 		-----------
-		List all items directly at the root of the SSRS instance
-
-	.EXAMPLE
-		Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path / -Recurse
-	   
-		Description
-		-----------
-		List all items directly at the root of the SSRS instance and under every folder below the root
-
+		List all items under the root folder
 	#>
 	
 	[cmdletbinding()]
@@ -54,22 +46,18 @@ function Get-RsFolderContent
         
         $Proxy,
         
-        [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
+        [Parameter(Mandatory=$True)]
         [string]
         $Path,
         
         [switch]
         $Recurse
     )
-process 
+
+    if(-not $Proxy)
     {
-
-        if(-not $Proxy)
-        {
-		    $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
-        }
-
-        $Proxy.ListChildren($Path, $Recurse)
+		$Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
     }
+
+    $Proxy.ListChildren($Path, $Recurse)    
 }
-New-Alias -Name "Get-RsCatalogItems" -Value Get-RsFolderContent -Scope Global
