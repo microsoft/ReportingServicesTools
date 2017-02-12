@@ -63,7 +63,7 @@
 	# Functions to export from this module
 	FunctionsToExport = @(
 		'Backup-RsEncryptionKey',
-		'Get-RsCatalogItems',
+		'Get-RsFolderContent',
 		'Get-RsDataSource',
 		'Get-RsItemReferences',
 		'Grant-AccessOnCatalogItem',
@@ -100,7 +100,7 @@
 	
 	# Aliases to export from this module
 	# Aliases are stored in ReportingServicesTools.psm1
-	AliasesToExport = '*'
+	AliasesToExport = 'Get-RsCatalogItems'
 	
 	# List of all modules packaged with this module
 	ModuleList = @()

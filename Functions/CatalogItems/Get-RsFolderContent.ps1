@@ -1,7 +1,7 @@
-# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Get-RsCatalogItems
+function Get-RsFolderContent
 {
 	<#
 	.SYNOPSIS
@@ -29,7 +29,7 @@ function Get-RsCatalogItems
 
 
 	.EXAMPLE
-		Get-RsCatalogItems -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /
+		Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /
 	   
 		Description
 		-----------
@@ -46,18 +46,22 @@ function Get-RsCatalogItems
         
         $Proxy,
         
-        [Parameter(Mandatory=$True)]
+        [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
         [string]
         $Path,
         
         [switch]
         $Recurse
     )
-
-    if(-not $Proxy)
+process 
     {
-		$Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
-    }
 
-    $Proxy.ListChildren($Path, $Recurse)    
+        if(-not $Proxy)
+        {
+		    $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
+        }
+
+        $Proxy.ListChildren($Path, $Recurse)
+    }
 }
+New-Alias -Name "Get-RsCatalogItems" -Value Get-RsFolderContent -Scope Global
