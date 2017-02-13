@@ -1,9 +1,10 @@
 ﻿function Get-ItemType
 {
-        param(
-            [string]$FileExtension
-        )
-switch ($FileExtension)
+    param
+    (
+        [string]$FileExtension
+    )
+    switch ($FileExtension)
     {
         '.rdl'  {return 'Report'}
         '.rsds' {return 'DataSource'}
