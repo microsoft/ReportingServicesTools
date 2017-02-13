@@ -8,6 +8,7 @@
 .DESCRIPTION
     This downloads catalog items from a report server to disk.
     Currently supported types to download are reports, datasources, datasets and resources.
+    This function will overwrite files -Destination which have the same name as the items being passed to the command.
 
 .PARAMETER ReportServerUri
     Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -27,11 +28,20 @@
     Folder to download catalog item to.
 
 .EXAMPLE
-    Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /Report -Destination C:\reports
+    Out-RsCatalogItem -ReportServerUri http://localhost/reportserver_sql2012 -Path /Report -Destination C:\reports
    
     Description
     -----------
-    Download catalog item 'Report' to folder 'C:\reports'. 
+    Download catalog item 'Report' to folder 'C:\reports'.
+
+.EXAMPLE
+    Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path '/SQL Server Performance Dashboard' | 
+    WHERE Name -Like Wait* | 
+    Out-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Destination c:\SQLReports
+   
+    Description
+    -----------
+    Downloads all catalog items from folder '/SQL Server Performance Dashboard' with a name that starts with 'Wait' to folder 'C:\SQLReports'. 
 #>
 
 function Out-RsCatalogItem
