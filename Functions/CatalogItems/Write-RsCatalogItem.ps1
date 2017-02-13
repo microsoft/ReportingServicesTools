@@ -77,7 +77,7 @@ function Write-RsCatalogItem
         $OverWrite
     )
     
-Begin
+    Begin
     {
     
         if(-not $Proxy)
@@ -86,9 +86,9 @@ Begin
         }
     }
 
-Process
+    Process
     {
-    foreach ($item in $Path)
+        foreach ($item in $Path)
         {
             if (!(Test-Path $Path))
             {
