@@ -45,82 +45,66 @@ function Out-RsCatalogItem
         
         $Proxy,
 
-        [Parameter(Mandatory=$True)]
-        [string]
+        [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
+        [string[]]
         $Path,
 
         [Parameter(Mandatory=$True)]
         [string]
         $Destination
     )
-
-    function Get-FileExtension
+    Begin
     {
-        param(
-            [Parameter(Mandatory=$True)]
-            [string]$TypeName
-        )
 
-        if ($TypeName -eq 'Report')
+        if (-not $Proxy)
         {
-            return '.rdl'
-        }
-        elseif ($TypeName -eq 'DataSource') 
-        {
-            return '.rsds'
-        }
-        elseif ($TypeName -eq 'DataSet')
-        {
-            return '.rsd'
-        } 
-        else 
-        {
-            throw 'Unsupported item type! We only support items which are of type Report, Data Set or Data Source'
+            $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
         }
     }
-
-    if (-not $Proxy)
-    {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
-    }
-
-    $itemType = $Proxy.GetItemType($Path)
-    if ($itemType -eq 'Unknown')
-    {
-        throw "Make sure item exists at $Path and item is of type Report, DataSet, DataSource or Resource"
-    }
-    elseif ($itemType -eq 'Resource')
-    {
-        $itemName = ($path.Split("/"))[-1]
-        # Resource contain the file extension as part of their name, so we don't need to call Get-FileExtension
-        $fileName = $itemName
-    }
-    else 
-    {
-        $itemName = ($path.Split("/"))[-1]
-        $fileName = $itemName + (Get-FileExtension $itemType)
-    }
-
-    Write-Verbose "Downloading $Path..."
-    $bytes = $Proxy.GetItemDefinition($Path)
     
-    if (!(Test-Path -Path $Destination))
+    Process
     {
-        Write-Verbose "Creating Folder $Destination..."
-        New-Item -ItemType directory -Path $Destination | Out-Null
-    }
+        foreach ($item in $Path)
+        {
+            $itemType = $Proxy.GetItemType($item)
+            if ($itemType -eq 'Unknown')
+            {
+                throw "Make sure item exists at $Path and item is of type Report, DataSet, DataSource or Resource"
+            }
+            elseif ($itemType -eq 'Resource')
+            {
+                $itemName = ($path.Split("/"))[-1]
+                # Resource contain the file extension as part of their name, so we don't need to call Get-FileExtension
+                $fileName = $itemName
+            }
+            else 
+            {
+                $itemName = ($path.Split("/"))[-1]
+                $fileName = $itemName + (Get-FileExtension $itemType)
+            }
 
-    $DestinationFullPath = Resolve-Path $Destination
-    Write-Verbose "Writing $itemType content to $DestinationFullPath\$fileName..."
-    if ($itemType -eq 'DataSource')
-    {
-        $content = [System.Text.Encoding]::Unicode.GetString($bytes)
-        [System.IO.File]::WriteAllText("$DestinationFullPath\$fileName", $content)
-    }
-    else 
-    {
-        [System.IO.File]::WriteAllBytes("$DestinationFullPath\$fileName", $bytes)
-    }
+            Write-Verbose "Downloading $Path..."
+            $bytes = $Proxy.GetItemDefinition($Path)
+    
+            if (!(Test-Path -Path $Destination))
+            {
+                Write-Verbose "Creating Folder $Destination..."
+                New-Item -ItemType directory -Path $Destination | Out-Null
+            }
 
-    Write-Information "$Path was downloaded to $DestinationFullPath\$fileName successfully!"
+            $DestinationFullPath = Resolve-Path $Destination
+            Write-Verbose "Writing $itemType content to $DestinationFullPath\$fileName..."
+            if ($itemType -eq 'DataSource')
+            {
+                $content = [System.Text.Encoding]::Unicode.GetString($bytes)
+                [System.IO.File]::WriteAllText("$DestinationFullPath\$fileName", $content)
+            }
+            else 
+            {
+                [System.IO.File]::WriteAllBytes("$DestinationFullPath\$fileName", $bytes)
+            }
+
+            Write-Information "$Path was downloaded to $DestinationFullPath\$fileName successfully!"
+        }
+    }
 }
