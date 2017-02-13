@@ -30,11 +30,26 @@
     Override existing catalog item.
 
 .EXAMPLE
-    Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl -Destination /monthlyreports
+    Write-RsCatalogItem -ReportServerUri http://localhost/reportserver_sql2012 -Path c:\reports\monthlyreport.rdl -Destination /financereports
    
     Description
     -----------
-    Uploads the report monthlyreport.rdl to folder /monthlyreports
+    Uploads the report monthlyreport.rdl to folder /financereports
+
+.EXAMPLE
+    Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl, c:\reports\dailyreport.rdl -Destination /financereports
+   
+    Description
+    -----------
+    Uploads the monthlyreport.rdl and dailyreport.rdl report to folder /financereports
+
+.EXAMPLE
+    Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path ( dir c:\reports -filter *.rdl) -Destination /financereports
+   
+    Description
+    -----------
+    Uploads all of the .rdl files to folder /financereports
+
 #>
 
 function Write-RsCatalogItem
@@ -48,116 +63,104 @@ function Write-RsCatalogItem
         
         $Proxy,
         
-        [Parameter(Mandatory=$True)]
-        [string]
+        [Alias('FullName')]
+        [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
+        [string[]]
         $Path,
         
         [Parameter(Mandatory=$True)]
         [string]
         $Destination,
         
+        [Alias('Override')]
         [switch]
-        $Override
+        $OverWrite
     )
-
-    function Get-ItemType
-    {
-        param(
-            [string]$FileExtension
-        )
-
-        if($FileExtension -eq '.rdl')
-        {
-            return 'Report'
-        }
-        elseif ($FileExtension -eq '.rsds') 
-        {
-            return 'DataSource'
-        }
-        elseif ($FileExtension -eq '.rsd')
-        {
-            return 'DataSet'
-        }
-        else
-        {
-            throw 'Uploading currently only supports .rdl, .rsds and .rsd files'
-        }
-    }
     
-    if(-not $Proxy)
+    Begin
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
-    }
-
-    if (!(Test-Path $Path))
-    {
-        throw "No item found at the specified path: $Path!"
-    }
-
-    $EntirePath = Resolve-Path $Path
-    $item = Get-Item $EntirePath 
-    $itemType = Get-ItemType $item.Extension
-    $itemName = $item.BaseName
     
-    
-    if($Destination -eq "/")
-    {
-        Write-Verbose "Uploading $EntirePath to /$($itemName)"
-    }
-    else 
-    {
-        Write-Verbose "Uploading $EntirePath to $Destination/$($itemName)"        
-    }
-    
-    if ($itemType -eq 'DataSource') 
-    {
-        [xml] $content = Get-Content -Path $EntirePath
-        if ($content.DataSourceDefinition -eq $null)
+        if(-not $Proxy)
         {
-            throw "Data Source Definition not found in the specified file: $EntirePath!"
+            $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
         }
+    }
 
-        $extension = $content.DataSourceDefinition.Extension
-        $connectionString = $content.DataSourceDefinition.ConnectString
-        $enabled = $content.DataSourceDefinition.Enabled
-        $credentialRetrieval = 'None'
-
-        $newDataSourceCmd = "New-RsDataSource -Destination $Destination -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval"
-
-        if (![String]::IsNullOrEmpty($connectionString))
+    Process
+    {
+        foreach ($item in $Path)
         {
-            $newDataSourceCmd = $newDataSourceCmd + " -ConnectionString $connectionString"
-        }
-
-        if ($Override)
-        {
-            if ($enabled -eq $false)
+            if (!(Test-Path $Path))
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled -Overwrite | Out-Null
+                throw "No item found at the specified path: $Path!"
+            }
+
+            $EntirePath = Resolve-Path $item
+            $item = Get-Item $EntirePath 
+            $itemType = Get-ItemType $item.Extension
+            $itemName = $item.BaseName
+    
+    
+            if($Destination -eq "/")
+            {
+                Write-Verbose "Uploading $EntirePath to /$($itemName)"
             }
             else 
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Overwrite | Out-Null
+                Write-Verbose "Uploading $EntirePath to $Destination/$($itemName)"        
             }
-        }
-        else 
-        {
-            if ($enabled -eq $false)
+    
+            if ($itemType -eq 'DataSource') 
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled | Out-Null
-            }
+                [xml] $content = Get-Content -Path $EntirePath
+                if ($content.DataSourceDefinition -eq $null)
+                {
+                    throw "Data Source Definition not found in the specified file: $EntirePath!"
+                }
+
+                $extension = $content.DataSourceDefinition.Extension
+                $connectionString = $content.DataSourceDefinition.ConnectString
+                $enabled = $content.DataSourceDefinition.Enabled
+                $credentialRetrieval = 'None'
+
+                $newDataSourceCmd = "New-RsDataSource -Destination $Destination -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval"
+
+                if (![String]::IsNullOrEmpty($connectionString))
+                {
+                    $newDataSourceCmd = $newDataSourceCmd + " -ConnectionString $connectionString"
+                }
+
+                if ($OverWrite)
+                {
+                    if ($enabled -eq $false)
+                    {
+                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled -Overwrite | Out-Null
+                    }
+                    else 
+                    {
+                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Overwrite | Out-Null
+                    }
+                }
+                else 
+                {
+                    if ($enabled -eq $false)
+                    {
+                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled | Out-Null
+                    }
+                    else 
+                    {
+                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval | Out-Null
+                    }  
+                }
+            } 
             else 
             {
-                New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval | Out-Null
-            }  
-        }
-    } 
-    else 
-    {
-        $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
-        $warnings = $null
-        $Proxy.CreateCatalogItem($itemType, $itemName, $Destination, $override, $bytes, $null, [ref]$warnings) | Out-Null
-    }
+                $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
+                $warnings = $null
+                $Proxy.CreateCatalogItem($itemType, $itemName, $Destination, $OverWrite, $bytes, $null, [ref]$warnings) | Out-Null
+            }
 
-    Write-Information "$EntirePath was uploaded to $Destination successfully!"
+            Write-Information "$EntirePath was uploaded to $Destination successfully!"
+        }
+    }
 }
