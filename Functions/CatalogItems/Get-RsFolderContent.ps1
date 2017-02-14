@@ -29,11 +29,28 @@ function Get-RsFolderContent
 
 
 	.EXAMPLE
-		Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /
+		Get-RsFolderContent -ReportServerUri http://localhost/reportserver_sql2012 -Path /
 	   
 		Description
 		-----------
-		List all items under the root folder
+		List all items directly under the root of the named SSRS instance.
+
+	.EXAMPLE
+		Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path / -Recurse
+	   
+		Description
+		-----------
+		Lists all items directly under the root of the SSRS instance and recursively under all sub-folders.
+
+    .EXAMPLE
+        Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path '/SQL Server Performance Dashboard' | 
+        WHERE Name -Like Wait* | 
+        Out-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Destination c:\SQLReports
+   
+        Description
+        -----------
+        Downloads all catalog items from folder '/SQL Server Performance Dashboard' with a name that starts with 'Wait' to folder 'C:\SQLReports'. 
+
 	#>
 	
 	[cmdletbinding()]
