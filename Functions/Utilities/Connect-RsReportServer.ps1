@@ -14,8 +14,8 @@ function Connect-RsReportServer
             The name of the computer to connect via WMI to.
             Only used for WMI access.
         
-        .PARAMETER Instance
-            The name of the SQL instance to connect via WMI to.
+        .PARAMETER ReportServerInstance
+            The name of the SQL Instance to connect via WMI to.
             Only used for WMI access.
         
         .PARAMETER Version
@@ -31,24 +31,14 @@ function Connect-RsReportServer
             Only used by the WebApi.
         
         .EXAMPLE
-            PS C:\> Connect-RsReportServer -ComputerName "srv-foobar" -Instance "Northwind" -Uri "http://srv-foobar/reportserver/"
+            Connect-RsReportServer -ComputerName "srv-foobar" -ReportServerInstance "Northwind" -Uri "http://srv-foobar/reportserver/"
     
             Configures WMI access to
             - Target the server "srv-foobar"
-            - Target the instance "Northwind"
+            - Target the Instance "Northwind"
             
             Configures WebApi access to
             - Connect to the Uri: "http://srv-foobar/reportserver/"
-        
-        .NOTES
-            Author:      Friedrich Weinmann
-            Editors:     -
-            Created on:  27.01.2017
-            Last Change: 27.01.2017
-            Version:     1.0
-    
-            Release 1.0 (27.01.2017, Friedrich Weinmann)
-            - Initial Release
     #>
     
     [CmdletBinding()]
@@ -59,11 +49,13 @@ function Connect-RsReportServer
         [string]
         $ComputerName,
         
+        [Alias('SqlServerInstance')]
         [string]
-        $Instance,
+        $ReportServerInstance,
         
-        [ReportingServicesTools.SqlServerVersion]
-        $Version,
+        [Alias('SqlServerVersion')]
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
+        $ReportServerVersion,
         
         [AllowEmptyString()]
         [AllowNull()]
@@ -77,17 +69,30 @@ function Connect-RsReportServer
         $RegisterProxy
     )
     
-    if ($PSBoundParameters.ContainsKey("ComputerName")) { [ReportingServicesTools.ConnectionHost]::ComputerName = $ComputerName }
-    if ($PSBoundParameters.ContainsKey("Instance")) { [ReportingServicesTools.ConnectionHost]::Instance = $Instance }
-    if ($PSBoundParameters.ContainsKey("Version")) { [ReportingServicesTools.ConnectionHost]::Version = $Version }
-    if ($PSBoundParameters.ContainsKey("Credential")) { [ReportingServicesTools.ConnectionHost]::Credential = $Credential }
+    if ($PSBoundParameters.ContainsKey("ComputerName"))
+    {
+        [Microsoft.ReportingServicesTools.ConnectionHost]::ComputerName = $ComputerName
+    }
+    if ($PSBoundParameters.ContainsKey("ReportServerInstance"))
+    {
+        [Microsoft.ReportingServicesTools.ConnectionHost]::Instance = $ReportServerInstance
+    }
+    if ($PSBoundParameters.ContainsKey("Version"))
+    {
+        [Microsoft.ReportingServicesTools.ConnectionHost]::Version = $Version
+    }
+    if ($PSBoundParameters.ContainsKey("Credential"))
+    {
+        [Microsoft.ReportingServicesTools.ConnectionHost]::Credential = $Credential
+    }
+    
     if ($PSBoundParameters.ContainsKey("Uri"))
     {
-        [ReportingServicesTools.ConnectionHost]::Uri = $Uri
+        [Microsoft.ReportingServicesTools.ConnectionHost]::Uri = $Uri
         try
         {
-            $proxy = New-RsWebServiceProxy -ReportServerUri ([ReportingServicesTools.ConnectionHost]::Uri) -Credential ([ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
-            [ReportingServicesTools.ConnectionHost]::Proxy = $proxy
+            $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::Uri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
+            [Microsoft.ReportingServicesTools.ConnectionHost]::Proxy = $proxy
         }
         catch
         {

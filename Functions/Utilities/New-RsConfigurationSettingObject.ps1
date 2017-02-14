@@ -53,23 +53,6 @@ function New-RsConfigurationSettingObject
             Description
             -----------
             This command will retrieve and return WMI Object associated to the named instance (SQL2012) of SQL Server 2012 Reporting Services.
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 31.01.2017
-            Version:     1.1
-            
-            Release 1.1 (27.01.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Updated default values to retrieve them from the C# connection info repository.
-            - Changed executing logic to use ComputerName and Credential parameters.
-            - Added Parameter 'MinimumSqlServerVersion'
-            
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
 
     [cmdletbinding()]
@@ -77,19 +60,19 @@ function New-RsConfigurationSettingObject
     (
         [Alias('SqlServerInstance')]
         [string]
-        $ReportServerInstance = ([ReportingServicesTools.ConnectionHost]::Instance),
+        $ReportServerInstance = ([Microsoft.ReportingServicesTools.ConnectionHost]::Instance),
         
         [Alias('SqlServerVersion')]
-        [ReportingServicesTools.SqlServerVersion]
-        $ReportServerVersion = ([ReportingServicesTools.ConnectionHost]::Version),
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
+        $ReportServerVersion = ([Microsoft.ReportingServicesTools.ConnectionHost]::Version),
         
         [string]
-        $ComputerName = ([ReportingServicesTools.ConnectionHost]::ComputerName),
+        $ComputerName = ([Microsoft.ReportingServicesTools.ConnectionHost]::ComputerName),
         
         [System.Management.Automation.PSCredential]
-        $Credential = ([ReportingServicesTools.ConnectionHost]::Credential),
+        $Credential = ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential),
         
-        [ReportingServicesTools.SqlServerVersion]
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
         $MinimumSqlServerVersion
     )
     
@@ -98,14 +81,20 @@ function New-RsConfigurationSettingObject
         throw (New-Object System.Management.Automation.PSArgumentException("Trying to connect to $ComputerName \ $ReportServerInstance, but it is only $ReportServerVersion when at least $MinimumSqlServerVersion is required!"))
     }
     
-    $splat = @{
+    $getWmiObjectParameters = @{
         ErrorAction = "Stop"
         Namespace = "root\Microsoft\SqlServer\ReportServer\RS_$ReportServerInstance\v$($ReportServerVersion.Value__)\Admin"
         Class = "MSReportServer_ConfigurationSetting"
     }
     
-    if ($ComputerName) { $splat["ComputerName"] = $ComputerName }
-    if ($Credential) { $splat["Credential"] = $Credential }
+    if ($ComputerName)
+    {
+        $getWmiObjectParameters["ComputerName"] = $ComputerName
+    }
+    if ($Credential)
+    {
+        $getWmiObjectParameters["Credential"] = $Credential
+    }
     
-    Get-WmiObject @splat
+    Get-WmiObject @getWmiObjectParameters
 }

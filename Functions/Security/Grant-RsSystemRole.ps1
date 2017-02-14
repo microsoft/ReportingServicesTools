@@ -51,27 +51,6 @@ function Grant-RsSystemRole
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then grant 'System User' access to user 'johnd'.
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 01.02.2017
-            Version:     1.1
-            
-            Release 1.1 (01.02.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-            - Replaced calling exit with throwing a terminating error (exit is a bit of an overkill when failing a simple execution)
-            - Improved error message on failure.
-            - Renamed the parameter 'UserOrGroupName' to 'Identity', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
-            - New parameter: 'Strict'. Using this, the function will throw a terminating error when trying to assign permissions that the target identity already has. Otherwise there is no way for another function to discern this outcome short of channel redirection.
-            - Renamed function from "Grant-AccessToRs" to "Grant-RsSystemRole", in order to conform to naming standards and include the module prefix. Introduced an alias with the old name for backwards compatibility.
-            - New parameter: 'Proxy'. Allows passing already established proxy objects for use instead of reestablishing each time.
-            
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
@@ -99,33 +78,21 @@ function Grant-RsSystemRole
         $Proxy
     )
     
-    if ($PSBoundParameters.ContainsKey("ReportServerUri")) { $tempUri = $ReportServerUri }
-    else { $tempUri = [ReportingServicesTools.ConnectionHost]::Uri }
-    
-    if ($PSCmdlet.ShouldProcess($tempUri, "Grant $RoleName on Report Server to $Identity"))
+    if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetweb -BoundParameters $PSBoundParameters), "Grant $RoleName on Report Server to $Identity"))
     {
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
         #region Retrieving and checking roles and policies
         # retrieving roles from the proxy 
         Write-Verbose "Retrieving valid roles for System..."
-        try { $roles = $proxy.ListRoles("System", $null) }
-        catch { throw (New-Object System.Exception("Error retrieving roles for System! $($_.Exception.Message)", $_.Exception)) }
+        try
+        {
+            $roles = $proxy.ListRoles("System", $null)
+        }
+        catch
+        {
+            throw (New-Object System.Exception("Error retrieving roles for System! $($_.Exception.Message)", $_.Exception))
+        }
         
         # validating the role name provided by user
         if ($roles.Name -notcontains $RoleName)
@@ -148,7 +115,10 @@ function Grant-RsSystemRole
         Write-Verbose 'checking if the specified role already exists for the specified user/group name'
         if (($originalPolicies | Where-Object { $_.GroupUserName -eq $Identity }).Roles.Name -contains $RoleName)
         {
-            if ($Strict) { throw "$($Identity) already has $($RoleName) privileges" }
+            if ($Strict)
+            {
+                throw "$($Identity) already has $($RoleName) privileges"
+            }
             else
             {
                 Write-Warning "$($Identity) already has $($RoleName) privileges"
@@ -193,7 +163,7 @@ function Grant-RsSystemRole
         {
             Write-Verbose "Granting $($role.Name) to $($policy.GroupUserName)..."
             $proxy.SetSystemPolicies($policies)
-            Write-Information "Granted $($role.Name) to $($policy.GroupUserName)!"
+            Write-Verbose "Granted $($role.Name) to $($policy.GroupUserName)!"
         }
         catch
         {

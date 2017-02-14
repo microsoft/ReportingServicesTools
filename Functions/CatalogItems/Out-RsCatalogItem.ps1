@@ -37,27 +37,6 @@ function Out-RsCatalogItem
             Description
             -----------
             Download catalog item 'Report' to folder 'C:\reports'.
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 03.02.2017
-            Version:     1.1
-            
-            Release 1.1 (03.02.2017, Friedrich Weinmann)
-            - Removed/Replaced all instances of "Write-Information", in order to maintain PowerShell 3.0 Compatibility.
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Changed type of parameter 'Path' to System.String[], to better facilitate pipeline & nonpipeline use
-            - Added alias 'ItemPath' for parameter 'Path', for consistency's sake
-            - Redesigned to accept pipeline input from 'Path'
-            - BREAKING CHANGE! (well ... somewhat):
-              Added Path validation to 'Destination' parameter. The previous implementation was error-prone anyway (it would fail on most cases caught by this change anyway).
-              Furthermore, given that this function is a single-item operation, automatically creating folders is outside the scope of this function and should not be added anyway.
-    
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
     [CmdletBinding()]
     param (
@@ -111,22 +90,7 @@ function Out-RsCatalogItem
         }
         #endregion Utility Functions
         
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
         $DestinationFullPath = Resolve-Path $Destination
     }
@@ -137,19 +101,40 @@ function Out-RsCatalogItem
         foreach ($item in $Path)
         {
             #region Retrieving content from Report Server
-            try { $itemType = $Proxy.GetItemType($item) }
-            catch { throw (New-Object System.Exception("Failed to retrieve item type of '$item' from proxy: $($_.Exception.Message)", $_.Exception)) }
+            try
+            {
+                $itemType = $Proxy.GetItemType($item)
+            }
+            catch
+            {
+                throw (New-Object System.Exception("Failed to retrieve item type of '$item' from proxy: $($_.Exception.Message)", $_.Exception))
+            }
             
             switch ($itemType)
             {
-                "Unknown" { throw "Make sure item exists at $item and item is of type Report, DataSet, DataSource or Resource" }
-                "Resource" { $fileName = ($item.Split("/"))[-1] }
-                default { $fileName = "$(($item.Split("/"))[-1])$(Get-FileExtension -TypeName $itemType)" }
+                "Unknown"
+                {
+                    throw "Make sure item exists at $item and item is of type Report, DataSet, DataSource or Resource"
+                }
+                "Resource"
+                {
+                    $fileName = ($item.Split("/"))[-1]
+                }
+                default
+                {
+                    $fileName = "$(($item.Split("/"))[-1])$(Get-FileExtension -TypeName $itemType)"
+                }
             }
             
             Write-Verbose "Downloading $item..."
-            try { $bytes = $Proxy.GetItemDefinition($item) }
-            catch { throw (New-Object System.Exception("Failed to retrieve item definition of '$item' from proxy: $($_.Exception.Message)", $_.Exception)) }
+            try
+            {
+                $bytes = $Proxy.GetItemDefinition($item)
+            }
+            catch
+            {
+                throw (New-Object System.Exception("Failed to retrieve item definition of '$item' from proxy: $($_.Exception.Message)", $_.Exception))
+            }
             #endregion Retrieving content from Report Server
             
             #region Writing results to file

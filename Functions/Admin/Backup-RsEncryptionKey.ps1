@@ -50,23 +50,6 @@ function Backup-RsEncryptionKey
             -----------
             This command will back up the encryption key against named instance (SQL2012) from SQL Server 2012 Reporting Services.
             To do so, it will not use the default connection, but rather connect to the computer "sql2012a243", prompting the user for connection credentials.
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 31.01.2017
-            Version:     1.1
-            
-            Release 1.1 (26.01.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-            - Replaced calling exit with throwing a terminating error (exit is a bit of an overkill when failing a simple execution)
-            - Improved error message on failure.
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
@@ -85,7 +68,7 @@ function Backup-RsEncryptionKey
         $ReportServerInstance,
         
         [Alias('SqlServerVersion')]
-        [ReportingServicesTools.SqlServerVersion]
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
         $ReportServerVersion,
         
         [string]
@@ -95,28 +78,9 @@ function Backup-RsEncryptionKey
         $Credential
     )
     
-    if ($ComputerName) { $tempComputerName = $ComputerName }
-    else { $tempComputerName = ([ReportingServicesTools.ConnectionHost]::ComputerName) }
-    if ($ReportServerInstance) { $tempInstanceName = $ReportServerInstance }
-    else { $tempInstanceName = ([ReportingServicesTools.ConnectionHost]::Instance) }
-        
-    if ($PSCmdlet.ShouldProcess("$tempComputerName \ $tempInstanceName", "Retrieve encryption key and create backup in $KeyPath"))
+    if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Retrieve encryption key and create backup in $KeyPath"))
     {
-        #region Connect to Report Server using WMI
-        try
-        {
-            $splat = @{ }
-            if ($PSBoundParameters.ContainsKey('ReportServerInstance')) { $splat['ReportServerInstance'] = $ReportServerInstance }
-            if ($PSBoundParameters.ContainsKey('ReportServerVersion')) { $splat['ReportServerVersion'] = $ReportServerVersion }
-            if ($PSBoundParameters.ContainsKey('ComputerName')) { $splat['ComputerName'] = $ComputerName }
-            if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-            $rsWmiObject = New-RsConfigurationSettingObject @splat
-        }
-        catch
-        {
-            throw
-        }
-        #endregion Connect to Report Server using WMI
+        $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
         
         Write-Verbose "Retrieving encryption key..."
         $encryptionKeyResult = $rsWmiObject.BackupEncryptionKey($Password)

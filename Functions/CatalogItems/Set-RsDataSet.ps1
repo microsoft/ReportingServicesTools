@@ -39,24 +39,6 @@ function Set-RsDataSet
             Description
             -----------
             Sets the dataset reference 'DataSet1' of report /ReportWithDSReference to point to dataset '/DataSets/SampleSet'
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 04.02.2017
-            Version:     1.1
-            
-            Release 1.1 (04.02.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Renamed the parameter 'ItemPath' to 'Path', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
-            - Changed type of parameter 'Path' to System.String[], to better facilitate pipeline & nonpipeline use
-            - Redesigned to accept pipeline input from 'Path'
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-    
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
@@ -85,22 +67,7 @@ function Set-RsDataSet
     
     Begin
     {
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
     }
     
     Process
@@ -112,8 +79,14 @@ function Set-RsDataSet
             {
                 Write-Verbose "Processing: $item"
                 
-                try { $dataSets = $Proxy.GetItemReferences($item, "DataSet") }
-                catch { throw (New-Object System.Exception("Failed to retrieve item references from Report Server for '$item': $($_.Exception.Message)", $_.Exception)) }
+                try
+                {
+                    $dataSets = $Proxy.GetItemReferences($item, "DataSet")
+                }
+                catch
+                {
+                    throw (New-Object System.Exception("Failed to retrieve item references from Report Server for '$item': $($_.Exception.Message)", $_.Exception))
+                }
                 $dataSetReference = $dataSets | Where-Object { $_.Name -eq $DataSetName } | Select-Object -First 1
                 
                 if (-not $dataSetReference)

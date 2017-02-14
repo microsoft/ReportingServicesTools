@@ -28,16 +28,6 @@ function DoSomeThingTo-RSCatalogItem
             PS C:\> DoSomeThingTo-RSCatalogItem
 
             Does something to an RS Catalog Item
-
-        .NOTES
-            Author:      (Original Author)
-            Editors:     (Additional Contributors)
-            Created on:  (Date)
-            Last Change: (Date)
-            Version:     1.0
-
-            Release 1.0 (Date, Author)
-            - Initial Release
     #>
     
     [CmdletBinding()]
@@ -54,22 +44,7 @@ function DoSomeThingTo-RSCatalogItem
     
     Begin
     {
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
     }
     
     Process

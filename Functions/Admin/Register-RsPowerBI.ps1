@@ -58,28 +58,9 @@ function Register-RsPowerBI
             Use the "Connect-RsReportServer" function to set/update a default value.
         
         .EXAMPLE
-            Register-RsPowerBI -ClientId 'value1' -ClientSecret 'value2' -AppObjectId 'value3' -TenantName 'value4' -TenantId 'value5' -RedirectUrls 'value6'
+            Register-PowerBI -ClientId "UpdateWithClientID" -ClientSecret "UpdateWithClientSecret" -AppObjectId "UpdateWithObjectId" -TenantName "UpdateWithTenantName" -TenantId "UpdateWithTenantId" -RedirectUrls "UpdateWithRedirectUrls" -ReportServerInstance "UpdateWithSqlServerInstance"
     
-            <Insert description here>
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 26.01.2017
-            Version:     1.1
-            
-            Release 1.1 (26.01.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-            - Replaced calling exit with throwing a terminating error (exit is a bit of an overkill when failing a simple execution)
-            - Improved error message on failure.
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Added input validation, to ensure no out-of-date servers are specified.
-            - Renamed function from "Register-PowerBI" to "Register-RsPowerBI", in order to conform to naming standards and include the module prefix. Introduced an alias with the old name for backwards compatibility.
-            
-            Release 1.0 (???, ???)
-            - Initial Release
+            Connects the Report Server to the previously configured Azure Active Directory Web App for direct integration into PowerBI.
         
         .LINK
             https://blogs.msdn.microsoft.com/sqlrsteamblog/2016/07/22/manually-configuring-power-bi-integration-in-reporting-services/
@@ -126,7 +107,7 @@ function Register-RsPowerBI
         $ReportServerInstance,
         
         [Alias('SqlServerVersion')]
-        [ReportingServicesTools.SqlServerVersion]
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
         $ReportServerVersion,
         
         [string]
@@ -136,28 +117,9 @@ function Register-RsPowerBI
         $Credential
     )
     
-    if ($ComputerName) { $tempComputerName = $ComputerName }
-    else { $tempComputerName = ([ReportingServicesTools.ConnectionHost]::ComputerName) }
-    if ($ReportServerInstance) { $tempInstanceName = $ReportServerInstance }
-    else { $tempInstanceName = ([ReportingServicesTools.ConnectionHost]::Instance) }
-    
-    if ($PSCmdlet.ShouldProcess("$tempComputerName \ $tempInstanceName", "Registering PowerBI for SQL Server Instance"))
+    if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Registering PowerBI for SQL Server Instance"))
     {
-        #region Connect to Report Server using WMI
-        try
-        {
-            $splat = @{ }
-            if ($PSBoundParameters.ContainsKey('ReportServerInstance')) { $splat['ReportServerInstance'] = $ReportServerInstance }
-            if ($PSBoundParameters.ContainsKey('ReportServerVersion')) { $splat['ReportServerVersion'] = $ReportServerVersion }
-            if ($PSBoundParameters.ContainsKey('ComputerName')) { $splat['ComputerName'] = $ComputerName }
-            if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-            $rsWmiObject = New-RsConfigurationSettingObject @splat -MinimumSqlServerVersion "SQLServer2016"
-        }
-        catch
-        {
-            throw
-        }
-        #endregion Connect to Report Server using WMI
+        $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
 
         Write-Verbose "Configuring Power BI ..."
         $configureResult = $rsWmiObject.SavePowerBIInformation($ClientId,

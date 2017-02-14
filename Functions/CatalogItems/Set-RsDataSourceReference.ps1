@@ -39,22 +39,6 @@ function Set-RsDataSourceReference
             Description
             -----------
             Sets the dataset reference 'DataSource1' of dataset '/DataSet' to point to datasource '/Datasources/SampleSource'
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 04.02.2017
-            Version:     1.1
-            
-            Release 1.1 (04.02.2017, Friedrich Weinmann)
-            - Renamed function from "Set-RsSharedDataSource" to "Set-RsDataSourceReference", in order to conform to naming standards. Introduced an alias with the old name for backwards compatibility.
-            - Renamed the parameter 'ItemPath' to 'Path', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
-            - Changed type of parameter 'Path' to System.String[], to better facilitate pipeline & nonpipeline use
-            - Redesigned to accept pipeline input from 'Path'
-    
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
     [CmdletBinding()]
     param (
@@ -83,22 +67,7 @@ function Set-RsDataSourceReference
     
     Begin
     {
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
     }
     
     Process
@@ -109,8 +78,14 @@ function Set-RsDataSourceReference
             $dataSets = $null
             $dataSourceReference = $null
             
-            try { $dataSets = $Proxy.GetItemReferences($item, "DataSource") }
-            catch { throw (New-Object System.Exception("Failed to retrieve datasource item references for '$item': $($_.Exception.Message)", $_.Exception)) }
+            try
+            {
+                $dataSets = $Proxy.GetItemReferences($item, "DataSource")
+            }
+            catch
+            {
+                throw (New-Object System.Exception("Failed to retrieve datasource item references for '$item': $($_.Exception.Message)", $_.Exception))
+            }
             $dataSourceReference = $dataSets | Where-Object { $_.Name -eq $DataSourceName } | Select-Object -First 1
             
             if (-not $dataSourceReference)
@@ -124,8 +99,14 @@ function Set-RsDataSourceReference
             $dataSourceReference.Reference = $DataSourcePath
             
             Write-Verbose "Set dataSource reference '$DataSourceName' of item $item to $DataSourcePath"
-            try { $Proxy.SetItemReferences($item, @($dataSourceReference)) }
-            catch { throw (New-Object System.Exception("Failed to update datasource item references for '$item': $($_.Exception.Message)", $_.Exception)) }
+            try
+            {
+                $Proxy.SetItemReferences($item, @($dataSourceReference))
+            }
+            catch
+            {
+                throw (New-Object System.Exception("Failed to update datasource item references for '$item': $($_.Exception.Message)", $_.Exception))
+            }
         }
     }
 }

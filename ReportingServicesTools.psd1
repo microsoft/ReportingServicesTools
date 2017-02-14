@@ -64,8 +64,8 @@
     FunctionsToExport = @(
         'Backup-RsEncryptionKey',
         'Connect-RsReportServer',
-        'Get-RsCatalogChildItem',
         'Get-RsDataSource',
+        'Get-RsFolderContent',
         'Get-RsItemReference',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
@@ -86,7 +86,7 @@
         'Set-RsDataSource',
         'Set-RsDataSourcePassword',
         'Set-RsDataSourceReference',
-        'Set-RsEmailConfiguration',
+        'Set-RsEmailSettings',
         'Write-RsCatalogItem',
         'Write-RsFolderContent'
     )
@@ -101,12 +101,14 @@
     # Aliases are stored in ReportingServicesTools.psm1
     AliasesToExport = @(
         'Get-RsCatalogItems',
+        'Get-RsChildItem',
         'Get-RsItemReferences',
         'Grant-AccessOnCatalogItem',
         'Grant-AccessToRS',
         'Register-PowerBI',
         'Revoke-AccessOnCatalogItem',
         'Revoke-AccessToRS',
+        'rsdir',
         'Set-RsEmailSettingsAsBasicAuth',
         'Set-RsEmailSettingsAsNoAuth',
         'Set-RsEmailSettingsAsNTLMAuth',

@@ -1,7 +1,7 @@
-﻿$source = @"
+$source = @"
 using System.Management.Automation;
 
-namespace ReportingServicesTools
+namespace Microsoft.ReportingServicesTools
 {
     /// <summary>
     /// Static class containing connection information to the reporting server.
@@ -34,7 +34,7 @@ namespace ReportingServicesTools
         public static string Uri = @"http://localhost/reportserver/";
 
         /// <summary>
-        /// Stores an existing WebProxy object, to avoid having to process a new object each and every tim
+        /// Stores an existing WebProxy object, to avoid having to process a new object each and every time
         /// </summary>
         public static object Proxy;
     }
@@ -45,17 +45,17 @@ namespace ReportingServicesTools
     public enum SmtpAuthentication
     {
         /// <summary>
-        /// Anonymous access is fairly simple to set up
+        /// Connect to a mail server without any authentication.
         /// </summary>
         None = 0,
 
         /// <summary>
-        /// Because not everybody is using Microsoft Exchange
+        /// Connect to a mail server with basic authentication.
         /// </summary>
         Basic = 1,
 
         /// <summary>
-        /// Because windows authentication rocks and this is the next best thing.
+        /// Connect to a mail server using NTLM authentication.
         /// </summary>
         Ntlm = 2
     }
@@ -63,7 +63,7 @@ namespace ReportingServicesTools
     /// <summary>
     /// What authentication type to use when connecting with an SQL Server
     /// </summary>
-    public enum SqlServerAuthentication
+    public enum SqlServerAuthenticationType
     {
         /// <summary>
         /// Default Windows Authentication
@@ -76,7 +76,7 @@ namespace ReportingServicesTools
         SQL = 1,
 
         /// <summary>
-        /// Connect using a service account
+        /// Connect to SQL Server using the same account as the one which Reporting Services Service is running as.
         /// </summary>
         ServiceAccount = 2
     }

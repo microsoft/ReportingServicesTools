@@ -40,55 +40,38 @@ function New-RsWebServiceProxy
             Description
             -----------
             This command will create and return a web service proxy to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials.
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 27.01.2017
-            Version:     1.1
-    
-            Release 1.1 (27.01.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Renamed the parameter 'Credentials' to 'Credential', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
-            - Replaced the default values of both report server uri as well as the credential parameter with calls from the custom C# Api. This allows simple connection management and better remoting.
-            - Fixed Credential usage (wrong variable name in the if-condition)
-            - When not specifying connection info, it will try to reuse the default proxy if one already exists or create a new one. This reduces execution time across the board without having to juggle proxy objects between functions.
-            
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
 
     [cmdletbinding()]
     param
     (
         [string]
-        $ReportServerUri = ([ReportingServicesTools.ConnectionHost]::Uri),
+        $ReportServerUri = ([Microsoft.ReportingServicesTools.ConnectionHost]::Uri),
         
         [Alias('Credentials')]
         [AllowNull()]
         [System.Management.Automation.PSCredential]
-        $Credential = ([ReportingServicesTools.ConnectionHost]::Credential)
+        $Credential = ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential)
     )
     
     #region If we did not specify a connection parameter, use a default connection
     if (-not ($PSBoundParameters.ContainsKey("ReportServerUri") -or $PSBoundParameters.ContainsKey("Credential")))
     {
-        if ([ReportingServicesTools.ConnectionHost]::Proxy)
+        if ([Microsoft.ReportingServicesTools.ConnectionHost]::Proxy)
         {
-            return ([ReportingServicesTools.ConnectionHost]::Proxy)
+            return ([Microsoft.ReportingServicesTools.ConnectionHost]::Proxy)
         }
         else
         {
             try
             {
-                $proxy = New-RsWebServiceProxy -ReportServerUri ([ReportingServicesTools.ConnectionHost]::Uri) -Credential ([ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
-                [ReportingServicesTools.ConnectionHost]::Proxy = $proxy
+                $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::Uri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
+                [Microsoft.ReportingServicesTools.ConnectionHost]::Proxy = $proxy
                 return $proxy
             }
             catch
             {
-                throw (New-Object System.Exception("Failed to establish proxy connection to $([ReportingServicesTools.ConnectionHost]::Uri) : $($_.Exception.Message)", $_.Exception))
+                throw (New-Object System.Exception("Failed to establish proxy connection to $([Microsoft.ReportingServicesTools.ConnectionHost]::Uri) : $($_.Exception.Message)", $_.Exception))
             }
         }
     }

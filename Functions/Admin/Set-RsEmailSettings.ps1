@@ -1,7 +1,7 @@
-﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Set-RsEmailConfiguration
+function Set-RsEmailSettings
 {
     <#
         .SYNOPSIS
@@ -43,41 +43,31 @@ function Set-RsEmailConfiguration
             Use the "Connect-RsReportServer" function to set/update a default value.
         
         .EXAMPLE
-            Set-RsEmailConfiguration -SmtpServer doe.com -SenderAddress john@doe.com
+            Set-RsEmailSettings -SmtpServer doe.com -SenderAddress john@doe.com
             Description
             -----------
             This command will configure the Report Server to use NTLM Authentication with the specified SMTP Server and Sender Address when sending emails.
         
         .EXAMPLE
-            Set-RsEmailConfiguration -ReportServerInstance 'SQL2012' -ReportServerVersion '11' -SmtpServer doe.com -SenderAddress john@doe.com
+            Set-RsEmailSettings -ReportServerInstance 'SQL2012' -ReportServerVersion '11' -SmtpServer doe.com -SenderAddress john@doe.com
             Description
             -----------
             This command will configure the named instance (SQL2012) from SQL Server 2012 Reporting Services to use NTLM Authentication with the specified SMTP Server and Sender Address when sending emails.
     
         .EXAMPLE
-            Set-RsEmailConfiguration -Authentication None -SmtpServer foo.nordwind.fiction -SenderAddress Jane@nordwind.fiction
+            Set-RsEmailSettings -Authentication None -SmtpServer foo.nordwind.fiction -SenderAddress Jane@nordwind.fiction
             Description
             -----------
             This command will configure the Report Server to anonymously send emails using the smtp server foo.nordwind.fiction, sending as jane@nordwind.fiction.
     
         .EXAMPLE
-            Set-RsEmailConfiguration -Authentication Basic -SmtpServer foo.nordwind.fiction -SenderAddress Jane@nordwind.fiction -EmailCredential $cred
+            Set-RsEmailSettings -Authentication Basic -SmtpServer foo.nordwind.fiction -SenderAddress Jane@nordwind.fiction -EmailCredential $cred
             Description
             -----------
             This command will configure the Report Server to send emails using the smtp server foo.nordwind.fiction, sending as jane@nordwind.fiction.
             The Report Server will use basic authentication using the specified credentials to complete this process.
         
         .NOTES
-            Author:      Friedrich Weinmann
-            Editors:     -
-            Created on:  31.01.2017
-            Last Change: 31.01.2017
-            Version:     1.0
-            
-            Release 1.0 (31.01.2017, Friedrich Weinmann)
-            - Initial Release
-    
-            Special note:
             This function unifies the three authentication specific functions that were present in the module until v 0.0.0.8. (Set-RsEmailSettingsAsNTLMAuth, Set-RsEmailSettingsAsNoAuth and Set-RsEmailSettingsAsBasicAuth).
             In order to maintain backwards compatibility, aliases with their respective name were created.
             These then affect the default value for the new 'Authentication' parameter, which was introduced in this function.
@@ -87,7 +77,8 @@ function Set-RsEmailConfiguration
     [cmdletbinding()]
     param
     (
-        [ReportingServicesTools.SmtpAuthentication]
+        [Parameter(Mandatory = $True)]
+        [Microsoft.ReportingServicesTools.SmtpAuthentication]
         $Authentication = "Ntlm",
         
         [Parameter(Mandatory = $True)]
@@ -107,7 +98,7 @@ function Set-RsEmailConfiguration
         $ReportServerInstance,
         
         [Alias('SqlServerVersion')]
-        [ReportingServicesTools.SqlServerVersion]
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
         $ReportServerVersion,
         
         [string]
@@ -117,30 +108,25 @@ function Set-RsEmailConfiguration
         $Credential
     )
     
-    #region Connect to Report Server using WMI
-    try
-    {
-        $splat = @{ }
-        if ($PSBoundParameters.ContainsKey('ReportServerInstance')) { $splat['ReportServerInstance'] = $ReportServerInstance }
-        if ($PSBoundParameters.ContainsKey('ReportServerVersion')) { $splat['ReportServerVersion'] = $ReportServerVersion }
-        if ($PSBoundParameters.ContainsKey('ComputerName')) { $splat['ComputerName'] = $ComputerName }
-        if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-        $rsWmiObject = New-RsConfigurationSettingObject @splat
-    }
-    catch
-    {
-        throw
-    }
-    #endregion Connect to Report Server using WMI
+    $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
     
     #region Backwards compatibility
     if (-not $PSBoundParameters.ContainsKey("Authentication"))
     {
         $CallName = (Get-PSCallStack)[0].InvocationInfo.InvocationName
         
-        if ($CallName -eq "Set-RsEmailSettingsAsNoAuth") { $Authentication = "None" }
-        if ($CallName -eq "Set-RsEmailSettingsAsBasicAuth") { $Authentication = "Basic" }
-        if ($CallName -eq "Set-RsEmailSettingsAsNTLMAuth") { $Authentication = "Ntlm" }
+        if ($CallName -eq "Set-RsEmailSettingsAsNoAuth")
+        {
+            $Authentication = "None"
+        }
+        if ($CallName -eq "Set-RsEmailSettingsAsBasicAuth")
+        {
+            $Authentication = "Basic"
+        }
+        if ($CallName -eq "Set-RsEmailSettingsAsNTLMAuth")
+        {
+            $Authentication = "Ntlm"
+        }
     }
     #endregion Backwards compatibility
     
@@ -160,8 +146,14 @@ function Set-RsEmailConfiguration
     }
     #endregion Handle Credentials on basic authentication
     
-    try { $result = $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $UserName, $Password, $Authentication.Value__, $true) }
-    catch { throw (New-Object System.Exception("Failed to update email settings: $($_.Exception.Message)", $_.Exception)) }
+    try
+    {
+        $result = $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $UserName, $Password, $Authentication.Value__, $true)
+    }
+    catch
+    {
+        throw (New-Object System.Exception("Failed to update email settings: $($_.Exception.Message)", $_.Exception))
+    }
     
     if ($result.HRESULT -ne 0)
     {
@@ -170,6 +162,6 @@ function Set-RsEmailConfiguration
 }
 
 # Backwards compatiblity
-New-Alias -Name "Set-RsEmailSettingsAsNTLMAuth" -Value Set-RsEmailConfiguration -Scope Global
-New-Alias -Name "Set-RsEmailSettingsAsNoAuth" -Value Set-RsEmailConfiguration -Scope Global
-New-Alias -Name "Set-RsEmailSettingsAsBasicAuth" -Value Set-RsEmailConfiguration -Scope Global
+New-Alias -Name "Set-RsEmailSettingsAsNTLMAuth" -Value Set-RsEmailSettings -Scope Global
+New-Alias -Name "Set-RsEmailSettingsAsNoAuth" -Value Set-RsEmailSettings -Scope Global
+New-Alias -Name "Set-RsEmailSettingsAsBasicAuth" -Value Set-RsEmailSettings -Scope Global

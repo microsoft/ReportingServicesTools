@@ -6,10 +6,16 @@ function Restore-RSEncryptionKey
     <#
         .SYNOPSIS
             This script restores the SQL Server Reporting Services encryption key.
-
+        
         .DESCRIPTION
             This script restores encryption key for SQL Server Reporting Services. This key is needed in order to read all the encrypted content stored in the Reporting Services Catalog database.
-
+        
+        .PARAMETER Password
+            Specify the password that was used when the encryption key was backed up.
+        
+        .PARAMETER KeyPath
+            Specify the path to where the encryption key is stored.
+        
         .PARAMETER ReportServerInstance
             Specify the name of the SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
@@ -25,13 +31,7 @@ function Restore-RSEncryptionKey
         .PARAMETER Credential
             The credentials with which to connect to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
-
-        .PARAMETER Password
-            Specify the password that was used when the encryption key was backed up.
-            
-        .PARAMETER KeyPath
-            Specify the path to where the encryption key is stored.
-
+        
         .EXAMPLE
             Restore-RSEncryptionKey -Password 'Enter Your Password' -KeyPath 'C:\ReportingServices\Default.snk'
             Description
@@ -43,71 +43,42 @@ function Restore-RSEncryptionKey
             Description
             -----------
             This command will restore the encryption key to the named instance (SQL2012) from SQL Server 2012 Reporting Services
-    
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 26.01.2017
-            Version:     1.1
-    
-            Release 1.1 (26.01.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-            - Replaced calling exit with throwing a terminating error (exit is a bit of an overkill when failing a simple execution)
-            - Improved error message on failure.
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Try/Catch when reading from file. No special logic involved, but shows that the possibility of failure was considered
-    
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param
     (
-        [Alias('SqlServerInstance')]
-        [string]
-        $ReportServerInstance,
-        
-        [Alias('SqlServerVersion')]
-        [ReportingServicesTools.SqlServerVersion]
-        $ReportServerVersion,
-        
-        [string]
-        $ComputerName,
-        
-        [System.Management.Automation.PSCredential]
-        $Credential,
-        
         [Parameter(Mandatory = $True)]
         [string]
         $Password,
         
         [Parameter(Mandatory = $True)]
         [string]
-        $KeyPath    
+        $KeyPath,
+        
+        [Alias('SqlServerInstance')]
+        [string]
+        $ReportServerInstance,
+        
+        [Alias('SqlServerVersion')]
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
+        $ReportServerVersion,
+        
+        [string]
+        $ComputerName,
+        
+        [System.Management.Automation.PSCredential]
+        $Credential
     )
     
-    if (-not $ReportServerInstance) { $ReportServerInstance = [ReportingServicesTools.ConnectionHost]::Instance }
-    
-    if ($PSCmdlet.ShouldProcess($ReportServerInstance, "Restore encryptionkey from file $KeyPath"))
+    if (-not $ReportServerInstance)
     {
-        #region Connect to Report Server using WMI
-        try
-        {
-            $splat = @{ }
-            if ($PSBoundParameters.ContainsKey('ReportServerInstance')) { $splat['ReportServerInstance'] = $ReportServerInstance }
-            if ($PSBoundParameters.ContainsKey('ReportServerVersion')) { $splat['ReportServerVersion'] = $ReportServerVersion }
-            if ($PSBoundParameters.ContainsKey('ComputerName')) { $splat['ComputerName'] = $ComputerName }
-            if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-            $rsWmiObject = New-RsConfigurationSettingObject @splat
-        }
-        catch
-        {
-            throw
-        }
-        #endregion Connect to Report Server using WMI
+        $ReportServerInstance = [Microsoft.ReportingServicesTools.ConnectionHost]::Instance
+    }
+    
+    if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Restore encryptionkey from file $KeyPath"))
+    {
+        $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
         
         $reportServerService = 'ReportServer'
         
@@ -122,8 +93,14 @@ function Restore-RSEncryptionKey
             throw "No key was found at the specified location: $path"
         }
         
-        try { $keyBytes = [System.IO.File]::ReadAllBytes($KeyPath) }
-        catch { throw }
+        try
+        {
+            $keyBytes = [System.IO.File]::ReadAllBytes($KeyPath)
+        }
+        catch
+        {
+            throw
+        }
         
         Write-Verbose "Restoring encryption key..."
         $restoreKeyResult = $rsWmiObject.RestoreEncryptionKey($keyBytes, $keyBytes.Length, $Password)
@@ -139,12 +116,6 @@ function Restore-RSEncryptionKey
         
         try
         {
-            $splat = @{
-                Name = $reportServerService
-                ComputerName = $rsWmiObject.PSComputerName
-                ErrorAction = 'Stop'
-            }
-            
             $service = Get-Service -Name $reportServerService -ComputerName $rsWmiObject.PSComputerName -ErrorAction Stop
             Write-Verbose "Stopping Reporting Services Service..."
             $service.Stop()

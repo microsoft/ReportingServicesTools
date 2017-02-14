@@ -40,26 +40,6 @@ function Write-RsCatalogItem
             Description
             -----------
             Uploads the report monthlyreport.rdl to folder /monthlyreports
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 05.02.2017
-            Version:     1.1
-            
-            Release 1.1 (05.02.2017, Friedrich Weinmann)
-            - Removed/Replaced all instances of "Write-Information", in order to maintain PowerShell 3.0 Compatibility.
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Renamed the parameter 'Override' to 'Overwrite', for consistency's sake. Added the previous name as an alias, for backwards compatiblity.
-            - Changed type of parameter 'Path' to System.String[], to better facilitate pipeline & nonpipeline use
-            - Redesigned to accept pipeline input from 'Path'
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-            - Added alias 'DestinationFolder' for parameter 'Destination', for consistency's sake.
-        
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
@@ -115,22 +95,7 @@ function Write-RsCatalogItem
         }
         #endregion Utility Function
         
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
     }
     
     Process
@@ -164,14 +129,20 @@ function Write-RsCatalogItem
                 #region Upload DataSource
                 if ($itemType -eq 'DataSource')
                 {
-                    try { [xml]$content = Get-Content -Path $EntirePath -ErrorAction Stop }
-                    catch { throw (New-Object System.Exception("Failed to access XML content of '$EntirePath': $($_.Exception.Message)", $_.Exception)) }
+                    try
+                    {
+                        [xml]$content = Get-Content -Path $EntirePath -ErrorAction Stop
+                    }
+                    catch
+                    {
+                        throw (New-Object System.Exception("Failed to access XML content of '$EntirePath': $($_.Exception.Message)", $_.Exception))
+                    }
                     if ($content.DataSourceDefinition -eq $null)
                     {
                         throw "Data Source Definition not found in the specified file: $EntirePath!"
                     }
                     
-                    $splat = @{
+                    $NewRsDataSourceParam = @{
                         Proxy = $Proxy
                         Destination = $Destination
                         Name = $itemName
@@ -182,7 +153,7 @@ function Write-RsCatalogItem
                         Overwrite = $Overwrite
                     }
                     
-                    New-RsDataSource @splat
+                    New-RsDataSource @NewRsDataSourceParam
                 }
                 #endregion Upload DataSource
                 
@@ -191,8 +162,14 @@ function Write-RsCatalogItem
                 {
                     $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
                     $warnings = $null
-                    try { $Proxy.CreateCatalogItem($itemType, $itemName, $Destination, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null }
-                    catch { throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception)) }
+                    try
+                    {
+                        $Proxy.CreateCatalogItem($itemType, $itemName, $Destination, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null
+                    }
+                    catch
+                    {
+                        throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                    }
                 }
                 #endregion Upload other stuff
                 

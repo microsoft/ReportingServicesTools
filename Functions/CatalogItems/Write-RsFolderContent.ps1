@@ -40,22 +40,6 @@ function Write-RsFolderContent
             Description
             -----------
             Uploads all reports under c:\monthlyreports to folder /monthlyReports.
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 05.02.2017
-            Version:     1.1
-            
-            Release 1.1 (05.02.2017, Friedrich Weinmann)
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Renamed the parameter 'DestinationFolder' to 'Destination', for consistency's sake. Added the previous name as an alias, for backwards compatiblity.
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-    
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
@@ -83,22 +67,7 @@ function Write-RsFolderContent
     
     if ($PSCmdlet.ShouldProcess($Path, "Upload all contents in folder $(if ($Recurse) { "and subfolders " })to $Destination"))
     {
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
         if(-not (Test-Path $Path -PathType Container))
         {
@@ -106,7 +75,14 @@ function Write-RsFolderContent
         }
         $sourceFolder = Get-Item $Path
         
-        if($Recurse) { $items = Get-ChildItem $Path -Recurse } else { $items = Get-ChildItem $Path }
+        if ($Recurse)
+        {
+            $items = Get-ChildItem $Path -Recurse
+        }
+        else
+        {
+            $items = Get-ChildItem $Path
+        }
         foreach ($item in $items)
         {
             if (($item.PSIsContainer) -and $Recurse)
@@ -124,8 +100,14 @@ function Write-RsFolderContent
                 }
                 
                 Write-Verbose "Creating folder $parentFolder/$($item.Name)"
-                try { $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null }
-                catch { throw (New-Object System.Exception("Failed to create folder '$($item.Name)' in '$parentFolder': $($_.Exception.Message)", $_.Exception))}
+                try
+                {
+                    $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null
+                }
+                catch
+                {
+                    throw (New-Object System.Exception("Failed to create folder '$($item.Name)' in '$parentFolder': $($_.Exception.Message)", $_.Exception))
+                }
             }
             
             if ($item.Extension -eq ".rdl" -or
@@ -145,8 +127,14 @@ function Write-RsFolderContent
                     $parentFolder = $Destination + $relativePath
                 }
                 
-                try { Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder -ErrorAction Stop }
-                catch { throw (New-Object System.Exception("Failed to create catalog item from '$($item.FullName)' in '$parentFolder': $($_.Exception)", $_.Exception))}
+                try
+                {
+                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder -ErrorAction Stop
+                }
+                catch
+                {
+                    throw (New-Object System.Exception("Failed to create catalog item from '$($item.FullName)' in '$parentFolder': $($_.Exception)", $_.Exception))
+                }
             }
         }
     }

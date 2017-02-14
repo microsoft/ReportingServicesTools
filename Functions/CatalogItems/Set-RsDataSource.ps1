@@ -41,25 +41,6 @@ function Set-RsDataSource
             Description
             -----------
             This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
-        
-        .NOTES
-            Author:      ???
-            Editors:     Friedrich Weinmann
-            Created on:  ???
-            Last Change: 04.02.2017
-            Version:     1.1
-            
-            Release 1.1 (04.02.2017, Friedrich Weinmann)
-            - Removed/Replaced all instances of "Write-Information", in order to maintain PowerShell 3.0 Compatibility.
-            - Fixed Parameter help (Don't poison the name with "(optional)", breaks Get-Help)
-            - Standardized the parameters governing the Report Server connection for consistent user experience.
-            - Renamed the parameter 'DataSourcePath' to 'Path', in order to maintain parameter naming conventions. Added the previous name as an alias, for backwards compatiblity.
-            - Added alias 'ItemPath' for parameter 'Path', for consistency's sake
-            - Replaced "break" with a terminating error. break will crash more than just the function.
-            - Implemented ShouldProcess (-WhatIf, -Confirm)
-        
-            Release 1.0 (???, ???)
-            - Initial Release
     #>
     
     [cmdletbinding()]
@@ -85,22 +66,7 @@ function Set-RsDataSource
     
     if ($PSCmdlet.ShouldProcess($Path, "Applying new definition"))
     {
-        #region Connect to Report Server using Web Proxy
-        if (-not $Proxy)
-        {
-            try
-            {
-                $splat = @{ }
-                if ($PSBoundParameters.ContainsKey('ReportServerUri')) { $splat['ReportServerUri'] = $ReportServerUri }
-                if ($PSBoundParameters.ContainsKey('Credential')) { $splat['Credential'] = $Credential }
-                $Proxy = New-RSWebServiceProxy @splat
-            }
-            catch
-            {
-                throw
-            }
-        }
-        #endregion Connect to Report Server using Web Proxy
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
         #region Input Validation
         if ($DataSourceDefinition.GetType().Name -ne 'DataSourceDefinition')
