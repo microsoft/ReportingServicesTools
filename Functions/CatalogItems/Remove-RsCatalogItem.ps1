@@ -23,14 +23,14 @@ function Remove-RsCatalogItem
         Specify the path of the catalog item to remove.
 
     .EXAMPLE
-        Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Path /monthlyreports
+        Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer -RsFolder /monthlyreports
    
         Description
         -----------
         Removes the monthlyreports folder, located directly at the root of the SSRS instance, and all objects below it.
 
     .EXAMPLE
-        Get-RsCatalogItems -ReportServerUri http://localhost/ReportServer_SQL2016 -Path '/SQL Server Performance Dashboard' |
+        Get-RsCatalogItems -ReportServerUri http://localhost/ReportServer_SQL2016 -RsFolder '/SQL Server Performance Dashboard' |
         Out-GridView -PassThru |
         Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer_SQL2016
    
@@ -50,9 +50,10 @@ function Remove-RsCatalogItem
         
         $Proxy,
         
+        [Alias('Path')]
         [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
         [string]
-        $Path
+        $RsFolder
     )
 process 
     {
@@ -64,8 +65,8 @@ process
 
         try
         {
-            Write-Verbose "Deleting catalog item $Path..."
-            $Proxy.DeleteItem($Path)
+            Write-Verbose "Deleting catalog item $RsFolder..."
+            $Proxy.DeleteItem($RsFolder)
             Write-Information "Catalog item deleted successfully!"
         }
         catch

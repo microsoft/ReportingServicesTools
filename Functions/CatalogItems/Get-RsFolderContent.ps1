@@ -29,21 +29,21 @@ function Get-RsFolderContent
 
 
 	.EXAMPLE
-		Get-RsFolderContent -ReportServerUri http://localhost/reportserver_sql2012 -Path /
+		Get-RsFolderContent -ReportServerUri http://localhost/reportserver_sql2012 -RsFolder /
 	   
 		Description
 		-----------
 		List all items directly under the root of the named SSRS instance.
 
 	.EXAMPLE
-		Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path / -Recurse
+		Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder / -Recurse
 	   
 		Description
 		-----------
 		Lists all items directly under the root of the SSRS instance and recursively under all sub-folders.
 
     .EXAMPLE
-        Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path '/SQL Server Performance Dashboard' | 
+        Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder '/SQL Server Performance Dashboard' | 
         WHERE Name -Like Wait* | 
         Out-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Destination c:\SQLReports
    
@@ -63,9 +63,10 @@ function Get-RsFolderContent
         
         $Proxy,
         
+        [Alias('Path')]
         [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
         [string]
-        $Path,
+        $RsFolder,
         
         [switch]
         $Recurse
@@ -78,7 +79,7 @@ process
 		    $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
         }
 
-        $Proxy.ListChildren($Path, $Recurse)
+        $Proxy.ListChildren($RsFolder, $Recurse)
     }
 }
 New-Alias -Name "Get-RsCatalogItems" -Value Get-RsFolderContent -Scope Global
