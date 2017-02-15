@@ -27,7 +27,7 @@
     Folder on reportserver to upload the item to.
 
 .EXAMPLE
-    Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -DestinationFolder /monthlyReports
+    Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -RsFolder /monthlyReports
    
     Description
     -----------
@@ -51,9 +51,10 @@ function Write-RsFolderContent()
         [string]
         $Path,
         
+        [Alias('DestinationFolder')]
         [Parameter(Mandatory=$True)]
         [string]
-        $DestinationFolder
+        $RsFolder
     )
 
     if(-not $Proxy)
@@ -67,7 +68,7 @@ function Write-RsFolderContent()
         throw "$Path is not a folder"
     } 
     
-    # Write-Verbose "Creating folder $DestinationFolder"
+    # Write-Verbose "Creating folder $RsFolder"
     # $Proxy.CreateFolder($sourceFolder.Name, $Destination, $null) | Out-Null
 
     if($Recurse) { $items = Get-ChildItem $Path -Recurse } else { $items = Get-ChildItem $Path }
@@ -78,13 +79,13 @@ function Write-RsFolderContent()
             $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
             $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
             $relativePath = $relativePath.replace("\", "/")
-            if($DestinationFolder -eq "/" -and $relativePath -ne "")
+            if($RsFolder -eq "/" -and $relativePath -ne "")
             {
                 $parentFolder = $relativePath
             }
             else 
             {
-                $parentFolder = $DestinationFolder + $relativePath               
+                $parentFolder = $RsFolder + $relativePath               
             }
 
             Write-Verbose "Creating folder $parentFolder/$($item.Name)"
@@ -99,13 +100,13 @@ function Write-RsFolderContent()
             $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
             $relativePath = $relativePath.replace("\", "/")
 
-            if($DestinationFolder -eq "/" -and $relativePath -ne "")
+            if($RsFolder -eq "/" -and $relativePath -ne "")
             {
                 $parentFolder = $relativePath
             }
             else 
             {
-                $parentFolder = $DestinationFolder + $relativePath               
+                $parentFolder = $RsFolder + $relativePath               
             }
             
             Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder
