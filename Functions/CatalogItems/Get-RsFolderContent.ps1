@@ -21,8 +21,8 @@ function Get-RsFolderContent
 		Report server proxy to use. 
 		Has to be provided if ReportServerUri is not provided.
 
-	.PARAMETER Path
-		Path to folder.
+	.PARAMETER RsFolder
+		Path to folder on SSRS instance.
 
 	.PARAMETER Recurse
 		Recursively list subfolders with content.

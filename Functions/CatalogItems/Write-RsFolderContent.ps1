@@ -23,7 +23,7 @@
 .PARAMETER Path
     Path to folder which contains items to upload on disk.
 
-.PARAMETER DestinationFolder
+.PARAMETER RsFolder
     Folder on reportserver to upload the item to.
 
 .EXAMPLE
@@ -67,9 +67,6 @@ function Write-RsFolderContent()
     {
         throw "$Path is not a folder"
     } 
-    
-    # Write-Verbose "Creating folder $RsFolder"
-    # $Proxy.CreateFolder($sourceFolder.Name, $Destination, $null) | Out-Null
 
     if($Recurse) { $items = Get-ChildItem $Path -Recurse } else { $items = Get-ChildItem $Path }
     foreach($item in $items)
@@ -109,7 +106,7 @@ function Write-RsFolderContent()
                 $parentFolder = $RsFolder + $relativePath               
             }
             
-            Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder
+            Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder
         }
     }
 }

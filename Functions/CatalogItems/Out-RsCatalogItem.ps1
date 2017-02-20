@@ -21,8 +21,8 @@
     Report server proxy to use. 
     Has to be provided if ReportServerUri is not provided.
 
-.PARAMETER Path
-    Path to catalog item to download.
+.PARAMETER RsFolder
+    Path to catalog item in SSRS to download.
 
 .PARAMETER Destination
     Folder to download catalog item to.

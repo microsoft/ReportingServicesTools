@@ -19,8 +19,8 @@ function Remove-RsCatalogItem
     .PARAMETER Proxy
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
     
-    .PARAMETER Path
-        Specify the path of the catalog item to remove.
+    .PARAMETER RsFolder
+        Specify the RsFolder path of the catalog item to remove.
 
     .EXAMPLE
         Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer -RsFolder /monthlyreports

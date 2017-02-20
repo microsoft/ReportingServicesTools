@@ -19,7 +19,7 @@ function New-RsDataSource
     .PARAMETER Proxy
         Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
 
-    .PARAMETER Destination
+    .PARAMETER RsFolder
         Specify the location where the data source should be created at 
 
     .PARAMETER Name
@@ -53,43 +53,43 @@ function New-RsDataSource
         Specify whether to overwrite data source if an existing data source with same name exists at the specified destination 
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'None' 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'None' 
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will use not specify any credentials.
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Integrated' 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Integrated' 
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will assume current user's identity.
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Prompt' -Prompt 'Please enter your username and password' 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Prompt' -Prompt 'Please enter your username and password' 
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will prompt user for Database credentials.
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Prompt' -Prompt 'Please enter your username and password' -WindowsCredentials 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Prompt' -Prompt 'Please enter your username and password' -WindowsCredentials 
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will prompt user for Windows credentials.
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser 
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, the specified credentials will be treated as Database credentials.
 
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser -WindowsCredentials
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser -WindowsCredentials
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, the specified credentials will be treated as Windows credentials.
     
     .EXAMPLE 
-        New-RsDataSource -Destination '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'None' -Overwrite 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'None' -Overwrite 
         Description
         -----------
         This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. If data source already exists, it will be overwriten.
@@ -106,9 +106,10 @@ function New-RsDataSource
 
         $Proxy,
 
-        [Parameter(Mandatory=$True)]
+        [Alias('Destination')]
+        [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
         [string]
-        $Destination,
+        $RsFolder,
 
         [Parameter(Mandatory=$True)]
         [string]
@@ -212,7 +213,7 @@ function New-RsDataSource
     try
     {
         Write-Verbose "Creating data source..."
-        $Proxy.CreateDataSource($Name, $Destination, $Overwrite, $datasource, $null)
+        $Proxy.CreateDataSource($Name, $RsFolder, $Overwrite, $datasource, $null)
         Write-Information "Data source created successfully!"
     }
     catch

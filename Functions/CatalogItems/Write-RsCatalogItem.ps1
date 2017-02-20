@@ -23,7 +23,7 @@
 .PARAMETER Path
     Path to item to upload on disk.
 
-.PARAMETER Destination
+.PARAMETER RsFolder
     Folder on reportserver to upload the item to.
 
 .PARAMETER override

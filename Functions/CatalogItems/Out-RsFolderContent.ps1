@@ -23,11 +23,11 @@
 .PARAMETER Recurse
     Recursively download subfolders.
 
-.PARAMETER Path
+.PARAMETER RsFolder
     Path to folder on report server to download catalog items from. 
 
 .PARAMETER Destination
-    Folder to download catalog items to.
+    Folder path on disk to download catalog items to.
 
 .EXAMPLE
     Out-RsFolderContent -ReportServerUri http://localhost/reportserver_sql2012 -RsFolder /MonthlyReports -Destination C:\reports\MonthlyReports
