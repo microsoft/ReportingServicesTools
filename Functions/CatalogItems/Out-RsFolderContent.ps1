@@ -23,14 +23,14 @@
 .PARAMETER Recurse
     Recursively download subfolders.
 
-.PARAMETER Path
+.PARAMETER RsFolder
     Path to folder on report server to download catalog items from. 
 
 .PARAMETER Destination
-    Folder to download catalog items to.
+    Folder path on disk to download catalog items to.
 
 .EXAMPLE
-    Out-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /MonthlyReports -Destination C:\reports\MonthlyReports
+    Out-RsFolderContent -ReportServerUri http://localhost/reportserver_sql2012 -RsFolder /MonthlyReports -Destination C:\reports\MonthlyReports
    
     Description
     -----------
@@ -52,9 +52,10 @@ function Out-RsFolderContent
         [switch]
         $Recurse,
         
+        [Alias('Path')]
         [Parameter(Mandatory=$True)]
         [string]
-        $Path,
+        $RsFolder,
         
         [Parameter(Mandatory=$True)]
         [string]
@@ -68,11 +69,11 @@ function Out-RsFolderContent
     
     if ($Recurse) 
     {
-        $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path -Recurse
+        $items = Get-RsFolderContent -proxy:$Proxy -RsFolder:$RsFolder -Recurse
     }
     else 
     {
-        $items = Get-RsCatalogItems -proxy:$Proxy -Path:$Path
+        $items = Get-RsFolderContent -proxy:$Proxy -RsFolder:$RsFolder
     }
 
     foreach ($item in $items)
@@ -80,9 +81,9 @@ function Out-RsFolderContent
         if (($item.TypeName -eq 'Folder') -and $Recurse)
         {
             $relativePath = $item.Path
-            if($Path -ne "/")
+            if($RsFolder -ne "/")
             {
-                $relativePath = Clear-Substring -string $relativePath -substring $Path -position front
+                $relativePath = Clear-Substring -string $relativePath -substring $RsFolder -position front
             }
             $relativePath = $relativePath.Replace("/", "\")
             
@@ -97,18 +98,18 @@ function Out-RsFolderContent
             $item.TypeName -eq "DataSource" -or 
             $item.TypeName -eq "DataSet")
         {
-            # We're relying on the fact that the implementation of Get-RsCatalogItems will show us the folder before their content, 
+            # We're relying on the fact that the implementation of Get-RsFolderContent will show us the folder before their content, 
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains
             $relativePath = $item.Path
-            if($Path -ne "/")
+            if($RsFolder -ne "/")
             {
-                $relativePath = Clear-Substring -string $relativePath -substring $Path -position front
+                $relativePath = Clear-Substring -string $relativePath -substring $RsFolder -position front
             }
             $relativePath = Clear-Substring -string $relativePath -substring ("/" + $item.Name) -position back
             $relativePath = $relativePath.replace("/", "\")
 
             $folder = $Destination + $relativePath
-            Out-RsCatalogItem -proxy $proxy -Path $item.Path -Destination $folder
+            Out-RsCatalogItem -proxy $proxy -RsFolder $item.Path -Destination $folder
         }
     }
 }

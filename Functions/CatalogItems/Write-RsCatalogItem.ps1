@@ -23,28 +23,28 @@
 .PARAMETER Path
     Path to item to upload on disk.
 
-.PARAMETER Destination
+.PARAMETER RsFolder
     Folder on reportserver to upload the item to.
 
 .PARAMETER override
     Override existing catalog item.
 
 .EXAMPLE
-    Write-RsCatalogItem -ReportServerUri http://localhost/reportserver_sql2012 -Path c:\reports\monthlyreport.rdl -Destination /financereports
+    Write-RsCatalogItem -ReportServerUri http://localhost/reportserver_sql2012 -Path c:\reports\monthlyreport.rdl -RsFolder /financereports
    
     Description
     -----------
     Uploads the report monthlyreport.rdl to folder /financereports
 
 .EXAMPLE
-    Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl, c:\reports\dailyreport.rdl -Destination /financereports
+    Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl, c:\reports\dailyreport.rdl -RsFolder /financereports
    
     Description
     -----------
     Uploads the monthlyreport.rdl and dailyreport.rdl report to folder /financereports
 
 .EXAMPLE
-    Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path ( dir c:\reports -filter *.rdl) -Destination /financereports
+    Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path ( dir c:\reports -filter *.rdl) -RsFolder /financereports
    
     Description
     -----------
@@ -68,9 +68,10 @@ function Write-RsCatalogItem
         [string[]]
         $Path,
         
+        [Alias('Destination')]
         [Parameter(Mandatory=$True)]
         [string]
-        $Destination,
+        $RsFolder,
         
         [Alias('Override')]
         [switch]
@@ -101,13 +102,13 @@ function Write-RsCatalogItem
             $itemName = $item.BaseName
     
     
-            if($Destination -eq "/")
+            if($RsFolder -eq "/")
             {
                 Write-Verbose "Uploading $EntirePath to /$($itemName)"
             }
             else 
             {
-                Write-Verbose "Uploading $EntirePath to $Destination/$($itemName)"        
+                Write-Verbose "Uploading $EntirePath to $RsFolder/$($itemName)"        
             }
     
             if ($itemType -eq 'DataSource') 
@@ -123,7 +124,7 @@ function Write-RsCatalogItem
                 $enabled = $content.DataSourceDefinition.Enabled
                 $credentialRetrieval = 'None'
 
-                $newDataSourceCmd = "New-RsDataSource -Destination $Destination -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval"
+                $newDataSourceCmd = "New-RsDataSource -RsFolder $RsFolder -Name $itemName -Extension $extension -CredentialRetrieval $credentialRetrieval"
 
                 if (![String]::IsNullOrEmpty($connectionString))
                 {
@@ -134,22 +135,22 @@ function Write-RsCatalogItem
                 {
                     if ($enabled -eq $false)
                     {
-                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled -Overwrite | Out-Null
+                        New-RsDataSource -Proxy $Proxy -RsFolder $RsFolder -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled -Overwrite | Out-Null
                     }
                     else 
                     {
-                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Overwrite | Out-Null
+                        New-RsDataSource -Proxy $Proxy -RsFolder $RsFolder -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Overwrite | Out-Null
                     }
                 }
                 else 
                 {
                     if ($enabled -eq $false)
                     {
-                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled | Out-Null
+                        New-RsDataSource -Proxy $Proxy -RsFolder $RsFolder -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval -Disabled | Out-Null
                     }
                     else 
                     {
-                        New-RsDataSource -Proxy $Proxy -Destination $Destination -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval | Out-Null
+                        New-RsDataSource -Proxy $Proxy -RsFolder $RsFolder -Name $itemName -Extension $extension -ConnectionString $connectionString -CredentialRetrieval $credentialRetrieval | Out-Null
                     }  
                 }
             } 
@@ -157,10 +158,10 @@ function Write-RsCatalogItem
             {
                 $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
                 $warnings = $null
-                $Proxy.CreateCatalogItem($itemType, $itemName, $Destination, $OverWrite, $bytes, $null, [ref]$warnings) | Out-Null
+                $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $OverWrite, $bytes, $null, [ref]$warnings) | Out-Null
             }
 
-            Write-Information "$EntirePath was uploaded to $Destination successfully!"
+            Write-Information "$EntirePath was uploaded to $RsFolder successfully!"
         }
     }
 }
