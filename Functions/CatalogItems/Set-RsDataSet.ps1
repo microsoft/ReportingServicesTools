@@ -1,46 +1,6 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-<<<<<<< HEAD
-=======
-<#
-
-.SYNOPSIS
-    Overrides the reference of a report to a shared dataset. 
-
-.DESCRIPTION
-    Overrides the reference of a report to a shared dataset. 
-
-.PARAMETER ReportServerUri
-    Specify the Report Server URL to your SQL Server Reporting Services Instance.
-    Has to be provided if proxy is not provided.
-
-.PARAMETER ReportServerCredentials
-    Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER Proxy
-    Report server proxy to use. 
-    Has to be provided if ReportServerUri is not provided.
-
-.PARAMETER ItemPath 
-    Path of the report.
-
-.PARAMETER DataSetName 
-    Name of the dataset reference to override. 
-
-.PARAMETER DataSetPath
-    Path to the shared dataset the reference will point to.
-
-.EXAMPLE
-    
-    Set-RsDataSet -ReportServerUri 'http://localhost/reportserver_sql2012' -ItemPath /ReportWithDSReference -DataSetName Dataset1 -DataSetPath /Datasets/SampleSet
-
-    Description
-    -----------
-    Sets the dataset reference 'DataSet1' of report /ReportWithDSReference to point to dataset '/DataSets/SampleSet' 
-#>
-
->>>>>>> refs/remotes/Microsoft/master
 
 function Set-RsDataSet
 {

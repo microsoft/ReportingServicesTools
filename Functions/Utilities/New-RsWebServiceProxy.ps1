@@ -4,28 +4,8 @@
 function New-RsWebServiceProxy
 {
     <#
-<<<<<<< HEAD
         .SYNOPSIS
             This script creates a web service proxy object to the Reporting Services SOAP endpoint.
-=======
-    .SYNOPSIS
-        This script creates a web service proxy object to the Reporting Services SOAP endpoint.
-
-    .DESCRIPTION
-        This script creates a web service proxy object to the Reporting Services SOAP endpoint associated to the Report Server URI specified by the user. 
-
-    .PARAMETER ReportServerUri
-        Specify the Report Server URL to your SQL Server Reporting Services Instance.
-
-	.PARAMETER Credentials
-		Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
-
-    .EXAMPLE 
-        New-RsWebServiceProxy 
-        Description
-        -----------
-        This command will create and return a web service proxy to the Report Server located at http://localhost/reportserver using current user's credentials.
->>>>>>> refs/remotes/Microsoft/master
         
         .DESCRIPTION
             This script creates a web service proxy object to the Reporting Services SOAP endpoint associated to the Report Server URI specified by the user.
