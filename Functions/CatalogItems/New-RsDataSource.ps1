@@ -4,6 +4,7 @@
 function New-RsDataSource
 {
     <#
+<<<<<<< HEAD
         .SYNOPSIS
             This script creates a new data source on Report Server.
         
@@ -98,6 +99,97 @@ function New-RsDataSource
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. If data source already exists, it will be overwriten.
             
+=======
+    .SYNOPSIS
+        This script creates a new data source on Report Server.
+
+    .DESCRIPTION
+        This script creates a new data source on Report Server. 
+
+    .PARAMETER ReportServerUri
+        Specify the Report Server URL to your SQL Server Reporting Services Instance.
+
+    .PARAMETER ReportServerCredentials
+        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
+
+    .PARAMETER Proxy
+        Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
+
+    .PARAMETER RsFolder
+        Specify the location where the data source should be created at 
+
+    .PARAMETER Name
+        Specify the name of the the new data source
+
+    .PARAMETER Extension
+        Specify the extension of the new data source (e.g. SQL, SQLAZURE, OLEDB, OLEDB-MD, etc.) For full list, please look at <Extensions>\<Data> node in C:\Program Files\Microsoft SQL Server\MSRS{VersionNumber}.{InstanceName}\Reporting Services\ReportServer\RSReportServer.config.
+
+    .PARAMETER ConnectionString
+        Specify the connection string for the new data source.
+
+    .PARAMETER CredentialRetrieval
+        Specify the type of authentication to use: None, Prompt, Integrated, Store. Please view https://msdn.microsoft.com/en-us/library/reportservice2010.datasourcedefinition.credentialretrieval.aspx for more details on each option. 
+
+    .PARAMETER Prompt
+        Specify the prompt to display to user.  
+
+    .PARAMETER DatasourceCredentials
+        Specify the Credentials to use when connecting to the data source.
+
+    .PARAMETER ImpersonateUser
+        Specify whether to impersonate using the credentials specify when connecting to the data source. You must specify DatasourceCredentials if you specify this switch.
+
+    .PARAMETER WindowsCredentials
+        Specify whether the credentials specified are Windows credentials or not. You must specify DatasourceCredentials if you specify this switch.
+
+    .PARAMETER Disabled
+        Specify whether this data source should be disabled.
+
+    .PARAMETER Overwrite
+        Specify whether to overwrite data source if an existing data source with same name exists at the specified destination 
+
+    .EXAMPLE 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'None' 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will use not specify any credentials.
+
+    .EXAMPLE 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Integrated' 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will assume current user's identity.
+
+    .EXAMPLE 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Prompt' -Prompt 'Please enter your username and password' 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will prompt user for Database credentials.
+
+    .EXAMPLE 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Prompt' -Prompt 'Please enter your username and password' -WindowsCredentials 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, it will prompt user for Windows credentials.
+
+    .EXAMPLE 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, the specified credentials will be treated as Database credentials.
+
+    .EXAMPLE 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'Store' -DatasourceCredentials 'sa' -ImpersonateUser -WindowsCredentials
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. When connecting to this data source, the specified credentials will be treated as Windows credentials.
+    
+    .EXAMPLE 
+        New-RsDataSource -RsFolder '/' -Name 'My Data Source' -Extension 'SQL' -ConnectionString 'Data Source=.;Initial Catalog=MyDb;' -CredentialRetrieval 'None' -Overwrite 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new SQL Server data source called 'My Data Source' at the root folder. If data source already exists, it will be overwriten.
+>>>>>>> refs/remotes/Microsoft/master
     #>
 
     [cmdletbinding()]
@@ -106,9 +198,25 @@ function New-RsDataSource
         [Alias('Destination', 'ItemPath')]
         [Parameter(Mandatory = $True)]
         [string]
+<<<<<<< HEAD
         $Path,
         
         [Parameter(Mandatory = $True)]
+=======
+        $ReportServerUri = 'http://localhost/reportserver',
+
+        [System.Management.Automation.PSCredential]
+        $ReportServerCredentials,
+
+        $Proxy,
+
+        [Alias('Destination')]
+        [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
+        [string]
+        $RsFolder,
+
+        [Parameter(Mandatory=$True)]
+>>>>>>> refs/remotes/Microsoft/master
         [string]
         $Name,
         
@@ -201,8 +309,13 @@ function New-RsDataSource
     try
     {
         Write-Verbose "Creating data source..."
+<<<<<<< HEAD
         $Proxy.CreateDataSource($Name, $Path, $Overwrite, $datasource, $null)
         Write-Verbose "Data source created successfully!"
+=======
+        $Proxy.CreateDataSource($Name, $RsFolder, $Overwrite, $datasource, $null)
+        Write-Information "Data source created successfully!"
+>>>>>>> refs/remotes/Microsoft/master
     }
     catch
     {

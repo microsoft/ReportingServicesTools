@@ -1,6 +1,43 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+<<<<<<< HEAD
+=======
+<#
+
+.SYNOPSIS
+    Overrides the reference of a report or dataset to a shared data source. 
+
+.DESCRIPTION
+    Overrides the reference of a report or dataset to a shared data source. 
+
+.PARAMETER ReportServerUri
+    Specify the Report Server URL to your SQL Server Reporting Services Instance.
+    Has to be provided if proxy is not provided.
+
+.PARAMETER ReportServerCredentials
+    Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
+
+.PARAMETER Proxy
+    Report server proxy to use. 
+    Has to be provided if ReportServerUri is not provided.
+    
+.PARAMETER ItemPath 
+    Path to DataSource.
+
+.PARAMETER Password 
+    Password to set.
+
+.EXAMPLE
+    
+    Set-RsDataSourcePassword -ReportServerUri 'http://localhost/reportserver_sql2012' -ItemPath /DataSource1 -Password SuperSecretPassword
+
+    Description
+    -----------
+    Sets the password for the datasource /DataSource1 to 'SuperSecretPassword'
+#>
+
+>>>>>>> refs/remotes/Microsoft/master
 
 function Set-RsDataSourcePassword
 {

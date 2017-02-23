@@ -4,8 +4,25 @@
 function Restore-RSEncryptionKey
 {
     <#
+<<<<<<< HEAD
         .SYNOPSIS
             This script restores the SQL Server Reporting Services encryption key.
+=======
+    .SYNOPSIS
+        This script restores the SQL Server Reporting Services encryption key.
+
+    .DESCRIPTION
+        This script restores encryption key for SQL Server Reporting Services. This key is needed in order to read all the encrypted content stored in the Reporting Services Catalog database.
+
+    .PARAMETER SqlServerInstance
+        Specify the name of the SQL Server Reporting Services Instance.
+
+    .PARAMETER SqlServerVersion
+        Specify the version of the SQL Server Reporting Services Instance. 13 for SQL Server 2016, 12 for SQL Server 2014, 11 for SQL Server 2012
+
+    .PARAMETER Password
+        Specify the password that was used when the encryption key was backed up.
+>>>>>>> refs/remotes/Microsoft/master
         
         .DESCRIPTION
             This script restores encryption key for SQL Server Reporting Services. This key is needed in order to read all the encrypted content stored in the Reporting Services Catalog database.

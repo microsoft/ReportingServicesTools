@@ -30,13 +30,14 @@ The following is a list of commands which are available for you to use once you 
 |Command|Description|
 |-------|-----------|
 |Backup-RsEncryptionKey|This command backs up the encryption key used by SQL Server Reporting Services to protect sensitive content.|
-|Get-RsCatalogItems|This command lists all catalog items under a folder.|
+|Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
 |Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
+|New-RsFolder|This command creates a new folder in the specified path.|
 |New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |Out-RsCatalogItem|This command downloads a catalog item.|
 |Out-RsFolderContent|This command all catalog items in folder.|

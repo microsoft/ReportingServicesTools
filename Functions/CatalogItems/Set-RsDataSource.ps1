@@ -5,6 +5,7 @@
 function Set-RsDataSource
 {
     <#
+<<<<<<< HEAD
         .SYNOPSIS
             This script updates information about a data source on Report Server.
         
@@ -41,6 +42,40 @@ function Set-RsDataSource
             Description
             -----------
             This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
+=======
+    .SYNOPSIS
+        This script updates information about a data source on Report Server.
+
+    .DESCRIPTION
+        This script updates information about a data source on Report Server that was retrieved using Get-RsDataSource.  
+
+    .PARAMETER ReportServerUri
+        Specify the Report Server URL to your SQL Server Reporting Services Instance.
+
+    .PARAMETER ReportServerCredentials
+        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
+
+    .PARAMETER Proxy
+        Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
+
+    .PARAMETER DataSourcePath
+        Specify the path to the data source.
+
+    .PARAMETER DataSourceDefinition
+        Specify the data source definition of the Data Source to update 
+
+    .EXAMPLE 
+        Set-RsDataSource -DataSourcePath '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
+
+    .EXAMPLE 
+        Set-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -DataSourcePath '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition 
+        Description
+        -----------
+        This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and update the details of data source found at '/path/to/my/datasource'.		
+>>>>>>> refs/remotes/Microsoft/master
     #>
     
     [cmdletbinding()]
