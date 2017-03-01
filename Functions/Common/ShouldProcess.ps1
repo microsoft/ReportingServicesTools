@@ -34,7 +34,7 @@ function Get-ShouldProcessTargetWmi
     [CmdletBinding()]
     Param (
         [AllowNull()]
-        [System.Management.Automation.PSBoundParametersDictionary]
+        [object]
         $BoundParameters,
         
         [string]
@@ -114,7 +114,7 @@ function Get-ShouldProcessTargetWeb
     [CmdletBinding()]
     Param (
         [AllowNull()]
-        [System.Management.Automation.PSBoundParametersDictionary]
+        [object]
         $BoundParameters,
         
         [string]
