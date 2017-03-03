@@ -35,6 +35,16 @@ function Get-RsFolderContent
             Description
             -----------
             List all items under the root folder
+    
+        .EXAMPLE
+            Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path / -Recurse
+    
+        .EXAMPLE
+            Get-RsFolderContent -Path '/SQL Server Performance Dashboard' | WHERE Name -Like Wait* | Out-RsCatalogItem -Destination c:\SQLReports
+       
+            Description
+            -----------
+            Downloads all catalog items from folder '/SQL Server Performance Dashboard' with a name that starts with 'Wait' to folder 'C:\SQLReports'.
     #>
     
     [cmdletbinding()]
