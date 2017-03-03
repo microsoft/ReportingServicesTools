@@ -77,9 +77,9 @@ function Connect-RsReportServer
     {
         [Microsoft.ReportingServicesTools.ConnectionHost]::Instance = $ReportServerInstance
     }
-    if ($PSBoundParameters.ContainsKey("Version"))
+    if ($PSBoundParameters.ContainsKey("ReportServerVersion"))
     {
-        [Microsoft.ReportingServicesTools.ConnectionHost]::Version = $Version
+        [Microsoft.ReportingServicesTools.ConnectionHost]::Version = $ReportServerVersion
     }
     if ($PSBoundParameters.ContainsKey("Credential"))
     {

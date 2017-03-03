@@ -26,7 +26,7 @@
     [CmdletBinding()]
     Param (
         [AllowNull()]
-        [System.Management.Automation.PSBoundParametersDictionary]
+        [object]
         $BoundParameters
     )
     
@@ -78,7 +78,7 @@ function New-RsConfigurationSettingObjectHelper
     [CmdletBinding()]
     Param (
         [AllowNull()]
-        [System.Management.Automation.PSBoundParametersDictionary]
+        [object]
         $BoundParameters
     )
     
