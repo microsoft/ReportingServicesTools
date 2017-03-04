@@ -38,6 +38,10 @@ function Get-RsFolderContent
     
         .EXAMPLE
             Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path / -Recurse
+
+            Description
+            -----------
+            Lists all items directly under the root of the SSRS instance and recursively under all sub-folders.
     
         .EXAMPLE
             Get-RsFolderContent -Path '/SQL Server Performance Dashboard' | WHERE Name -Like Wait* | Out-RsCatalogItem -Destination c:\SQLReports
