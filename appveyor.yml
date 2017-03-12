@@ -13,8 +13,31 @@ skip_commits:
 install:
 - ps: Install-PackageProvider -Name NuGet -Force
 - ps: Install-Module -Name PSScriptAnalyzer -Force
+- ps: Install-Module -Name Pester
 
 build: false
+
+before_test:
+- ps: |
+    $ErrorActionPreference = 'Stop';
+    $url = "$($env:downloadUrl)/SQLServer2016-x64-ENU.exe"
+    $urlBox = "$($env:downloadUrl)/SQLServer2016-x64-ENU.box"
+    #arguments sqlserver needs
+    $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine,RS /RSINSTALLMODE=DefaultNativeMode /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`""
+    $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2016Eval"
+    if ((Test-Path $tempDir) -eq $false) { New-Item -ItemType Directory -Path $tempDir}
+    $fileFullPath = "$tempDir\SQLServer.exe"
+    $fileFullPathBox = "$tempDir\SQLServer.box"
+    Write-Host "Downloading..." (Get-Date).DateTime
+    (New-Object Net.WebClient).DownloadFile($url , $fileFullPath)
+    (New-Object Net.WebClient).DownloadFile($urlBox , $fileFullPathBox)
+    Write-Host "Extracting..." (Get-Date).DateTime
+    $extractPath = "$tempDir\SQL2016TEMP"
+    Start-Process "$fileFullPath" "/Q /x:`"$extractPath`"" -Wait
+    Write-Host "Installing SQL Server..." (Get-Date).DateTime
+    $setupPath = "$extractPath\setup.exe"
+    Start-Process $setupPath "$silentArgs" -Wait
+    Write-Host "Installation completed" (Get-Date).DateTime
 
 test_script:
 - ps: |
