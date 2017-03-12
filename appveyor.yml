@@ -22,7 +22,7 @@ before_test:
     $ErrorActionPreference = 'Stop';
     $url = "$($env:downloadUrl)/SQLServer2016-x64-ENU.exe"
     $urlBox = "$($env:downloadUrl)/SQLServer2016-x64-ENU.box"
-    #arguments sqlserver needs
+    #arguments sqlserver needs for the installation 
     $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine,RS /RSINSTALLMODE=DefaultNativeMode /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`""
     $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2016Eval"
     if ((Test-Path $tempDir) -eq $false) { New-Item -ItemType Directory -Path $tempDir}
@@ -53,9 +53,11 @@ test_script:
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
     # Fail if thre are issues
     if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
+
+    # Integration test section
     # Activate verbose on Powershell
     $VerbosePreference = "continue" 
-    #import Reporting Services tools 
+    # Import Reporting Services tools 
     Import-Module .\ReportingServicesTools.psd1 
     # Executing integration tests
     $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
