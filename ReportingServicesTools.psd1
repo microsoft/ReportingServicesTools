@@ -7,7 +7,7 @@
     RootModule = 'ReportingServicesTools.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.0.0.15'
+    ModuleVersion = '0.0.0.9'
     
     # ID used to uniquely identify this module
     GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -82,7 +82,7 @@
         'Revoke-RsSystemAccess',
         'Set-RsDatabase',
         'Set-RsDatabaseCredentials',
-        'Set-RsDataSet',
+        'Set-RsDataSetReference',
         'Set-RsDataSource',
         'Set-RsDataSourcePassword',
         'Set-RsDataSourceReference',
@@ -109,6 +109,7 @@
         'Revoke-AccessOnCatalogItem',
         'Revoke-AccessToRS',
         'rsdir',
+        'Set-RsDataSet',
         'Set-RsEmailSettingsAsBasicAuth',
         'Set-RsEmailSettingsAsNoAuth',
         'Set-RsEmailSettingsAsNTLMAuth',

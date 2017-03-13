@@ -68,11 +68,11 @@ function Get-RsItemReference
             {
                 "Report"
                 {
-                    return ($Proxy.GetItemReferences($Item, "DataSet") + $Proxy.GetItemReferences($Item, "DataSource")) | Add-Member -Name "Path" -Value $itemType -PassThru
+                    return ($Proxy.GetItemReferences($Item, "DataSet") + $Proxy.GetItemReferences($Item, "DataSource")) | Add-Member -Name "ItemType" -Value $itemType -MemberType NoteProperty -PassThru
                 }
                 "DataSet"
                 {
-                    return $Proxy.GetItemReferences($Item, "DataSource") | Add-Member -Name "Path" -Value $itemType -PassThru
+                    return $Proxy.GetItemReferences($Item, "DataSource") | Add-Member -Name "ItemType" -Value $itemType -MemberType NoteProperty -PassThru
                 }
                 "Unknown"
                 {

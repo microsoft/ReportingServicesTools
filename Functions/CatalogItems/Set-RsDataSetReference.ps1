@@ -2,7 +2,7 @@
 # Licensed under the MIT License (MIT)
 
 
-function Set-RsDataSet
+function Set-RsDataSetReference
 {
     <#
         .SYNOPSIS
@@ -34,7 +34,7 @@ function Set-RsDataSet
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Set-RsDataSet -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /ReportWithDSReference -DataSetName Dataset1 -DataSetPath /Datasets/SampleSet
+            Set-RsDataSetReference -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /ReportWithDSReference -DataSetName Dataset1 -DataSetPath /Datasets/SampleSet
             
             Description
             -----------
@@ -107,3 +107,4 @@ function Set-RsDataSet
     }
 }
 
+New-Alias -Name Set-RsDataSet -Value Set-RsDataSetReference -Scope Global
