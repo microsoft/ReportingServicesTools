@@ -57,7 +57,7 @@ function New-RsFolder
         $FolderName,
         
         [string]
-        $ReportServerUri = 'http://localhost/reportserver',
+        $ReportServerUri,
         
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
