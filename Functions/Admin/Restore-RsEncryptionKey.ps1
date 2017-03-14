@@ -71,20 +71,15 @@ function Restore-RSEncryptionKey
         $Credential
     )
     
-    if (-not $ReportServerInstance)
-    {
-        $ReportServerInstance = [Microsoft.ReportingServicesTools.ConnectionHost]::Instance
-    }
-    
     if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Restore encryptionkey from file $KeyPath"))
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
         
         $reportServerService = 'ReportServer'
         
-        if ($ReportServerInstance)
+        if ($rsWmiObject.InstanceName -ne "MSSQLSERVER")
         {
-            $reportServerService = $reportServerService + '$' + $ReportServerInstance
+            $reportServerService = $reportServerService + '$' + $rsWmiObject.InstanceName
         }
         
         Write-Verbose "Checking if key file path is valid..."

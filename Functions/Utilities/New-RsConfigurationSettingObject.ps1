@@ -76,7 +76,7 @@ function New-RsConfigurationSettingObject
         $MinimumSqlServerVersion
     )
     
-    if ($MinimumSqlServerVersion -gt $ReportServerVersion)
+    if (($MinimumSqlServerVersion) -and ($MinimumSqlServerVersion -gt $ReportServerVersion))
     {
         throw (New-Object System.Management.Automation.PSArgumentException("Trying to connect to $ComputerName \ $ReportServerInstance, but it is only $ReportServerVersion when at least $MinimumSqlServerVersion is required!"))
     }
