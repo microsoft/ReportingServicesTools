@@ -11,24 +11,24 @@ Describe "New-RsFolder" {
     }
     Context "Create a subfolder"{
         # Create folder to create the path
-        $folderPathName = 'SutPathSubFolder' + [guid]::NewGuid()
-        New-RsFolder -Path / -FolderName $folderPathName
-        $folderPath = '/'+ $folderPathName
+        $folderName = 'SutPathSubFolder' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $folderName
+        $folderPath = '/'+ $folderName
         # Search for the folder path existence 
         $folderList = Get-RsFolderContent -RsFolder /
         $folderPathCount = ($folderList | where path -eq $folderPath).Count
         # Section to test the New-RsFolder
-        $folderName = 'SutSubFolder' + [guid]::NewGuid()
-        New-RsFolder -Path $folderPath -FolderName $folderName 
+        $subFolderName = 'SutSubFolder' + [guid]::NewGuid()
+        New-RsFolder -Path $folderPath -FolderName $subFolderName 
         # Test if the folder was created
         $newFolderList = Get-RsFolderContent -RsFolder / -Recurse
-        $path = $folderPath + '/' + $folderName
-        $folderCount = ($newFolderList | where path -eq $path).Count
+        $subFolderPath = $folderPath + '/' + $subFolderName
+        $subFolderCount = ($newFolderList | where path -eq $subFolderPath).Count
         It "Should exist the folder to be used as the path"{
-            $folderPathCount | Should be 1
+            $FolderPathCount | Should be 1
         }
         It "Should be a new folder"{
-            $folderCount | Should be 1    
+            $subFolderCount | Should be 1    
         }
     }
      Context "Create a folder with proxy"{
