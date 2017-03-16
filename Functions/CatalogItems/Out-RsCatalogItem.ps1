@@ -1,121 +1,169 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-<#
-.SYNOPSIS
-    This downloads catalog items from a report server to disk.
-
-.DESCRIPTION
-    This downloads catalog items from a report server to disk.
-    Currently supported types to download are reports, datasources, datasets and resources.
-    This function will overwrite files -Destination which have the same name as the items being passed to the command.
-
-.PARAMETER ReportServerUri
-    Specify the Report Server URL to your SQL Server Reporting Services Instance.
-    Has to be provided if proxy is not provided.
-
-.PARAMETER ReportServerCredentials
-    Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
-
-.PARAMETER proxy
-    Report server proxy to use. 
-    Has to be provided if ReportServerUri is not provided.
-
-.PARAMETER RsFolder
-    Path to catalog item in SSRS to download.
-
-.PARAMETER Destination
-    Folder to download catalog item to.
-
-.EXAMPLE
-    Out-RsCatalogItem -ReportServerUri http://localhost/reportserver_sql2012 -RsFolder /Report -Destination C:\reports
-   
-    Description
-    -----------
-    Download catalog item 'Report' to folder 'C:\reports'.
-
-.EXAMPLE
-    Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder '/SQL Server Performance Dashboard' | 
-    WHERE Name -Like Wait* | 
-    Out-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Destination c:\SQLReports
-   
-    Description
-    -----------
-    Downloads all catalog items from folder '/SQL Server Performance Dashboard' with a name that starts with 'Wait' to folder 'C:\SQLReports'. 
-#>
 
 function Out-RsCatalogItem
 {
-    param(
-        [string]
-        $ReportServerUri = 'http://localhost/reportserver',
-                
-        [System.Management.Automation.PSCredential]
-        $ReportServerCredentials,
+    <#
+        .SYNOPSIS
+            This downloads catalog items from a report server to disk.
         
-        $Proxy,
-
-        [Alias('Path')]
-        [Parameter(Mandatory=$True,ValueFromPipeline = $true,ValueFromPipelinebyPropertyname = $true)]
+        .DESCRIPTION
+            This downloads catalog items from a report server to disk.
+            Currently supported types to download are reports, datasources, datasets and resources.
+        
+        .PARAMETER Path
+            Path to catalog item to download.
+        
+        .PARAMETER Destination
+            Folder to download catalog item to.
+        
+        .PARAMETER ReportServerUri
+            Specify the Report Server URL to your SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER Credential
+            Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER Proxy
+            Report server proxy to use.
+            Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
+            Useful when repeatedly having to connect to multiple different Report Server.
+        
+        .EXAMPLE
+            Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /Report -Destination C:\reports
+            
+            Description
+            -----------
+            Download catalog item 'Report' to folder 'C:\reports'.
+    #>
+    [CmdletBinding()]
+    param (
+        [Alias('ItemPath')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $RsFolder,
-
-        [Parameter(Mandatory=$True)]
+        $Path,
+        
+        [ValidateScript({ Test-Path $_ -PathType Container})]
+        [Parameter(Mandatory = $True)]
         [string]
-        $Destination
+        $Destination,
+        
+        [string]
+        $ReportServerUri,
+        
+        [Alias('ReportServerCredentials')]
+        [System.Management.Automation.PSCredential]
+        $Credential,
+        
+        $Proxy
     )
+    
     Begin
     {
-
-        if (-not $Proxy)
+        #region Utility Functions
+        function Get-FileExtension
         {
-            $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials 
+            param (
+                [Parameter(Mandatory = $True)]
+                [string]
+                $TypeName
+            )
+            
+            if ($TypeName -eq 'Report')
+            {
+                return '.rdl'
+            }
+            elseif ($TypeName -eq 'DataSource')
+            {
+                return '.rsds'
+            }
+            elseif ($TypeName -eq 'DataSet')
+            {
+                return '.rsd'
+            }
+            else
+            {
+                throw 'Unsupported item type! We only support items which are of type Report, Data Set or Data Source'
+            }
         }
+        #endregion Utility Functions
+        
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
+        
+        $DestinationFullPath = Resolve-Path $Destination
     }
     
     Process
     {
-        foreach ($item in $RsFolder)
+        #region Processing each path passed to it
+        foreach ($item in $Path)
         {
-            $itemType = $Proxy.GetItemType($item)
-            if ($itemType -eq 'Unknown')
+            #region Retrieving content from Report Server
+            try
             {
-                throw "Make sure item exists at $RsFolder and item is of type Report, DataSet, DataSource or Resource"
+                $itemType = $Proxy.GetItemType($item)
             }
-            elseif ($itemType -eq 'Resource')
+            catch
             {
-                $itemName = ($RsFolder.Split("/"))[-1]
-                # Resource contain the file extension as part of their name, so we don't need to call Get-FileExtension
-                $fileName = $itemName
+                throw (New-Object System.Exception("Failed to retrieve item type of '$item' from proxy: $($_.Exception.Message)", $_.Exception))
             }
-            else 
+            
+            switch ($itemType)
             {
-                $itemName = ($RsFolder.Split("/"))[-1]
-                $fileName = $itemName + (Get-FileExtension $itemType)
+                "Unknown"
+                {
+                    throw "Make sure item exists at $item and item is of type Report, DataSet, DataSource or Resource"
+                }
+                "Resource"
+                {
+                    $fileName = ($item.Split("/"))[-1]
+                }
+                default
+                {
+                    $fileName = "$(($item.Split("/"))[-1])$(Get-FileExtension -TypeName $itemType)"
+                }
             }
-
-            Write-Verbose "Downloading $RsFolder..."
-            $bytes = $Proxy.GetItemDefinition($RsFolder)
-    
-            if (!(Test-Path -Path $Destination))
+            
+            Write-Verbose "Downloading $item..."
+            try
             {
-                Write-Verbose "Creating Folder $Destination..."
-                New-Item -ItemType directory -Path $Destination | Out-Null
+                $bytes = $Proxy.GetItemDefinition($item)
             }
-
-            $DestinationFullPath = Resolve-Path $Destination
+            catch
+            {
+                throw (New-Object System.Exception("Failed to retrieve item definition of '$item' from proxy: $($_.Exception.Message)", $_.Exception))
+            }
+            #endregion Retrieving content from Report Server
+            
+            #region Writing results to file
             Write-Verbose "Writing $itemType content to $DestinationFullPath\$fileName..."
-            if ($itemType -eq 'DataSource')
+            try
             {
-                $content = [System.Text.Encoding]::Unicode.GetString($bytes)
-                [System.IO.File]::WriteAllText("$DestinationFullPath\$fileName", $content)
+                if ($itemType -eq 'DataSource')
+                {
+                    $content = [System.Text.Encoding]::Unicode.GetString($bytes)
+                    [System.IO.File]::WriteAllText("$DestinationFullPath\$fileName", $content)
+                }
+                else
+                {
+                    [System.IO.File]::WriteAllBytes("$DestinationFullPath\$fileName", $bytes)
+                }
             }
-            else 
+            catch
             {
-                [System.IO.File]::WriteAllBytes("$DestinationFullPath\$fileName", $bytes)
+                throw (New-Object System.IO.IOException("Failed to write content to '$DestinationFullPath\$fileName' : $($_.Exception.Message)", $_.Exception))
             }
-
-            Write-Information "$RsFolder was downloaded to $DestinationFullPath\$fileName successfully!"
+            
+            Write-Verbose "$item was downloaded to $DestinationFullPath\$fileName successfully!"
+            #endregion Writing results to file
         }
+        #endregion Processing each path passed to it
+    }
+    
+    End
+    {
+        
     }
 }

@@ -1,121 +1,124 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+
 function Set-RsDataSource
 {
     <#
-    .SYNOPSIS
-        This script updates information about a data source on Report Server.
-
-    .DESCRIPTION
-        This script updates information about a data source on Report Server that was retrieved using Get-RsDataSource.  
-
-    .PARAMETER ReportServerUri
-        Specify the Report Server URL to your SQL Server Reporting Services Instance.
-
-    .PARAMETER ReportServerCredentials
-        Specify the credentials to use when connecting to your SQL Server Reporting Services Instance.
-
-    .PARAMETER Proxy
-        Specify the Proxy to use when communicating with Reporting Services server. If Proxy is not specified, connection to Report Server will be created using ReportServerUri, ReportServerUsername and ReportServerPassword.
-
-    .PARAMETER DataSourcePath
-        Specify the path to the data source.
-
-    .PARAMETER DataSourceDefinition
-        Specify the data source definition of the Data Source to update 
-
-    .EXAMPLE 
-        Set-RsDataSource -DataSourcePath '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition 
-        Description
-        -----------
-        This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
-
-    .EXAMPLE 
-        Set-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -DataSourcePath '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition 
-        Description
-        -----------
-        This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and update the details of data source found at '/path/to/my/datasource'.		
+        .SYNOPSIS
+            This script updates information about a data source on Report Server.
+        
+        .DESCRIPTION
+            This script updates information about a data source on Report Server that was retrieved using Get-RsDataSource.
+        
+        .PARAMETER Path
+            Specify the path to the data source.
+        
+        .PARAMETER DataSourceDefinition
+            Specify the data source definition of the Data Source to update
+        
+        .PARAMETER ReportServerUri
+            Specify the Report Server URL to your SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER Credential
+            Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER Proxy
+            Report server proxy to use.
+            Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
+            Useful when repeatedly having to connect to multiple different Report Server.
+        
+        .EXAMPLE
+            Set-RsDataSource -Path '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition
+            Description
+            -----------
+            This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
+        
+        .EXAMPLE
+            Set-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -Path '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition
+            Description
+            -----------
+            This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
     #>
-
+    
     [cmdletbinding()]
     param
     (
+        [Alias('DataSourcePath','ItemPath')]
+        [Parameter(Mandatory = $True)]
         [string]
-        $ReportServerUri = 'http://localhost/reportserver',
-
+        $Path,
+        
+        [Parameter(Mandatory = $True)]
+        $DataSourceDefinition,
+        
+        [string]
+        $ReportServerUri,
+        
+        [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
-        $ReportServerCredentials,
-
-        $Proxy,
-
-        [Parameter(Mandatory=$True)]
-        [string]
-        $DataSourcePath,
-
-        [Parameter(Mandatory=$True)]
-        $DataSourceDefinition
+        $Credential,
+        
+        $Proxy
     )
-
-    if (-not $Proxy)
+    
+    if ($PSCmdlet.ShouldProcess($Path, "Applying new definition"))
     {
-        $Proxy = New-RSWebServiceProxy -ReportServerUri $ReportServerUri -Credentials $ReportServerCredentials
-    }
-
-    if ($DataSourceDefinition.GetType().Name -ne 'DataSourceDefinition')
-    {
-        throw 'Invalid object specified for DataSourceDefinition!'
-    }
-
-    if ($DataSourceDefinition.CredentialRetrieval.ToString().ToUpper() -eq 'STORE')
-    {
-        if ([System.String]::IsNullOrEmpty($DataSourceDefinition.UserName) -or [System.String]::IsNullOrEmpty($DataSourceDefinition.Password))
+        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
+        
+        #region Input Validation
+        if ($DataSourceDefinition.GetType().Name -ne 'DataSourceDefinition')
         {
-            throw "Username and password must be specified when CredentialRetrieval is set to Store!"
+            throw 'Invalid object specified for DataSourceDefinition!'
         }
-    }
-    else 
-    {
-        if (-not [System.String]::IsNullOrEmpty($DataSourceDefinition.UserName) -or
-            -not [System.String]::IsNullOrEmpty($DataSourceDefinition.Password))
+        
+        if ($DataSourceDefinition.CredentialRetrieval -like 'STORE')
         {
-            throw "Username and/or password can be specified only when CredentialRetrieval is Store!"
+            if (-not ($DataSourceDefinition.UserName))
+            {
+                throw "Username and password must be specified when CredentialRetrieval is set to Store!"
+            }
         }
-
-        if ($DataSourceDefinition.ImpersonateUser)
+        else
         {
-            throw "ImpersonateUser can be set to true only when CredentialRetrieval is Store!"
+            if ($DataSourceDefinition.UserName -or $DataSourceDefinition.Password)
+            {
+                throw "Username and/or password can be specified only when CredentialRetrieval is Store!"
+            }
+            
+            if ($DataSourceDefinition.ImpersonateUser)
+            {
+                throw "ImpersonateUser can be set to true only when CredentialRetrieval is Store!"
+            }
         }
-    }
-
-    # validating extension specified by the user is supported
-    Write-Verbose "Retrieving data extensions..."
-    $dataExtensions = $Proxy.ListExtensions("Data")
-    $isExtensionValid = $false
-    foreach ($dataExtension in $dataExtensions)
-    {
-        Write-Verbose "`t$($dataExtension.Name)`n"
-        if ($dataExtension.Name -eq $DataSourceDefinition.Extension)
+        #endregion Input Validation
+        
+        # validating extension specified by the user is supported
+        Write-Verbose "Retrieving data extensions..."
+        try
         {
-            $isExtensionValid = $True
-            break
+            if ($Proxy.ListExtensions("Data").Name -notcontains $DataSourceDefinition.Extension)
+            {
+                throw "Extension specified is not supported by the report server!"
+            }
         }
-    }
-
-    if (-not $isExtensionValid)
-    {
-        throw "Extension specified is not supported by the report server!"
-    }
-
-    try
-    {
-        Write-Verbose "Updating data source..."
-        $Proxy.SetDataSourceContents($DataSourcePath, $DataSourceDefinition)
-        Write-Information "Data source updated successfully!"
-    }
-    catch
-    {
-       Write-Error "Exception occurred while updating data source! $($_.Exception.Message)"
-       break 
+        catch
+        {
+            throw (New-Object System.Exception("Failed to retrieve list of supported extensions from Report Server: $($_.Exception.Message)", $_.Exception))
+        }
+        
+        
+        try
+        {
+            Write-Verbose "Updating data source..."
+            $Proxy.SetDataSourceContents($Path, $DataSourceDefinition)
+            Write-Verbose "Data source updated successfully!"
+        }
+        catch
+        {
+            throw (New-Object System.Exception("Exception occurred while updating data source! $($_.Exception.Message)", $_.Exception))
+        }
     }
 }

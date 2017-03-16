@@ -1,15 +1,17 @@
-function Clear-Substring
+function Clear-SubString
 {
+    [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$True)]        
+        [Parameter(Mandatory = $True)]        
         [string]
         $string,
         
-        [Parameter(Mandatory=$True)]        
+        [Parameter(Mandatory = $True)]        
         [string]
         $substring,
         
+        [ValidateSet('front', 'back')]
         [string]
         $position
     )

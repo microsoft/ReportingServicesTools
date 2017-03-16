@@ -4,88 +4,123 @@
 function Restore-RSEncryptionKey
 {
     <#
-    .SYNOPSIS
-        This script restores the SQL Server Reporting Services encryption key.
-
-    .DESCRIPTION
-        This script restores encryption key for SQL Server Reporting Services. This key is needed in order to read all the encrypted content stored in the Reporting Services Catalog database.
-
-    .PARAMETER SqlServerInstance
-        Specify the name of the SQL Server Reporting Services Instance.
-
-    .PARAMETER SqlServerVersion
-        Specify the version of the SQL Server Reporting Services Instance. 13 for SQL Server 2016, 12 for SQL Server 2014, 11 for SQL Server 2012
-
-    .PARAMETER Password
-        Specify the password that was used when the encryption key was backed up.
+        .SYNOPSIS
+            This script restores the SQL Server Reporting Services encryption key.
         
-    .PARAMETER KeyPath
-        Specify the path to where the encryption key is stored.
-
-    .EXAMPLE
-        Restore-RSEncryptionKey -Password 'Enter Your Password' -KeyPath 'C:\ReportingServices\Default.snk'
-        Description
-        -----------
-        This command will restore the encryption key to the default instance from SQL Server 2016 Reporting Services
-    
-    .EXAMPLE
-        Restore-RSEncryptionKey -SqlServerInstance 'SQL2012' -SqlServerVersion '11' -Password 'Enter Your Password' -KeyPath 'C:\ReportingServices\Default.snk'
-        Description
-        -----------
-        This command will restore the encryption key to the named instance (SQL2012) from SQL Server 2012 Reporting Services 
+        .DESCRIPTION
+            This script restores encryption key for SQL Server Reporting Services. This key is needed in order to read all the encrypted content stored in the Reporting Services Catalog database.
+        
+        .PARAMETER Password
+            Specify the password that was used when the encryption key was backed up.
+        
+        .PARAMETER KeyPath
+            Specify the path to where the encryption key is stored.
+        
+        .PARAMETER ReportServerInstance
+            Specify the name of the SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER ReportServerVersion
+            Specify the version of the SQL Server Reporting Services Instance.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER ComputerName
+            The Report Server to target.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .PARAMETER Credential
+            The credentials with which to connect to the Report Server.
+            Use the "Connect-RsReportServer" function to set/update a default value.
+        
+        .EXAMPLE
+            Restore-RSEncryptionKey -Password 'Enter Your Password' -KeyPath 'C:\ReportingServices\Default.snk'
+            Description
+            -----------
+            This command will restore the encryption key to the default instance from SQL Server 2016 Reporting Services
+        
+        .EXAMPLE
+            Restore-RSEncryptionKey -ReportServerInstance 'SQL2012' -ReportServerVersion '11' -Password 'Enter Your Password' -KeyPath 'C:\ReportingServices\Default.snk'
+            Description
+            -----------
+            This command will restore the encryption key to the named instance (SQL2012) from SQL Server 2012 Reporting Services
     #>
 
-    [cmdletbinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param
     (
-        [string]
-        $SqlServerInstance='MSSQLSERVER',
-
-        [string]
-        $SqlServerVersion='13',
-        
-        [Parameter(Mandatory=$True)]
+        [Parameter(Mandatory = $True)]
         [string]
         $Password,
         
-        [Parameter(Mandatory=$True)]
+        [Parameter(Mandatory = $True)]
         [string]
-        $KeyPath    
+        $KeyPath,
+        
+        [Alias('SqlServerInstance')]
+        [string]
+        $ReportServerInstance,
+        
+        [Alias('SqlServerVersion')]
+        [Microsoft.ReportingServicesTools.SqlServerVersion]
+        $ReportServerVersion,
+        
+        [string]
+        $ComputerName,
+        
+        [System.Management.Automation.PSCredential]
+        $Credential
     )
-
-    $rsWmiObject = New-RsConfigurationSettingObject -SqlServerInstance $SqlServerInstance -SqlServerVersion $SqlServerVersion
-    $reportServerService = 'ReportServer'
-
-    if (![String]::IsNullOrEmpty($sqlServerInstance))
+    
+    if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Restore encryptionkey from file $KeyPath"))
     {
-        $reportServerService = $reportServerService + '$' + $sqlServerInstance
+        $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
+        
+        $reportServerService = 'ReportServer'
+        
+        if ($rsWmiObject.InstanceName -ne "MSSQLSERVER")
+        {
+            $reportServerService = $reportServerService + '$' + $rsWmiObject.InstanceName
+        }
+        
+        Write-Verbose "Checking if key file path is valid..."
+        if (-not (Test-Path $KeyPath))
+        {
+            throw "No key was found at the specified location: $path"
+        }
+        
+        try
+        {
+            $keyBytes = [System.IO.File]::ReadAllBytes($KeyPath)
+        }
+        catch
+        {
+            throw
+        }
+        
+        Write-Verbose "Restoring encryption key..."
+        $restoreKeyResult = $rsWmiObject.RestoreEncryptionKey($keyBytes, $keyBytes.Length, $Password)
+        
+        if ($restoreKeyResult.HRESULT -eq 0)
+        {
+            Write-Verbose "Success!"
+        }
+        else
+        {
+            throw "Failed to restore the encryption key! Errors: $($restoreKeyResult.ExtendedErrors)"
+        }
+        
+        try
+        {
+            $service = Get-Service -Name $reportServerService -ComputerName $rsWmiObject.PSComputerName -ErrorAction Stop
+            Write-Verbose "Stopping Reporting Services Service..."
+            $service.Stop()
+            
+            Write-Verbose "Starting Reporting Services Service..."
+            $service.Start()
+        }
+        catch
+        {
+            throw (New-Object System.Exception("Failed to restart Report Server database service. Manually restart it for the change to take effect! $($_.Exception.Message)", $_.Exception))
+        }
     }
-
-    Write-Verbose "Checking if key file path is valid..."
-    if (![System.IO.File]::Exists($KeyPath)) 
-    {
-        Write-Error "No key was found at the specified location: $path"
-        Exit 1
-    }
-
-    $keyBytes = [System.IO.File]::ReadAllBytes($KeyPath)
-
-    Write-Verbose "Restoring encryption key..."
-    $restoreKeyResult = $rsWmiObject.RestoreEncryptionKey($keyBytes, $keyBytes.Length, $Password)
-
-    if ($restoreKeyResult.HRESULT -eq 0)
-    {
-        Write-Verbose "Success!"
-    }
-    else
-    {
-        Write-Error "Fail! `n Errors: $($restoreKeyResult.ExtendedErrors)"
-        Exit 2
-    }
-
-    Write-Verbose "Stopping Reporting Services Service..."
-    Stop-Service $reportServerService -ErrorAction Stop
-
-    Write-Verbose "Starting Reporting Services Service..."
-    Start-Service $reportServerService -ErrorAction Stop
 }
