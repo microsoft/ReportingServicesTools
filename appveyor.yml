@@ -13,8 +13,31 @@ skip_commits:
 install:
 - ps: Install-PackageProvider -Name NuGet -Force
 - ps: Install-Module -Name PSScriptAnalyzer -Force
+- ps: Install-Module -Name Pester
 
 build: false
+
+before_test:
+- ps: |
+    $ErrorActionPreference = 'Stop';
+    $url = "$($env:downloadUrl)/SQLServer2016-x64-ENU.exe"
+    $urlBox = "$($env:downloadUrl)/SQLServer2016-x64-ENU.box"
+    #arguments sqlserver needs for the installation 
+    $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine,RS /RSINSTALLMODE=DefaultNativeMode /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`""
+    $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2016Eval"
+    if ((Test-Path $tempDir) -eq $false) { New-Item -ItemType Directory -Path $tempDir}
+    $fileFullPath = "$tempDir\SQLServer.exe"
+    $fileFullPathBox = "$tempDir\SQLServer.box"
+    Write-Host "Downloading..." (Get-Date).DateTime
+    (New-Object Net.WebClient).DownloadFile($url , $fileFullPath)
+    (New-Object Net.WebClient).DownloadFile($urlBox , $fileFullPathBox)
+    Write-Host "Extracting..." (Get-Date).DateTime
+    $extractPath = "$tempDir\SQL2016TEMP"
+    Start-Process "$fileFullPath" "/Q /x:`"$extractPath`"" -Wait
+    Write-Host "Installing SQL Server..." (Get-Date).DateTime
+    $setupPath = "$extractPath\setup.exe"
+    Start-Process $setupPath "$silentArgs" -Wait
+    Write-Host "Installation completed" (Get-Date).DateTime
 
 test_script:
 - ps: |
@@ -30,7 +53,20 @@ test_script:
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
     # Fail if thre are issues
     if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
-   
+
+    # Integration test section
+    # Activate verbose on Powershell
+    $VerbosePreference = "continue" 
+    # Import Reporting Services tools 
+    Import-Module .\ReportingServicesTools.psd1 
+    # Executing integration tests
+    $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
+    # Upload integration tests results
+    $wcIT = New-Object 'System.Net.WebClient'
+    $wcIT.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResultsIT.xml))
+    # Fail if thre are issues on integration tests
+    if($resultsIT.FailedCount -gt 0){throw "Integration Test found $($resultsIT.FailedCount) issues"}
+    
 deploy_script:
 - ps: |
     # Deploy to Powershell Gallery only where there is a tag which will have the version number
