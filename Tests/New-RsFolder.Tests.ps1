@@ -1,3 +1,6 @@
+# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Licensed under the MIT License (MIT)
+
 Describe "New-RsFolder" {
     Context "Creat Folder with minimun parameters"{
         $folderName = 'SutFolderMinParameters' + [guid]::NewGuid()
@@ -9,28 +12,30 @@ Describe "New-RsFolder" {
             $folderCount | Should Be 1
         }
     }
+
     Context "Create a subfolder"{
         # Create folder to create the path
-        $folderName = 'SutPathSubFolder' + [guid]::NewGuid()
-        New-RsFolder -Path / -FolderName $folderName
-        $folderPath = '/'+ $folderName
+        $parentFolderName = 'SutParentFolder' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $parentFolderName
+        $folderPath = '/'+ $parentFolderName
         # Search for the folder path existence 
         $folderList = Get-RsFolderContent -RsFolder /
-        $folderPathCount = ($folderList | where path -eq $folderPath).Count
+        $parentfolderCount = ($folderList | where path -eq $folderPath).Count
         # Section to test the New-RsFolder
         $subFolderName = 'SutSubFolder' + [guid]::NewGuid()
         New-RsFolder -Path $folderPath -FolderName $subFolderName 
         # Test if the folder was created
-        $newFolderList = Get-RsFolderContent -RsFolder / -Recurse
+        $allFolderList = Get-RsFolderContent -RsFolder / -Recurse
         $subFolderPath = $folderPath + '/' + $subFolderName
-        $subFolderCount = ($newFolderList | where path -eq $subFolderPath).Count
-        It "Should exist the folder to be used as the path"{
-            $FolderPathCount | Should be 1
+        $subFolderCount = ($allFolderList | where path -eq $subFolderPath).Count
+        It "Should the parent folder"{
+            $parentFolderCount | Should be 1
         }
-        It "Should be a new folder"{
+        It "Should the subfolder"{
             $subFolderCount | Should be 1    
         }
     }
+
      Context "Create a folder with proxy"{
         # Declaring the parameters name, path and proxy
         $folderName = 'SutFolderParameterProxy' + [guid]::NewGuid()
@@ -45,6 +50,7 @@ Describe "New-RsFolder" {
             $folderCount | Should be 1    
         }
     }
+
     Context "Create a folder with ReportServerUri"{
         # Declaring the parameters name, path and ReportServerUri
         $folderName = 'SutFolderParameterReportServerUri' + [guid]::NewGuid()
@@ -59,9 +65,10 @@ Describe "New-RsFolder" {
             $folderCount | Should Be 1
         }
     }
+    
     Context "Create a folder with all the parameters except credentials"{
         # Declaring the parameters name, path and ReportServerUri
-        $folderName = 'SutFolderParameterReportServerUri' + [guid]::NewGuid()
+        $folderName = 'SutFolderAllParameters' + [guid]::NewGuid()
         $folderPath = '/'
         $folderReportServerUri = 'http://localhost/reportserver'
         $proxy = New-RsWebServiceProxy 
