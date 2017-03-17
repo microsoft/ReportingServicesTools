@@ -15,7 +15,7 @@ function Out-RsFolderContent
         .PARAMETER Recurse
             Recursively download subfolders.
         
-        .PARAMETER Path
+        .PARAMETER RsFolder
             Path to folder on report server to download catalog items from.
         
         .PARAMETER Destination
@@ -35,7 +35,7 @@ function Out-RsFolderContent
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Out-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /MonthlyReports -Destination C:\reports\MonthlyReports
+            Out-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -RsFolder /MonthlyReports -Destination C:\reports\MonthlyReports
             
             Description
             -----------
@@ -46,7 +46,7 @@ function Out-RsFolderContent
         [switch]
         $Recurse,
         
-        [Alias('ItemPath')]
+        [Alias('ItemPath', 'RsFolder')]
         [Parameter(Mandatory = $True)]
         [string]
         $Path,
@@ -108,7 +108,7 @@ function Out-RsFolderContent
             $item.TypeName -eq "DataSource" -or 
             $item.TypeName -eq "DataSet")
         {
-            # We're relying on the fact that the implementation of Get-RsCatalogItems will show us the folder before their content, 
+            # We're relying on the fact that the implementation of Get-RsFolderContent will show us the folder before their content, 
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains
             $relativePath = $item.Path
             if($Path -ne "/")

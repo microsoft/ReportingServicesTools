@@ -10,7 +10,7 @@ function Get-RsFolderContent
         .DESCRIPTION
             List all catalog items under a given path.
         
-        .PARAMETER Path
+        .PARAMETER RsFolder
             Path to folder.
         
         .PARAMETER Recurse
@@ -30,21 +30,21 @@ function Get-RsFolderContent
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /
+            Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -RsFolder /
             
             Description
             -----------
             List all items under the root folder
     
         .EXAMPLE
-            Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -Path / -Recurse
+            Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder / -Recurse
 
             Description
             -----------
             Lists all items directly under the root of the SSRS instance and recursively under all sub-folders.
     
         .EXAMPLE
-            Get-RsFolderContent -Path '/SQL Server Performance Dashboard' | WHERE Name -Like Wait* | Out-RsCatalogItem -Destination c:\SQLReports
+            Get-RsFolderContent -RsFolder '/SQL Server Performance Dashboard' | WHERE Name -Like Wait* | Out-RsCatalogItem -Destination c:\SQLReports
        
             Description
             -----------
@@ -53,7 +53,7 @@ function Get-RsFolderContent
     
     [cmdletbinding()]
     param(
-        [Alias('ItemPath')]
+        [Alias('ItemPath', 'RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $Path,

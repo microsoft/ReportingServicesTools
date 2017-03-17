@@ -18,7 +18,7 @@ function Write-RsFolderContent
         .PARAMETER Path
             Path to folder which contains items to upload on disk.
         
-        .PARAMETER Destination
+        .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
         
         .PARAMETER ReportServerUri
@@ -35,7 +35,7 @@ function Write-RsFolderContent
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -Destination /monthlyReports
+            Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -RsFolder /monthlyReports
             
             Description
             -----------
@@ -50,7 +50,7 @@ function Write-RsFolderContent
         [string]
         $Path,
         
-        [Alias('DestinationFolder')]
+        [Alias('DestinationFolder', 'RsFolder')]
         [Parameter(Mandatory = $True)]
         [string]
         $Destination,

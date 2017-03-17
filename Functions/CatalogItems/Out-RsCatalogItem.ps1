@@ -12,7 +12,7 @@ function Out-RsCatalogItem
             This downloads catalog items from a report server to disk.
             Currently supported types to download are reports, datasources, datasets and resources.
         
-        .PARAMETER Path
+        .PARAMETER RsFolder
             Path to catalog item to download.
         
         .PARAMETER Destination
@@ -32,7 +32,7 @@ function Out-RsCatalogItem
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /Report -Destination C:\reports
+            Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -RsFolder /Report -Destination C:\reports
             
             Description
             -----------
@@ -40,7 +40,7 @@ function Out-RsCatalogItem
     #>
     [CmdletBinding()]
     param (
-        [Alias('ItemPath')]
+        [Alias('ItemPath', 'RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $Path,

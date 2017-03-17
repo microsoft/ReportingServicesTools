@@ -15,7 +15,7 @@ function Write-RsCatalogItem
         .PARAMETER Path
             Path to item to upload on disk.
         
-        .PARAMETER Destination
+        .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
         
        .PARAMETER Overwrite
@@ -35,7 +35,7 @@ function Write-RsCatalogItem
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl -Destination /monthlyreports
+            Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl -RsFolder /monthlyreports
             
             Description
             -----------
@@ -47,7 +47,7 @@ function Write-RsCatalogItem
         [string[]]
         $Path,
         
-        [Alias('DestinationFolder')]
+        [Alias('DestinationFolder', 'RsFolder')]
         [Parameter(Mandatory = $True)]
         [string]
         $Destination,
