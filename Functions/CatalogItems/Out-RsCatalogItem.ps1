@@ -62,34 +62,6 @@ function Out-RsCatalogItem
     
     Begin
     {
-        #region Utility Functions
-        function Get-FileExtension
-        {
-            param (
-                [Parameter(Mandatory = $True)]
-                [string]
-                $TypeName
-            )
-            
-            if ($TypeName -eq 'Report')
-            {
-                return '.rdl'
-            }
-            elseif ($TypeName -eq 'DataSource')
-            {
-                return '.rsds'
-            }
-            elseif ($TypeName -eq 'DataSet')
-            {
-                return '.rsd'
-            }
-            else
-            {
-                throw 'Unsupported item type! We only support items which are of type Report, Data Set or Data Source'
-            }
-        }
-        #endregion Utility Functions
-        
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
         $DestinationFullPath = Resolve-Path $Destination

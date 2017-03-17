@@ -68,33 +68,6 @@ function Write-RsCatalogItem
     
     Begin
     {
-        #region Utility Function
-        function Get-ItemType
-        {
-            param (
-                [string]
-                $FileExtension
-            )
-            
-            if ($FileExtension -eq '.rdl')
-            {
-                return 'Report'
-            }
-            elseif ($FileExtension -eq '.rsds')
-            {
-                return 'DataSource'
-            }
-            elseif ($FileExtension -eq '.rsd')
-            {
-                return 'DataSet'
-            }
-            else
-            {
-                throw 'Uploading currently only supports .rdl, .rsds and .rsd files'
-            }
-        }
-        #endregion Utility Function
-        
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
     }
     
