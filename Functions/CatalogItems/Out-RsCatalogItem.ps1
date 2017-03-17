@@ -37,13 +37,22 @@ function Out-RsCatalogItem
             Description
             -----------
             Download catalog item 'Report' to folder 'C:\reports'.
+			
+        .EXAMPLE
+            Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder '/SQL Server Performance Dashboard' | 
+            WHERE Name -Like Wait* | 
+            Out-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Destination c:\SQLReports
+   
+    Description
+    -----------
+    Downloads all catalog items from folder '/SQL Server Performance Dashboard' with a name that starts with 'Wait' to folder 'C:\SQLReports'. 			
     #>
     [CmdletBinding()]
     param (
-        [Alias('ItemPath', 'RsFolder')]
+        [Alias('ItemPath', 'Path')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $Path,
+        $RsFolder,
         
         [ValidateScript({ Test-Path $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
@@ -70,7 +79,7 @@ function Out-RsCatalogItem
     Process
     {
         #region Processing each path passed to it
-        foreach ($item in $Path)
+        foreach ($item in $RsFolder)
         {
             #region Retrieving content from Report Server
             try

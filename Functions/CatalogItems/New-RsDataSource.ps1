@@ -103,10 +103,10 @@ function New-RsDataSource
     [cmdletbinding()]
     param
     (
-        [Alias('Destination', 'ItemPath', 'RsFolder')]
+        [Alias('Destination', 'ItemPath', 'Path')]
         [Parameter(Mandatory = $True)]
         [string]
-        $Path,
+        $RsFolder,
         
         [Parameter(Mandatory = $True)]
         [string]
@@ -201,7 +201,7 @@ function New-RsDataSource
     try
     {
         Write-Verbose "Creating data source..."
-        $Proxy.CreateDataSource($Name, $Path, $Overwrite, $datasource, $null)
+        $Proxy.CreateDataSource($Name, $RsFolder, $Overwrite, $datasource, $null)
         Write-Verbose "Data source created successfully!"
     }
     catch

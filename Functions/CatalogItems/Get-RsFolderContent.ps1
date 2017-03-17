@@ -11,7 +11,7 @@ function Get-RsFolderContent
             List all catalog items under a given path.
         
         .PARAMETER RsFolder
-            Path to folder.
+            Path to folder on SSRS instance.
         
         .PARAMETER Recurse
             Recursively list subfolders with content.
@@ -53,10 +53,10 @@ function Get-RsFolderContent
     
     [cmdletbinding()]
     param(
-        [Alias('ItemPath', 'RsFolder')]
+        [Alias('ItemPath', 'Path')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $Path,
+        $RsFolder,
         
         [switch]
         $Recurse,
@@ -78,7 +78,7 @@ function Get-RsFolderContent
     
     Process
     {
-        foreach ($item in $Path)
+        foreach ($item in $RsFolder)
         {
             try
             {

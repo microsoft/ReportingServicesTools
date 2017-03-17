@@ -53,7 +53,7 @@ function Write-RsFolderContent
         [Alias('DestinationFolder', 'RsFolder')]
         [Parameter(Mandatory = $True)]
         [string]
-        $Destination,
+        $RsFolder,
         
         [string]
         $ReportServerUri,
@@ -65,7 +65,7 @@ function Write-RsFolderContent
         $Proxy
     )
     
-    if ($PSCmdlet.ShouldProcess($Path, "Upload all contents in folder $(if ($Recurse) { "and subfolders " })to $Destination"))
+    if ($PSCmdlet.ShouldProcess($Path, "Upload all contents in folder $(if ($Recurse) { "and subfolders " })to $RsFolder"))
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
@@ -90,13 +90,13 @@ function Write-RsFolderContent
                 $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
                 $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
                 $relativePath = $relativePath.replace("\", "/")
-                if ($Destination -eq "/" -and $relativePath -ne "")
+                if ($RsFolder -eq "/" -and $relativePath -ne "")
                 {
                     $parentFolder = $relativePath
                 }
                 else
                 {
-                    $parentFolder = $Destination + $relativePath
+                    $parentFolder = $RsFolder + $relativePath
                 }
                 
                 Write-Verbose "Creating folder $parentFolder/$($item.Name)"
@@ -118,18 +118,18 @@ function Write-RsFolderContent
                 $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
                 $relativePath = $relativePath.replace("\", "/")
                 
-                if ($Destination -eq "/" -and $relativePath -ne "")
+                if ($RsFolder -eq "/" -and $relativePath -ne "")
                 {
                     $parentFolder = $relativePath
                 }
                 else
                 {
-                    $parentFolder = $Destination + $relativePath
+                    $parentFolder = $RsFolder + $relativePath
                 }
                 
                 try
                 {
-                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder -ErrorAction Stop
+                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder -ErrorAction Stop
                 }
                 catch
                 {

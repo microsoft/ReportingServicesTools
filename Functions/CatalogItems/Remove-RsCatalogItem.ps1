@@ -27,17 +27,28 @@ function Remove-RsCatalogItem
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            PS C:\> Remove-RsCatalogItem -RsFolder '/item'
-    
-            Removes /item from the Report Server
+            Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer -RsFolder /monthlyreports
+   
+            Description
+            -----------
+            Removes the monthlyreports folder, located directly at the root of the SSRS instance, and all objects below it.
+
+        .EXAMPLE
+            Get-RsCatalogItems -ReportServerUri http://localhost/ReportServer_SQL2016 -RsFolder '/SQL Server Performance Dashboard' |
+            Out-GridView -PassThru |
+            Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer_SQL2016
+   
+            Description
+            -----------
+            Gets a list of items from the SQL Server Performance Dashboard folder in a GridView from an SSRS instance names SQL2016 and allows the user to select items to be removed, after clicking "OK", only the items selected will be removed.
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
-        [Alias('ItemPath', 'RsFolder')]
+        [Alias('ItemPath', 'Path')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $Path,
+        $RsFolder,
         
         [string]
         $ReportServerUri,
@@ -56,7 +67,7 @@ function Remove-RsCatalogItem
     
     Process
     {
-        foreach ($item in $Path)
+        foreach ($item in $RsFolder)
         {
             if ($PSCmdlet.ShouldProcess($item, "Delete the catalog item"))
             {

@@ -46,10 +46,10 @@ function Out-RsFolderContent
         [switch]
         $Recurse,
         
-        [Alias('ItemPath', 'RsFolder')]
+        [Alias('ItemPath', 'Path')]
         [Parameter(Mandatory = $True)]
         [string]
-        $Path,
+        $RsFolder,
         
         [ValidateScript({ Test-Path $_ -PathType Container })]
         [Parameter(Mandatory = $True)]
@@ -70,7 +70,7 @@ function Out-RsFolderContent
     
     $GetRsFolderContentParam = @{
         Proxy = $Proxy
-        Path = $Path
+        RsFolder = $RsFolder
         Recurse = $Recurse
         ErrorAction = 'Stop'
     }
@@ -81,7 +81,7 @@ function Out-RsFolderContent
     }
     catch
     {
-        throw (New-Object System.Exception("Failed to retrieve items in '$Path': $($_.Exception.Message)", $_.Exception))
+        throw (New-Object System.Exception("Failed to retrieve items in '$RsFolder': $($_.Exception.Message)", $_.Exception))
     }
     
     $Destination = Resolve-Path $Destination
@@ -91,9 +91,9 @@ function Out-RsFolderContent
         if (($item.TypeName -eq 'Folder') -and $Recurse)
         {
             $relativePath = $item.Path
-            if($Path -ne "/")
+            if($RsFolder -ne "/")
             {
-                $relativePath = Clear-Substring -string $relativePath -substring $Path -position front
+                $relativePath = Clear-Substring -string $relativePath -substring $RsFolder -position front
             }
             $relativePath = $relativePath.Replace("/", "\")
             
@@ -111,15 +111,15 @@ function Out-RsFolderContent
             # We're relying on the fact that the implementation of Get-RsFolderContent will show us the folder before their content, 
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains
             $relativePath = $item.Path
-            if($Path -ne "/")
+            if($RsFolder -ne "/")
             {
-                $relativePath = Clear-Substring -string $relativePath -substring $Path -position front
+                $relativePath = Clear-Substring -string $relativePath -substring $RsFolder -position front
             }
             $relativePath = Clear-Substring -string $relativePath -substring ("/" + $item.Name) -position back
             $relativePath = $relativePath.replace("/", "\")
 
             $folder = $Destination + $relativePath
-            Out-RsCatalogItem -proxy $proxy -Path $item.Path -Destination $folder
+            Out-RsCatalogItem -proxy $proxy -RsFolder $item.Path -Destination $folder
         }
     }
 }
