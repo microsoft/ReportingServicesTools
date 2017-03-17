@@ -96,5 +96,6 @@ function New-RsConfigurationSettingObject
         $getWmiObjectParameters["Credential"] = $Credential
     }
     
-    Get-WmiObject @getWmiObjectParameters
+    $wmiObjects = Get-WmiObject @getWmiObjectParameters
+    return $wmiObjects | Where-Object { $_.InstanceName -eq $ReportServerInstance }
 }
