@@ -2,12 +2,11 @@
 # Licensed under the MIT License (MIT)
 
 Describe "New-RsFolder" {
-    Context "Creat Folder with minimun parameters"{
+    Context "Create Folder with minimun parameters"{
         $folderName = 'SutFolderMinParameters' + [guid]::NewGuid()
-        $folderPath = '/'
-        New-RsFolder -Path $folderPath -FolderName $folderName
+        New-RsFolder -Path / -FolderName $folderName
         $folderList = Get-RsFolderContent -RsFolder /
-        $folderCount = ($folderList | where name -eq $folderName).Count
+        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should be a new folder" {
             $folderCount | Should Be 1
         }
@@ -20,14 +19,14 @@ Describe "New-RsFolder" {
         $folderPath = '/'+ $parentFolderName
         # Search for the folder path existence 
         $folderList = Get-RsFolderContent -RsFolder /
-        $parentfolderCount = ($folderList | where path -eq $folderPath).Count
+        $parentfolderCount = ($folderList | Where-Object path -eq $folderPath).Count
         # Section to test the New-RsFolder
         $subFolderName = 'SutSubFolder' + [guid]::NewGuid()
         New-RsFolder -Path $folderPath -FolderName $subFolderName 
         # Test if the folder was created
         $allFolderList = Get-RsFolderContent -RsFolder / -Recurse
         $subFolderPath = $folderPath + '/' + $subFolderName
-        $subFolderCount = ($allFolderList | where path -eq $subFolderPath).Count
+        $subFolderCount = ($allFolderList | Where-Object path -eq $subFolderPath).Count
         It "Should the parent folder"{
             $parentFolderCount | Should be 1
         }
@@ -45,7 +44,7 @@ Describe "New-RsFolder" {
         New-RsFolder -Path $folderPath -FolderName $folderName -Proxy $proxy
         # Test if the folder was created
         $folderList = Get-RsFolderContent -RsFolder /
-        $folderCount = ($folderList | where name -eq $folderName).Count
+        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should be a new folder with the parameter proxy"{
             $folderCount | Should be 1    
         }
@@ -60,7 +59,7 @@ Describe "New-RsFolder" {
         New-RsFolder -ReportServerUri $folderReportServerUri -Path $folderPath -FolderName $folderName
         # Test if the folder was created
         $folderList = Get-RsFolderContent -RsFolder /
-        $folderCount = ($folderList | where name -eq $folderName).Count
+        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should be a new folder with the parameter ReportServerUri" {
             $folderCount | Should Be 1
         }
@@ -76,7 +75,7 @@ Describe "New-RsFolder" {
         New-RsFolder -ReportServerUri $folderReportServerUri -Path $folderPath -FolderName $folderName -Proxy $proxy
         # Test if the folder was created
         $folderList = Get-RsFolderContent -RsFolder /
-        $folderCount = ($folderList | where name -eq $folderName).Count
+        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should be a new folder with all parameters except credentials" {
             $folderCount | Should Be 1
         }
