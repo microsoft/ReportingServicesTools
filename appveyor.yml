@@ -5,6 +5,8 @@ environment:
     secure: 0PgkUpRd+qAfL0WFe5pFmOE/KasEJY19wogMfkRzk1NFqFqfDGLIU+CPbd1ZoR+1  
   access_token:
     secure: kGlQZapsnS3J41iYVKMP4kqeYcSeFRPI3rXNxl5GwgkcnPiGJxQmU+HO30xaegQq
+  SqlSaPwd: i<3ReportingServices
+
 # Skip on updates to the readme.
 # We can force this by adding [skip ci] or [ci skip] anywhere in commit message
 skip_commits:
@@ -18,12 +20,14 @@ install:
 build: false
 
 before_test:
+- cmd: NET USER rsuser1 "%SqlSaPwd%" /ADD /Y
 - ps: |
     $ErrorActionPreference = 'Stop';
+    [Environment]::SetEnvironmentVariable("RsUser", "$($env:ComputerName)\rsuser1")
     $url = "$($env:downloadUrl)/SQLServer2016-x64-ENU.exe"
     $urlBox = "$($env:downloadUrl)/SQLServer2016-x64-ENU.box"
     #arguments sqlserver needs for the installation 
-    $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine,RS /RSINSTALLMODE=DefaultNativeMode /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`""
+    $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine,RS /RSINSTALLMODE=DefaultNativeMode /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`" /SECURITYMODE=SQL /SAPWD=`"$($env:SqlSaPwd)`""
     $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2016Eval"
     if ((Test-Path $tempDir) -eq $false) { New-Item -ItemType Directory -Path $tempDir}
     $fileFullPath = "$tempDir\SQLServer.exe"
@@ -35,9 +39,13 @@ before_test:
     $extractPath = "$tempDir\SQL2016TEMP"
     Start-Process "$fileFullPath" "/Q /x:`"$extractPath`"" -Wait
     Write-Host "Installing SQL Server..." (Get-Date).DateTime
+    Write-Host "Installation args: $silentArgs"
     $setupPath = "$extractPath\setup.exe"
     Start-Process $setupPath "$silentArgs" -Wait
     Write-Host "Installation completed" (Get-Date).DateTime
+    Write-Host "Importing SQLPS Module..." (Get-Date).DateTime
+    Import-Module "C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\sqlps\sqlps.psd1" -Verbose
+    Write-Host "SQLPS Module imported" (Get-Date).DateTime
 
 test_script:
 - ps: |
