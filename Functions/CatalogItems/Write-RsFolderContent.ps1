@@ -18,7 +18,7 @@ function Write-RsFolderContent
         .PARAMETER Path
             Path to folder which contains items to upload on disk.
         
-        .PARAMETER Destination
+        .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
         
         .PARAMETER ReportServerUri
@@ -35,7 +35,7 @@ function Write-RsFolderContent
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -Destination /monthlyReports
+            Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\monthlyreports -RsFolder /monthlyReports
             
             Description
             -----------
@@ -53,7 +53,7 @@ function Write-RsFolderContent
         [Alias('DestinationFolder')]
         [Parameter(Mandatory = $True)]
         [string]
-        $Destination,
+        $RsFolder,
         
         [string]
         $ReportServerUri,
@@ -65,7 +65,7 @@ function Write-RsFolderContent
         $Proxy
     )
     
-    if ($PSCmdlet.ShouldProcess($Path, "Upload all contents in folder $(if ($Recurse) { "and subfolders " })to $Destination"))
+    if ($PSCmdlet.ShouldProcess($Path, "Upload all contents in folder $(if ($Recurse) { "and subfolders " })to $RsFolder"))
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
@@ -90,13 +90,13 @@ function Write-RsFolderContent
                 $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
                 $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
                 $relativePath = $relativePath.replace("\", "/")
-                if ($Destination -eq "/" -and $relativePath -ne "")
+                if ($RsFolder -eq "/" -and $relativePath -ne "")
                 {
                     $parentFolder = $relativePath
                 }
                 else
                 {
-                    $parentFolder = $Destination + $relativePath
+                    $parentFolder = $RsFolder + $relativePath
                 }
                 
                 Write-Verbose "Creating folder $parentFolder/$($item.Name)"
@@ -118,18 +118,18 @@ function Write-RsFolderContent
                 $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
                 $relativePath = $relativePath.replace("\", "/")
                 
-                if ($Destination -eq "/" -and $relativePath -ne "")
+                if ($RsFolder -eq "/" -and $relativePath -ne "")
                 {
                     $parentFolder = $relativePath
                 }
                 else
                 {
-                    $parentFolder = $Destination + $relativePath
+                    $parentFolder = $RsFolder + $relativePath
                 }
                 
                 try
                 {
-                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -Destination $parentFolder -ErrorAction Stop
+                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder -ErrorAction Stop
                 }
                 catch
                 {

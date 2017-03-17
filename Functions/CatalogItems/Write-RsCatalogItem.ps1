@@ -15,7 +15,7 @@ function Write-RsCatalogItem
         .PARAMETER Path
             Path to item to upload on disk.
         
-        .PARAMETER Destination
+        .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
         
        .PARAMETER Overwrite
@@ -35,7 +35,7 @@ function Write-RsCatalogItem
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl -Destination /monthlyreports
+            Write-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\reports\monthlyreport.rdl -RsFolder /monthlyreports
             
             Description
             -----------
@@ -50,7 +50,7 @@ function Write-RsCatalogItem
         [Alias('DestinationFolder')]
         [Parameter(Mandatory = $True)]
         [string]
-        $Destination,
+        $RsFolder,
         
         [Alias('Override')]
         [switch]
@@ -114,17 +114,17 @@ function Write-RsCatalogItem
             $itemName = $item.BaseName
             
             
-            if ($Destination -eq "/")
+            if ($RsFolder -eq "/")
             {
                 Write-Verbose "Uploading $EntirePath to /$($itemName)"
             }
             else
             {
-                Write-Verbose "Uploading $EntirePath to $Destination/$($itemName)"
+                Write-Verbose "Uploading $EntirePath to $RsFolder/$($itemName)"
             }
             #endregion Manage Paths
             
-            if ($PSCmdlet.ShouldProcess("$itemName", "Upload from $EntirePath to Report Server at $Destination"))
+            if ($PSCmdlet.ShouldProcess("$itemName", "Upload from $EntirePath to Report Server at $RsFolder"))
             {
                 #region Upload DataSource
                 if ($itemType -eq 'DataSource')
@@ -144,7 +144,7 @@ function Write-RsCatalogItem
                     
                     $NewRsDataSourceParam = @{
                         Proxy = $Proxy
-                        Destination = $Destination
+                        RsFolder = $RsFolder
                         Name = $itemName
                         Extension = $content.DataSourceDefinition.Extension
                         ConnectionString = $content.DataSourceDefinition.ConnectString
@@ -164,7 +164,7 @@ function Write-RsCatalogItem
                     $warnings = $null
                     try
                     {
-                        $Proxy.CreateCatalogItem($itemType, $itemName, $Destination, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null
+                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null
                     }
                     catch
                     {
@@ -173,7 +173,7 @@ function Write-RsCatalogItem
                 }
                 #endregion Upload other stuff
                 
-                Write-Verbose "$EntirePath was uploaded to $Destination successfully!"
+                Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
             }
         }
     }

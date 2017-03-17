@@ -12,7 +12,7 @@ function Out-RsCatalogItem
             This downloads catalog items from a report server to disk.
             Currently supported types to download are reports, datasources, datasets and resources.
         
-        .PARAMETER Path
+        .PARAMETER RsFolder
             Path to catalog item to download.
         
         .PARAMETER Destination
@@ -32,18 +32,27 @@ function Out-RsCatalogItem
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /Report -Destination C:\reports
+            Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -RsFolder /Report -Destination C:\reports
             
             Description
             -----------
             Download catalog item 'Report' to folder 'C:\reports'.
+			
+        .EXAMPLE
+            Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder '/SQL Server Performance Dashboard' | 
+            WHERE Name -Like Wait* | 
+            Out-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Destination c:\SQLReports
+   
+    Description
+    -----------
+    Downloads all catalog items from folder '/SQL Server Performance Dashboard' with a name that starts with 'Wait' to folder 'C:\SQLReports'. 			
     #>
     [CmdletBinding()]
     param (
-        [Alias('ItemPath')]
+        [Alias('ItemPath', 'Path')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $Path,
+        $RsFolder,
         
         [ValidateScript({ Test-Path $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
@@ -98,7 +107,7 @@ function Out-RsCatalogItem
     Process
     {
         #region Processing each path passed to it
-        foreach ($item in $Path)
+        foreach ($item in $RsFolder)
         {
             #region Retrieving content from Report Server
             try
