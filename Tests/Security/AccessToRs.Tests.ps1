@@ -13,7 +13,7 @@ function Get-RsSystemPolicies() {
 Describe "Grant and Revoke Access To Rs" {
     Context "Granting System User permission to test user" {
         $user = Get-TestUser
-        Grant-AccessToRs -UserOrGroupName $user -RoleName 'System User' -Verbose
+        Grant-AccessToRs -UserOrGroupName $user -RoleName 'System User' -Confirm:$false -Verbose
 
         It "Should assign System User access to test user" {
             $policies = Get-RsSystemPolicies
@@ -28,7 +28,7 @@ Describe "Grant and Revoke Access To Rs" {
 
     Context "Revoking all access to test user" {
         $user = Get-TestUser
-        Revoke-AccessToRs -UserOrGroupName $user -Verbose
+        Revoke-AccessToRs -UserOrGroupName $user -Confirm:$false -Verbose
     
         It "Should remove all access for test user" {
             $policies = Get-RsSystemPolicies
@@ -40,7 +40,7 @@ Describe "Grant and Revoke Access To Rs" {
 
     Context "Granting System Administrator permission to test user" {
         $user = Get-TestUser
-        Grant-AccessToRs -UserOrGroupName $user -RoleName 'System Administrator' -Verbose
+        Grant-AccessToRs -UserOrGroupName $user -RoleName 'System Administrator' -Confirm:$false -Verbose
 
         It "Should assign System Administrator access to test user" {
             $policies = Get-RsSystemPolicies

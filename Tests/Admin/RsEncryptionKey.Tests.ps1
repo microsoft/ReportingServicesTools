@@ -9,8 +9,8 @@ Describe "RsEncryptionKey" {
         $keyPassword = 'RS4Ever!'
         $currentDir = (Resolve-Path '.').Path
         $keyPath = Join-Path $currentDir -ChildPath 'key.snk'
-        Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Verbose
-        Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Verbose
+        Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
+        Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
 
         It "Should allow access of encrypted content post restore" {
             $dataSource = Get-RsDataSource -DataSourcePath "/$name"

@@ -5,7 +5,12 @@ function Get-DatabaseName() {
 
 function Get-CredentialType() {
     $wmiObject = New-RsConfigurationSettingObject -SqlServerInstance MSSQLSERVER
-    return Get-DatabaseCredentialType -DatabaseLogonType $wmiObject.DatabaseLogonType
+    switch ($wmiObject.DatabaseLogonType) {
+        0 { return 'Windows' }
+        1 { return 'SQL' }
+        2 { return 'ServiceAccount' }
+        default { throw 'Invalid Credential Type!' }
+    }
 }
 
 function Get-SaCredentials() {
@@ -21,7 +26,7 @@ Describe "Set-RsDatabase" {
         $databaseServerName = 'localhost'
         $databaseName = 'ReportServer' + [System.DateTime]::Now.Ticks
         $credentialType = 'ServiceAccount'
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Verbose
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Confirm:$false -Verbose
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
@@ -34,7 +39,7 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer' + [System.DateTime]::Now.Ticks
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Verbose
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Confirm:$false -Verbose
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
@@ -47,7 +52,7 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer'
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Verbose
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Confirm:$false -Verbose
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
@@ -59,7 +64,7 @@ Describe "Set-RsDatabase" {
         $databaseServerName = 'localhost'
         $databaseName = 'ReportServer'
         $credentialType = 'ServiceAccount'
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Verbose
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Confirm:$false -Verbose
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
