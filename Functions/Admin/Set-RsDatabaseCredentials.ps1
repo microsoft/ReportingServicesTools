@@ -54,7 +54,7 @@ function Set-RsDatabaseCredentials
             -----------
             This command will configure Reporting Services to connect to the database using Service Account credentials.
     #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory = $true)]
         [Alias('Authentication')]
