@@ -114,9 +114,11 @@ function Restore-RSEncryptionKey
             $service = Get-Service -Name $reportServerService -ComputerName $rsWmiObject.PSComputerName -ErrorAction Stop
             Write-Verbose "Stopping Reporting Services Service..."
             $service.Stop()
+            $service.WaitForStatus([System.ServiceProcess.ServiceControllerStatus]::Stopped)
             
             Write-Verbose "Starting Reporting Services Service..."
             $service.Start()
+            $service.WaitForStatus([System.ServiceProcess.ServiceControllerStatus]::Running)
         }
         catch
         {
