@@ -47,7 +47,7 @@ function Write-RsCatalogItem
         [string[]]
         $Path,
         
-        [Alias('DestinationFolder', 'RsFolder')]
+        [Alias('DestinationFolder', 'Path')]
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
