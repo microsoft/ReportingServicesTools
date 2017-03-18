@@ -91,7 +91,7 @@ function Set-RsDatabaseCredentials
         $password = $null
         if ($DatabaseCredentialType -like 'serviceaccount')
         {
-            $username = $wmi.WindowsServiceIdentityActual
+            $username = $rsWmiObject.WindowsServiceIdentityActual
             $password = ''
         }
         
@@ -108,13 +108,12 @@ function Set-RsDatabaseCredentials
         
         $databaseName = $rsWmiObject.DatabaseName
         $databaseServerName = $rsWmiObject.DatabaseServerName
-        $isWindowsAccount = ($DatabaseCredentialType -like "Windows") -or ($DatabaseCredentialType -like "ServiceAccount")
         
         #region Configuring Database rights
         # Step 1 - Generate database rights script
         Write-Verbose "Generating database rights script..."
         $isWindowsAccount = ($DatabaseCredentialType -like "Windows") -or ($DatabaseCredentialType -like "ServiceAccount")
-        $result = $rsWmiObject.GenerateDatabaseRightsScript($username, $Name, $IsRemoteDatabaseServer, $isWindowsAccount)
+        $result = $rsWmiObject.GenerateDatabaseRightsScript($username, $databaseName, $IsRemoteDatabaseServer, $isWindowsAccount)
         if ($result.HRESULT -ne 0)
         {
             Write-Verbose "Generating database rights script... Failed!"
@@ -143,7 +142,7 @@ function Set-RsDatabaseCredentials
         #region Update Reporting Services database configuration
         # Step 3 - Update Reporting Services to connect to new database now
         Write-Verbose "Updating Reporting Services to connect to new database..."
-        $result = $rsWmiObject.SetDatabaseConnection($DatabaseServerName, $Name, $DatabaseCredentialType.Value__, $username, $password)
+        $result = $rsWmiObject.SetDatabaseConnection($DatabaseServerName, $databaseName, $DatabaseCredentialType.Value__, $username, $password)
         if ($result.HRESULT -ne 0)
         {
             Write-Verbose "Updating Reporting Services to connect to new database... Failed!"
