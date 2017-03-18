@@ -11,45 +11,53 @@ function Get-RsSystemPolicies() {
 }
 
 Describe "Grant and Revoke Access To Rs" {
-    Context "Granting System User permission to test user" {
-        $user = Get-TestUser
-        Grant-AccessToRs -UserOrGroupName $user -RoleName 'System User' -Confirm:$false -Verbose
+    $user = Get-TestUser
 
+    Context "Granting permission to test user" {
         It "Should assign System User access to test user" {
+            $role = 'System User'
+            Grant-AccessToRs -UserOrGroupName $user -RoleName $role -Confirm:$false -Verbose
+
             $policies = Get-RsSystemPolicies
             
             $userPolicy = $policies | Where-Object { $_.GroupUserName -eq $user }
             $userPolicy | Should Not BeNullOrEmpty
             
-            $role = $userPolicy.Roles | Where-Object { $_.Name -eq 'System User' }
+            $userPolicy.Roles.Length | Should Be 1
+            $role = $userPolicy.Roles | Where-Object { $_.Name -eq $role }
             $role | Should Not BeNullOrEmpty
+        }
+
+        It "Should assign System Administrator access to test user" {
+            $role = 'System Administrator'
+            Grant-AccessToRs -UserOrGroupName $user -RoleName $role -Confirm:$false -Verbose
+
+            $policies = Get-RsSystemPolicies
+            
+            $userPolicy = $policies | Where-Object { $_.GroupUserName -eq $user }
+            $userPolicy | Should Not BeNullOrEmpty
+            
+            $userPolicy.Roles.Length | Should Be 1
+            $role = $userPolicy.Roles | Where-Object { $_.Name -eq $role }
+            $role | Should Not BeNullOrEmpty
+        }
+
+        AfterEach {
+            Revoke-AccessToRs -UserOrGroupName $user -Confirm:$false -Verbose
         }
     }
 
-    Context "Revoking all access to test user" {
-        $user = Get-TestUser
-        Revoke-AccessToRs -UserOrGroupName $user -Confirm:$false -Verbose
-    
+    Context "Revoking access from test user" {
+        $role = 'System Administrator'
+        Grant-AccessToRs -UserOrGroupName $user -RoleName $role -Confirm:$false -Verbose
+
         It "Should remove all access for test user" {
+            Revoke-AccessToRs -UserOrGroupName $user -Confirm:$false -Verbose
+
             $policies = Get-RsSystemPolicies
             
             $userPolicy = $policies | Where-Object { $_.GroupUserName -eq $user }
             $userPolicy | Should BeNullOrEmpty
-        }
-    }
-
-    Context "Granting System Administrator permission to test user" {
-        $user = Get-TestUser
-        Grant-AccessToRs -UserOrGroupName $user -RoleName 'System Administrator' -Confirm:$false -Verbose
-
-        It "Should assign System Administrator access to test user" {
-            $policies = Get-RsSystemPolicies
-            
-            $userPolicy = $policies | Where-Object { $_.GroupUserName -eq $user }
-            $userPolicy | Should Not BeNullOrEmpty
-            
-            $role = $userPolicy.Roles | Where-Object { $_.Name -eq 'System Administrator' }
-            $role | Should Not BeNullOrEmpty
         }
     }
 }

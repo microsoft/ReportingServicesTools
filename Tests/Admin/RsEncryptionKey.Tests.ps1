@@ -18,5 +18,9 @@ Describe "RsEncryptionKey" {
             $dataSource.ConnectString | Should be $connectionString
             $dataSource.CredentialRetrieval | Should be $credentialRetrieval
         }
+
+        AfterEach {
+            Remove-RsCatalogItem -Path "/$name"
+        }
     }
 }
