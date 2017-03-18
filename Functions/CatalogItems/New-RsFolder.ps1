@@ -10,7 +10,7 @@ function New-RsFolder
         .DESCRIPTION
             This script creates a new folder in the Report Server
 
-        .PARAMETER Path
+        .PARAMETER RsFolder
             Specify the location where the folder should be created 
 
         .PARAMETER FolderName
@@ -30,16 +30,16 @@ function New-RsFolder
             Useful when repeatedly having to connect to multiple different Report Server.
 
         .EXAMPLE 
-            New-RsFolder -Path '/' -FolderName 'My new folder'
+            New-RsFolder -RsFolder '/' -FolderName 'My new folder'
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and create a new folder 'My new folder' at the root of the SSRS instance.
 
         .EXAMPLE 
-            New-RsFolder -ReportServerUri 'http://remoteServer/reportserver' -Path '/existingfolder' -FolderName 'My new sub-folder'	
+            New-RsFolder -ReportServerUri 'http://remoteServer/reportserver' -RsFolder '/existingfolder' -FolderName 'My new sub-folder'
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://remoteServer/reportserver using current user's credentials and create a new folder 'My new sub-folder' at the folder existingfolder in the root.	
+            This command will establish a connection to the Report Server located at http://remoteServer/reportserver using current user's credentials and create a new folder 'My new sub-folder' at the folder existingfolder in the root.
 
     #>
     
@@ -47,9 +47,9 @@ function New-RsFolder
     param
     (
         [Parameter(Mandatory = $True)]
-        [Alias('ItemPath')]
+        [Alias('ItemPath','Path')]
         [string]
-        $Path,
+        $RsFolder,
         
         [Parameter(Mandatory = $True)]
         [Alias('Name')]
@@ -71,7 +71,7 @@ function New-RsFolder
     try
     {
         Write-Verbose "Creating folder $($FolderName)..."
-        $Proxy.CreateFolder($FolderName, $Path, $null) | Out-Null
+        $Proxy.CreateFolder($FolderName, $RsFolder, $null) | Out-Null
         Write-Verbose "Folder $($FolderName) created successfully!"
     }
     catch
