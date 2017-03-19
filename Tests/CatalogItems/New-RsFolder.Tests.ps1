@@ -12,6 +12,10 @@ Describe "New-RsFolder" {
             $folderCount | Should Be 1
         }
 
+        BeforeEach {
+            $itemsToClean.Clear()
+        }
+
         AfterEach {
             Remove-RsCatalogItem -Path $itemsToClean
         }
