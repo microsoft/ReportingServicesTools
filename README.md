@@ -87,9 +87,25 @@ After you clone the repo you can make local changes and install them in your loc
     Remove-Module ReportingServicesTools
     Import-Module .\ReportingServicesTools.psd1
 
+## Test
+
+For running tests locally you need a local default instance of  SQL Server Reporting Services and Pester
+
+To install Pester execute
+
+    Install-Module -Name Pester
+
+To excute the tests run (this will execute the CatalogItems test only which doesn't change the local Reporting Services Installation)
+    
+    .\Test.ps1
+
 ## Style Guidelines
 
 If you have any scripts you would like to share, we request you to please format your scripts according to the guidelines created by the team behind the DSC Resource Kit. (https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md) and the PowerShell verbs https://msdn.microsoft.com/en-us/library/ms714428(v=vs.85).aspx
+
+## Contributions
+
+For contributions please provide the minimun possible increment per Pull Request so it can reviewed and merged quickly.
 
 ## Code of Conduct
 
