@@ -2,20 +2,19 @@
 # Licensed under the MIT License (MIT)
 
 
-function Set-RsDataSourcePassword
+function Get-RsItemReference
 {
     <#
         .SYNOPSIS
-            Overwrites the password on a Datasource.
+            List all item references associated with a report or a dataset.
         
         .DESCRIPTION
-            Overwrites the password on a Datasource.
+            List all item references associated with a report or a dataset.
+            For a paginated report, it lists all references to shared datasets and shared data sources.
+            For a dataset, it lists all references to shared data sources.
         
         .PARAMETER Path
-            Path to DataSource.
-        
-        .PARAMETER Password
-            Password to set.
+            Path to Item.
         
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -31,22 +30,17 @@ function Set-RsDataSourcePassword
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Set-RsDataSourcePassword -ReportServerUri 'http://localhost/reportserver_sql2012' -Path /DataSource1 -Password SuperSecretPassword
+            Get-RsItemReference -Path /Report1
             
             Description
             -----------
-            Sets the password for the datasource /DataSource1 to 'SuperSecretPassword'
+            List all item references associated with report /Report1
     #>
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
         [Alias('ItemPath')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [string[]] 
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
+        [string[]]
         $Path,
-
-        [Parameter(Mandatory = $true)]
-        [string]
-        $Password,
         
         [string]
         $ReportServerUri,
@@ -65,30 +59,32 @@ function Set-RsDataSourcePassword
     
     Process
     {
-        foreach ($item in $Path)
+        #region Process each path
+        foreach ($Item in $Path)
         {
-            if ($PSCmdlet.ShouldProcess($item, "Overwrite the password"))
+            $itemType = $Proxy.GetItemType($Item)
+            
+            switch ($itemType)
             {
-                try
+                "Report"
                 {
-                    $dataSourceContent = $Proxy.GetDataSourceContents($item)
+                    return ($Proxy.GetItemReferences($Item, "DataSet") + $Proxy.GetItemReferences($Item, "DataSource")) | Add-Member -Name "ItemType" -Value $itemType -MemberType NoteProperty -PassThru
                 }
-                catch
+                "DataSet"
                 {
-                    throw (New-Object System.Exception("Failed to retrieve Datasource content: $($_.Exception.Message)", $_.Exception))
+                    return $Proxy.GetItemReferences($Item, "DataSource") | Add-Member -Name "ItemType" -Value $itemType -MemberType NoteProperty -PassThru
                 }
-                $dataSourceContent.Password = $Password
-                Write-Verbose "Setting password of datasource $item"
-                try
+                "Unknown"
                 {
-                    $Proxy.SetDataSourceContents($item, $dataSourceContent)
+                    throw "Cannot find item with path $Item"
                 }
-                catch
+                default
                 {
-                    throw (New-Object System.Exception("Failed to update Datasource content: $($_.Exception.Message)", $_.Exception))
+                    throw "ItemType '$itemType' is not supported by this method."
                 }
             }
         }
+        #endregion Process each path
     }
 }
-
+New-Alias -Name "Get-RsItemReferences" -Value Get-RsItemReference -Scope Global
