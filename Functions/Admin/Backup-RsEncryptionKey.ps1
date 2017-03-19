@@ -82,8 +82,6 @@ function Backup-RsEncryptionKey
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
         
-        $KeyPath = Resolve-Path $KeyPath
-        
         Write-Verbose "Retrieving encryption key..."
         $encryptionKeyResult = $rsWmiObject.BackupEncryptionKey($Password)
         
