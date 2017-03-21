@@ -1,0 +1,1 @@
+Invoke-Pester -Path .\Tests\CatalogItems
