@@ -6,6 +6,7 @@ Describe "Get-RsFolderContent" {
         # Create a folder
         $folderName = 'SutGetFolderReportServerUriParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
+        $folderPath = '/' + $folderName
         # Declare parameter ReportServerUri  
         $reportServerUri = 'http://localhost/reportserver'
         # Test if the folder can be found
@@ -14,12 +15,15 @@ Describe "Get-RsFolderContent" {
         It "Should found a folder" {
             $folderCount | Should Be 1
         }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath
     }
 
     Context "Get folder with proxy parameter"{
         # Create a folder
         $folderName = 'SutGetFolderProxyParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
+        $folderPath = '/' + $folderName
         # Declare parameter proxy
         $proxy = New-RsWebServiceProxy 
         # Test if the folder can be found
@@ -27,13 +31,16 @@ Describe "Get-RsFolderContent" {
         $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should found a folder" {
             $folderCount | Should Be 1
-        }   
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath   
     }
 
     Context "Get folder with Proxy and ReportServerUri parameter"{
         # Create a folder
         $folderName = 'SutGetFolderProxyAndReportServerUriParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
+        $folderPath = '/' + $folderName
         # Declare parameter proxy and ReportServerUri 
         $proxy = New-RsWebServiceProxy 
         $reportServerUri = 'http://localhost/reportserver'
@@ -42,7 +49,9 @@ Describe "Get-RsFolderContent" {
         $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should found a folder" {
             $folderCount | Should Be 1
-        }   
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath   
     }
 
     Context "Get folder inside 4 folders"{
@@ -69,6 +78,8 @@ Describe "Get-RsFolderContent" {
         It "Should found 4 subfolders" {
             $folderCount | Should Be 1
             $folderList.Count | Should be 4
-        }   
+        }
+         # Removing folders used for testing
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $rootFolderPath
     }
 }
