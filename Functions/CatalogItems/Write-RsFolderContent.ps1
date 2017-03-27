@@ -50,7 +50,7 @@ function Write-RsFolderContent
         [string]
         $Path,
         
-        [Alias('DestinationFolder', 'RsFolder')]
+        [Alias('DestinationFolder')]
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
