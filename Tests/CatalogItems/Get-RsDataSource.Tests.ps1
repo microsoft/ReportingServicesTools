@@ -22,7 +22,7 @@ Describe "Get-RsDataSource" {
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
-        # Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath
     }
 
     Context "Get RsDataSource with Proxy parameter"{
@@ -38,11 +38,11 @@ Describe "Get-RsDataSource" {
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
-        # Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath
     }
 
     Context "Get RsDataSource with Proxy y ReportServerUri parameters"{
-        $dataSourceName = 'SutGetDataSourceProxy' + [guid]::NewGuid()
+        $dataSourceName = 'SutGetDataSourceProxyAndReporServerUri' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
         $credentialRetrieval = 'None'
         # Parameters to get the RsDataSource
@@ -56,6 +56,6 @@ Describe "Get-RsDataSource" {
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
-        # Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath
     }
 }
