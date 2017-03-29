@@ -3,18 +3,20 @@
 
 Describe "Write-RsFolderContent" {
     Context "Write-RsFolderContent with min parameters"{
-        # Create a local folder to upload
-        $localFolderName = 'SutTestWrite_RsFolderContent' + [guid]::NewGuid()
-        $localPathFolder = './' + $localFolderName 
+        # First Local Folder
+        $localFolderName = 'SutLocalWrite_RsFolderContent' + [guid]::NewGuid()
+        $localPathFolder = (Get-Item -Path ".\" -Verbose).FullName + '\' + $localFolderName + '\' 
         New-Item -Path '.' -Name $localFolderName  -ItemType "directory"
-        $rsFolderName = 'SutWrite-RsFolderContentMinParameters' + [guid]::NewGuid()
-        $rsFolderPath = '/' + $rsFolderName 
-        $folderInsideRsFolderPath = $rsFolderPath + '/' + $localFolderName 
-        New-RsFolder -Path / -FolderName $rsFolderName
-        Write-RsFolderContent -Path $localPathFolder -RsFolder $rsFolderName
-        $foundFolder = Get-RsFolderContent -RsFolder / | Where-Object path -eq $folderInsideRsFolderPath
+        # RsFolder
+        #$rsFolderName = 'SutWrite-RsFolderContentMinParameters' + [guid]::NewGuid()
+        #$rsFolderPath = '/' + $rsFolderName 
+        #New-RsFolder -Path / -FolderName $rsFolderName
+        $contentRsPath =  '/' + $localFolderName 
+        Write-RsFolderContent -Path $localPathFolder -RsFolder /
+        Get-RsFolderContent -RsFolder / -Recurse
+        $foundFolder = (Get-RsFolderContent -RsFolder / ) | Where-Object path -eq $contentRsPath
         It "Should write a local folder in an RSFolder" {
-            
+            $foundFolder.Count | Should Be 1 
         }
         # Removing folders used for testing
         #Remove-RsCatalogItem -RsFolder $rsFolderPath
