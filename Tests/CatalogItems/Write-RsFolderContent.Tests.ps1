@@ -3,6 +3,9 @@
 
 Describe "Write-RsFolderContent" {
     Context "Write-RsFolderContent with min parameters"{
+
+
+        
         # First Local Folder
         #$localFolderName = 'SutLocalWrite_RsFolderContent' + [guid]::NewGuid()
         #$localPathFolder = (Get-Item -Path ".\" -Verbose).FullName + '\' + $localFolderName + '\' 
