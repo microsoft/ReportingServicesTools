@@ -29,7 +29,22 @@ Describe "Write-RsFolderContent" {
         }
 
         It "Should upload a local database in Report Server" {
+               
+        #      $dataSourceName = 'SutOutRsFolderContentDataSourceMinParam' + [guid]::NewGuid()
+        #     $extension = 'SQL'
+        #     $credentialRetrieval = 'None'
+        #     New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
+        #     $dataSourcePath = '/' + $dataSourceName
+        #     $currentLocalPath = (Get-Item -Path ".\" -Verbose).FullName
+        #     Out-RsCatalogItem -RsFolder $dataSourcePath -Destination $currentLocalPath
+        #     $localDataSourceFile = $dataSourceName + '.rsds'
+        #     $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
+        #     Get-Item $localDataSourcePath
 
+        #     It "Should download a RsDataSource from Reporting Services with min parameters to a local folder" {
+        #     (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
+        # }
+           
             $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
             New-RsFolder -Path / -FolderName $folderName
             $folderPath = '/' + $folderName
