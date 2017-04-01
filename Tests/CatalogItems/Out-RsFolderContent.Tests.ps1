@@ -3,9 +3,7 @@
 
 Describe "Out-RsFolderContent" {
     Context "Out-RsFolderContent with min parameters"{
-
-        It "Should download a RsDataSource from Reporting Services with min parameters to a local folder" {
-            
+       
             $dataSourceName = 'SutOutRsFolderContentDataSourceMinParam' + [guid]::NewGuid()
             $extension = 'SQL'
             $credentialRetrieval = 'None'
@@ -17,17 +15,15 @@ Describe "Out-RsFolderContent" {
             $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
             Get-Item $localDataSourcePath
 
+            It "Should download a RsDataSource from Reporting Services with min parameters to a local folder" {
             (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
-
+            }
              # Removing folders used for testing
             Remove-RsCatalogItem -RsFolder $dataSourcePath
             Remove-Item  $localDataSourcePath
-        }
     }
 
     Context "Out-RsFolderContent with ReportServerUri Parameter"{
-        
-        It "Should download a RsDataSource from Reporting Services with ReportServerUri to a local folder" {
             
             $dataSourceName = 'SutOutRsFolderContentDataSourceRsUriParam' + [guid]::NewGuid()
             $extension = 'SQL'
@@ -41,18 +37,15 @@ Describe "Out-RsFolderContent" {
             $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
             Get-Item $localDataSourcePath
 
+            It "Should download a RsDataSource from Reporting Services with ReportServerUri to a local folder" {
             (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
-
+            }
             # Removing folders used for testing
             Remove-RsCatalogItem -RsFolder $dataSourcePath
             Remove-Item  $localDataSourcePath
-        }
-        
     }
 
     Context "Out-RsFolderContent with Proxy Parameter"{
-        
-        It "Should download a RsDataSource from Reporting Services with Proxy parameters" {
             
             $dataSourceName = 'SutOutRsFolderContentDataSourceProxyParam' + [guid]::NewGuid()
             $extension = 'SQL'
@@ -66,18 +59,16 @@ Describe "Out-RsFolderContent" {
             $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
             Get-Item $localDataSourcePath
 
-            # Test if the downloaded datasource is found in the local folder
+             It "Should download a RsDataSource from Reporting Services with Proxy parameters" {
             (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
-
+             }
              # Removing folders used for testing
             Remove-RsCatalogItem -RsFolder $dataSourcePath
-            Remove-Item  $localDataSourcePath
-        }  
+            Remove-Item  $localDataSourcePath  
     }
 
      Context "Out-RsFolderContent with Proxy and Report ServerUri Parameter"{
-        
-        It "Should download a RsDataSource from Reporting Services with Proxy and ReportServerUri parameter" {
+
             $dataSourceName = 'SutOutRsFolderContentDataSourceAllParam' + [guid]::NewGuid()
             $extension = 'SQL'
             $credentialRetrieval = 'None'
@@ -91,13 +82,12 @@ Describe "Out-RsFolderContent" {
             $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
             Get-Item $localDataSourcePath
 
-            # Test if the downloaded datasource is found in the local folder
+            It "Should download a RsDataSource from Reporting Services with Proxy and ReportServerUri parameter" {
             (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
-
+            }
             # Removing folders used for testing
             Remove-RsCatalogItem -RsFolder $dataSourcePath
             Remove-Item  $localDataSourcePath
-        }
         
     }
 
