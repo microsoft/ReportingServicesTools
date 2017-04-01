@@ -3,19 +3,21 @@
 
 Describe "Out-RsFolderContent" {
     Context "Out-RsFolderContent with min parameters"{
-        $dataSourceName = 'SutDataSourceMinParameters' + [guid]::NewGuid()
+        $dataSourceName = 'SutOutRsFolderContentDataSourceMin' + [guid]::NewGuid()
         $extension = 'SQL'
         $credentialRetrieval = 'None'
         $dataSourcePath = '/' + $dataSourceName
         New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
-
-        #$contentRsPath =  '/' + $localFolderName 
+        $currentLocalPath = (Get-Item -Path ".\" -Verbose).FullName
         Out-RsCatalogItem -RsFolder $dataSourcePath -Destination $currentLocalPath
-        It "Should write a local folder in an RSFolder" {
-            $foundFolder.Count | Should Be 1 
+        $localDataSourceFile = $dataSourceName + '.rsds'
+        $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
+        Get-Item $localDataSourcePath
+        It "Should download a RsDataSource from Reporting Services with min parameters" {
+            (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
         }
         # Removing folders used for testing
-        #Remove-RsCatalogItem -RsFolder $rsFolderPath
-        #Remove-Item $localPathFolder
+        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-Item  $localDataSourcePath
     }
 }
