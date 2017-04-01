@@ -11,18 +11,39 @@ Describe "Write-RsFolderContent" {
         #$rsFolderName = 'SutWrite-RsFolderContentMinParameters' + [guid]::NewGuid()
         #$rsFolderPath = '/' + $rsFolderName 
         #New-RsFolder -Path / -FolderName $rsFolderName
-        $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
-        New-RsFolder -Path / -FolderName $folderName
-        $folderPath = '/' + $folderName
-        $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
-        $rsReportPath = $folderPath + '/' + $reportName
-        $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
+        
         It "Should upload a local report in Report Server" {
+
+            $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
+            New-RsFolder -Path / -FolderName $folderName
+            $folderPath = '/' + $folderName
+            $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
+            Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
+            $rsReportPath = $folderPath + '/' + $reportName
+            $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
+
             $uploadedReport.path | Should Be $rsReportPath
+            
+            # Removing folders used for testing
+            Remove-RsCatalogItem -RsFolder $folderPath
         }
-        # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+
+        It "Should upload a local database in Report Server" {
+
+            $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
+            New-RsFolder -Path / -FolderName $folderName
+            $folderPath = '/' + $folderName
+            $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
+            Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
+            $rsReportPath = $folderPath + '/' + $reportName
+            $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
+
+            $uploadedReport.path | Should Be $rsReportPath
+            
+            # Removing folders used for testing
+            Remove-RsCatalogItem -RsFolder $folderPath
+        }
+        
         #Remove-Item $localPathFolder
     }
 
