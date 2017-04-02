@@ -3,8 +3,8 @@
 
 Function Get-ExistingDataExtension
 {
-        $proxy = New-RsWebServiceProxy
-        return $proxy.ListExtensions("Data")[0].Name
+    $proxy = New-RsWebServiceProxy
+    return $proxy.ListExtensions("Data")[0].Name
 }
 
 Describe "Get-RsDataSource" { 
