@@ -2,110 +2,76 @@
 # Licensed under the MIT License (MIT)
 
 Describe "Write-RsFolderContent" {
+
     Context "Write-RsFolderContent with min parameters"{
-        # First Local Folder
-        #$localFolderName = 'SutLocalWrite_RsFolderContent' + [guid]::NewGuid()
-        #$localPathFolder = (Get-Item -Path ".\" -Verbose).FullName + '\' + $localFolderName + '\' 
-        #New-Item -Path '.' -Name $localFolderName  -ItemType "directory"
-        # RsFolder
-        #$rsFolderName = 'SutWrite-RsFolderContentMinParameters' + [guid]::NewGuid()
-        #$rsFolderPath = '/' + $rsFolderName 
-        #New-RsFolder -Path / -FolderName $rsFolderName
+        $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $folderName
+        $folderPath = '/' + $folderName
+        $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
+        Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
         
         It "Should upload a local report in Report Server" {
+            $uploadedReport = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
 
-            $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
-            New-RsFolder -Path / -FolderName $folderName
-            $folderPath = '/' + $folderName
-            $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
-            Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
-            $rsReportPath = $folderPath + '/' + $reportName
-            $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
-
-            $uploadedReport.path | Should Be $rsReportPath
-            
-            # Removing folders used for testing
-            Remove-RsCatalogItem -RsFolder $folderPath
+            $uploadedReport.TypeName | Should Be 'Report'
         }
 
-        It "Should upload a local database in Report Server" {
-               
-        #      $dataSourceName = 'SutOutRsFolderContentDataSourceMinParam' + [guid]::NewGuid()
-        #     $extension = 'SQL'
-        #     $credentialRetrieval = 'None'
-        #     New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
-        #     $dataSourcePath = '/' + $dataSourceName
-        #     $currentLocalPath = (Get-Item -Path ".\" -Verbose).FullName
-        #     Out-RsCatalogItem -RsFolder $dataSourcePath -Destination $currentLocalPath
-        #     $localDataSourceFile = $dataSourceName + '.rsds'
-        #     $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
-        #     Get-Item $localDataSourcePath
+        It "Should upload a local RsDataSoutce in Report Server" {
+            $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'DataSource'
 
-        #     It "Should download a RsDataSource from Reporting Services with min parameters to a local folder" {
-        #     (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
-        # }
-           
-            $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
-            New-RsFolder -Path / -FolderName $folderName
-            $folderPath = '/' + $folderName
-            $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
-            Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
-            $rsReportPath = $folderPath + '/' + $reportName
-            $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
-
-            $uploadedReport.path | Should Be $rsReportPath
-            
-            # Removing folders used for testing
-            Remove-RsCatalogItem -RsFolder $folderPath
+            $uploadedDataSource.TypeName | Should Be 'DataSource'
         }
-        
-        #Remove-Item $localPathFolder
+
+        #It "Should upload a local DataSer in Report Server" {
+        #    $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'DataSet'
+
+        #    $uploadedDataSource.TypeName | Should Be 'DataSet'
+        #}
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $folderPath
     }
 
     Context "Write-RsFolderContent with ReportServerUri parameter"{
-        $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
+        $folderName = 'SutWriteRsFolderContentReportServerUri' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
         $reportServerUri = 'http://localhost/reportserver'
         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -ReportServerUri $reportServerUri
-        $rsReportPath = $folderPath + '/' + $reportName
-        $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
+        $uploadedReport = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
         It "Should upload a local report in Report Server with ReportServerUri Parameter" {
-            $uploadedReport.path | Should Be $rsReportPath
+            $uploadedReport.TypeName | Should Be 'Report'
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $folderPath
     }
 
     Context "Write-RsFolderContent with Proxy Parameter"{
-        $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
+        $folderName = 'SutWriteRsFolderContentProxy' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
         $proxy = New-RsWebServiceProxy 
         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -Proxy $proxy
-        $rsReportPath = $folderPath + '/' + $reportName
-        $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
+        $uploadedReport = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
         It "Should upload a local report in Report Server with Proxy Parameter" {
-            $uploadedReport.path | Should Be $rsReportPath
+            $uploadedReport.TypeName | Should Be 'Report'
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $folderPath
     }
 
     Context "Write-RsFolderContent with Proxy and ReportServerUri"{
-        $folderName = 'SutWriteRsFolderContentReportMin' + [guid]::NewGuid()
+        $folderName = 'SutWriteRsFolderContentAll' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
         $proxy = New-RsWebServiceProxy 
         $reportServerUri = 'http://localhost/reportserver'
         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -Proxy $proxy -ReportServerUri $reportServerUri
-        $rsReportPath = $folderPath + '/' + $reportName
-        $uploadedReport = (Get-RsFolderContent -RsFolder / -Recurse ) | Where-Object path -eq $rsReportPath
+        $uploadedReport = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
         It "Should upload a local report in Report Server with ReportServer and Proxy Uri" {
-            $uploadedReport.path | Should Be $rsReportPath
+            $uploadedReport.TypeName | Should Be 'Report'
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $folderPath
