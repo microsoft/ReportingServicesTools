@@ -202,4 +202,23 @@ Describe "New-RsDataSource" {
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $dataSourcePath
     }
+
+    Context "Create RsDataSource and Overwrite it"{
+        # Declare datasource name, extension, credential retrieval, and data source path.
+        $dataSourceName = 'SutDataSourceOverwrite' + [guid]::NewGuid()
+        $extension = 'SQL'
+        $credentialRetrieval = 'Integrated'
+        $dataSourcePath = '/' + $dataSourceName
+        New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
+        # Overwrite the existing RsDataSource
+        $credentialRetrievalChange = 'None'
+        New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrievalChange -Overwrite
+        $dataSource = Get-RsDataSource -Path $dataSourcePath
+        It "Should overwrite a datasource" {
+            $dataSource.CredentialRetrieval | Should be  $credentialRetrievalChange 
+            $dataSource.Count | Should Be 1
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $dataSourcePath
+    }
 }
