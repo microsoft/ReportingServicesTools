@@ -7,56 +7,49 @@ Describe "Out-RsFolderContent" {
                 $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localReportPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-                Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
+                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+                Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
                 $currentLocalPath = (Get-Item -Path ".\" ).FullName
 
-                It "Should download a Report from Reporting Services with min parameters to a local folder" {
+                It "Should download a Report from Reporting Services with min parameters" {
                 $report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
                 $reportPath = $folderPath + '/' + $report.Name 
                 Out-RsCatalogItem -RsFolder $reportPath -Destination $currentLocalPath
                 $localReportFile = $report.Name + '.rdl'
                 $localReportPath = $currentLocalPath + '\' + $localReportFile
-                Get-Item $localReportPath
-                (Get-Item $localReportPath).Name | Should Be $localDataSourceFile
-                }
-                # Removing local report downloaded while testing the command
+                (Get-Item $localReportPath).Name | Should Be $localReportFile
+                # Removing local report downloaded from report server used for testing
                 Remove-Item  $localReportPath
+                }
 
-                It "Should download a Report from Reporting Services with min parameters to a local folder" {
+                It "Should download a DataSet from Reporting Services with min parameters" {
                 $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
                 $dataSetPath = $folderPath + '/' + $dataSet.Name 
                 Out-RsCatalogItem -RsFolder $dataSetPath -Destination $currentLocalPath
-                $localDataSetFile = $dataSet.Name + '.rdl'
+                $localDataSetFile = $dataSet.Name + '.rsd'
                 $localDataSetPath = $currentLocalPath + '\' + $localDataSetFile
-                Get-Item $localDataSetPath
                 (Get-Item $localDataSetPath).Name | Should Be $localDataSetFile
-                        }
-                # Removing folders used for testing in Report Server
-                Remove-RsCatalogItem -RsFolder $folderPath
-                # Removing local DataSet download while testing the command
+                # Removing local dataset downloaded from report server used for testing
                 Remove-Item  $localDataSetPath
-
-                It "Should download a RsDataSource from Reporting Services with min parameters to a local folder" {
+                }
+               
+                It "Should download a RsDataSource from Reporting Services with min parameters" {
                 $dataSourceName = 'SutOutRsFolderContentDataSourceMinParam' + [guid]::NewGuid()
                 $extension = 'SQL'
                 $credentialRetrieval = 'None'
                 New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
                 $dataSourcePath = '/' + $dataSourceName
-                $currentLocalPath = (Get-Item -Path ".\" -Verbose).FullName
                 Out-RsCatalogItem -RsFolder $dataSourcePath -Destination $currentLocalPath
                 $localDataSourceFile = $dataSourceName + '.rsds'
                 $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
-                Get-Item $localDataSourcePath
                 (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
-                }
-                # Removing folders used for testing
+                # Removing local dataSource downloaded from report server and folder un report server used for testing
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
                 Remove-Item  $localDataSourcePath
+                }
         }
 
-        Context "Out-RsFolderContent with ReportServerUri Parameter"{
-            
+        Context "Out-RsFolderContent with ReportServerUri Parameter"{   
                 $dataSourceName = 'SutOutRsFolderContentDataSourceRsUriParam' + [guid]::NewGuid()
                 $extension = 'SQL'
                 $credentialRetrieval = 'None'
@@ -100,7 +93,6 @@ Describe "Out-RsFolderContent" {
         }
 
         Context "Out-RsFolderContent with Proxy and Report ServerUri Parameter"{
-
                 $dataSourceName = 'SutOutRsFolderContentDataSourceAllParam' + [guid]::NewGuid()
                 $extension = 'SQL'
                 $credentialRetrieval = 'None'
@@ -122,28 +114,30 @@ Describe "Out-RsFolderContent" {
                 Remove-Item  $localDataSourcePath
         
         }
-
         # Context "Out-RsFolderContent with Recurse parameters"{
 
-        #         $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
-        #         New-RsFolder -Path / -FolderName $folderName
-        #         $folderPath = '/' + $folderName
-        #         $localReportPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        #         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath
-        #         $currentLocalPath = (Get-Item -Path ".\" ).FullName
+        #          $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+        #          New-RsFolder -Path / -FolderName $folderName
+        #          $folderPath = '/' + $folderName
+        #          $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+        #          Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
+        #          $currentLocalPath = (Get-Item -Path ".\" ).FullName
 
-        #         It "Should download a Report from Reporting Services with min parameters to a local folder" {
-        #         $report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-        #         $reportPath = $folderPath + '/' + $report.Name 
-        #         Out-RsCatalogItem -RsFolder $reportPath -Destination $currentLocalPath
-        #         $localReportFile = $report.Name + '.rdl'
-        #         $localReportPath = $currentLocalPath + '\' + $localReportFile
-        #         Get-Item $localReportPath
-        #         (Get-Item $localReportPath).Name | Should Be $localDataSourceFile
-        #                 }
-        #         # Removing local report downloaded while testing the command
-        #         Remove-RsCatalogItem -RsFolder $dataSourcePath
-        #         Remove-Item  $localReportPath
-        # }
+        #          #$report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
+        #          #$reportPath = $folderPath + '/' + $report.Name 
+        #          Out-RsCatalogItem -RsFolder  -Destination $currentLocalPath
+        #          $localResourcesD = (Get-Item -Path ".\").FullName  + '\'
+        #          #$localReportPath = $currentLocalPath + '\' + $localReportFile
+        #          Write-Host Get-Item $localReportPath 
+        #          (Get-Item $localResourcestPath).Count
 
+        #          It "Should download a Report from Reporting Services with min parameters to a local folder" {
+                 
+        #         (Get-ChildItem $localResourcesPath).Count| Should Be 4
+        #          }
+        #          # Removing local report downloaded while testing the command
+        #          Remove-RsCatalogItem -RsFolder $reportPath
+        #          Remove-Item  $localReportPath
+        #  }
+        # NO TIENE SENTIDO RECURSE PORQUE SOLO PUEDE BAJAR ARCHIVOS NO FOLDERES. !!!!
 }
