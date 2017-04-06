@@ -1,10 +1,10 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-Describe "Out-RsFolderContent" {
+Describe "Out-RsCatalogItem" {
         Context "Out-RsFolderContent with min parameters"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutOutRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
@@ -50,7 +50,7 @@ Describe "Out-RsFolderContent" {
         }
 
         Context "Out-RsFolderContent with ReportServerUri Parameter"{   
-                $dataSourceName = 'SutOutRsFolderContentDataSourceRsUriParam' + [guid]::NewGuid()
+                $dataSourceName = 'SutOutRsFolderContentReportServerUriParam' + [guid]::NewGuid()
                 $extension = 'SQL'
                 $credentialRetrieval = 'None'
                 New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
@@ -72,7 +72,7 @@ Describe "Out-RsFolderContent" {
 
         Context "Out-RsFolderContent with Proxy Parameter"{
             
-                $dataSourceName = 'SutOutRsFolderContentDataSourceProxyParam' + [guid]::NewGuid()
+                $dataSourceName = 'SutOutRsFolderContentProxyParam' + [guid]::NewGuid()
                 $extension = 'SQL'
                 $credentialRetrieval = 'None'
                 New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
@@ -93,7 +93,7 @@ Describe "Out-RsFolderContent" {
         }
 
         Context "Out-RsFolderContent with Proxy and Report ServerUri Parameter"{
-                $dataSourceName = 'SutOutRsFolderContentDataSourceAllParam' + [guid]::NewGuid()
+                $dataSourceName = 'SutOutRsFolderContentAllParameter' + [guid]::NewGuid()
                 $extension = 'SQL'
                 $credentialRetrieval = 'None'
                 New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
@@ -112,32 +112,5 @@ Describe "Out-RsFolderContent" {
                 # Removing folders used for testing
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
                 Remove-Item  $localDataSourcePath
-        
-        }
-        # Context "Out-RsFolderContent with Recurse parameters"{
-
-        #          $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
-        #          New-RsFolder -Path / -FolderName $folderName
-        #          $folderPath = '/' + $folderName
-        #          $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        #          Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
-        #          $currentLocalPath = (Get-Item -Path ".\" ).FullName
-
-        #          #$report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-        #          #$reportPath = $folderPath + '/' + $report.Name 
-        #          Out-RsCatalogItem -RsFolder  -Destination $currentLocalPath
-        #          $localResourcesD = (Get-Item -Path ".\").FullName  + '\'
-        #          #$localReportPath = $currentLocalPath + '\' + $localReportFile
-        #          Write-Host Get-Item $localReportPath 
-        #          (Get-Item $localResourcestPath).Count
-
-        #          It "Should download a Report from Reporting Services with min parameters to a local folder" {
-                 
-        #         (Get-ChildItem $localResourcesPath).Count| Should Be 4
-        #          }
-        #          # Removing local report downloaded while testing the command
-        #          Remove-RsCatalogItem -RsFolder $reportPath
-        #          Remove-Item  $localReportPath
-        #  }
-        # NO TIENE SENTIDO RECURSE PORQUE SOLO PUEDE BAJAR ARCHIVOS NO FOLDERES. !!!!
+        } 
 }
