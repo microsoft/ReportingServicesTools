@@ -15,7 +15,7 @@ Describe "Write-RsFolderContent" {
             $uploadedReport.TypeName | Should Be 'Report'
         }
 
-        It "Should upload a local RsDataSoutce in Report Server" {
+        It "Should upload a local RsDataSource in Report Server" {
             $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'DataSource'
             $uploadedDataSource.TypeName | Should Be 'DataSource'
         }
@@ -83,6 +83,16 @@ Describe "Write-RsFolderContent" {
         $uploadedReports = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
         It "Should upload a report that is in a folder and a second report in a subfolder" {
             $uploadedReports.Count | Should Be 2
+        }
+
+         It "Should upload a local RsDataSource with Recurse Parameter" {
+            $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'DataSource'
+            $uploadedDataSource.TypeName | Should Be 'DataSource'
+        }
+
+        It "Should upload a local DataSet with Recurse Parameter" {
+            $uploadedDataSet = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'DataSet'
+            $uploadedDataSet.TypeName | Should Be 'DataSet'
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $folderPath
