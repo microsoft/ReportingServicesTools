@@ -80,8 +80,13 @@ Describe "Write-RsFolderContent" {
         $folderPath = '/' + $folderName
         $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -Recurse
-        $uploadedReports = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
-        It "Should upload a report that is in a folder and a second report in a subfolder" {
+       It "Should upload a local subFolder with Recurse Parameter" {
+            $uploadedDataSet = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Folder'
+            $uploadedDataSet.TypeName | Should Be 'Folder'
+        }
+
+       It "Should upload a report that is in a folder and a second report in a subfolder" {
+            $uploadedReports = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
             $uploadedReports.Count | Should Be 2
         }
 
