@@ -15,9 +15,16 @@ Describe "Out-RsFolderContent" {
                 New-Item -Path $destinationPath -type "directory"
                 Out-RsFolderContent -RsFolder $rsFolderPath -Destination $destinationPath
                 $localChildrenFolder = Get-ChildItem $destinationPath
+                $localFileExtension = $localChildrenFolder | ForEach-Object {[System.IO.Path]::GetExtension($_.ToString())}
+                It "Should download a report from Reporting Services with min parameters" {
+                }
 
-                It "Should download a folder content from Reporting Services with min parameters" {
-                        $localChildrenFolder.Count | Should BeGreaterThan 0
+                It "Should download a RsDataSource from Reporting Services with min parameters" {
+                         $localChildrenFolde | where {$_.extension -eq ".rsds"}
+                }
+
+                It "Should download a RsDataSet from Reporting Services with min parameters" {
+                        $localChildrenFolde | where {$_.extension -eq ".rsd"}
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
@@ -38,8 +45,8 @@ Describe "Out-RsFolderContent" {
                 Out-RsFolderContent -RsFolder $rsFolderPath -Destination $destinationPath -ReportServerUri $reportServerUri
                 $localChildrenFolder = Get-ChildItem $destinationPath
 
-                It "Should download a folder content from Reporting Services with min parameters" {
-                        $localChildrenFolder.Count | Should BeGreaterThan 0
+                It "Should download a report from Reporting Services with ReportServerUri parameters" {
+                        $localChildrenFolde | where {$_.extension -eq ".rdl"}
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
@@ -60,8 +67,8 @@ Describe "Out-RsFolderContent" {
                 Out-RsFolderContent -RsFolder $rsFolderPath -Destination $destinationPath -Proxy $proxy
                 $localChildrenFolder = Get-ChildItem $destinationPath
 
-                It "Should download a folder content from Reporting Services with min parameters" {
-                        $localChildrenFolder.Count | Should BeGreaterThan 0
+                It "Should download a report from Reporting Services with Proxy Parameters" {
+                        $localChildrenFolde | where {$_.extension -eq ".rdl"}
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
@@ -83,8 +90,8 @@ Describe "Out-RsFolderContent" {
                 Out-RsFolderContent -RsFolder $rsFolderPath -Destination $destinationPath -Proxy $proxy -ReportServerUri $reportServerUri
                 $localChildrenFolder = Get-ChildItem $destinationPath
 
-                It "Should download a folder content from Reporting Services with min parameters" {
-                        $localChildrenFolder.Count | Should BeGreaterThan 0
+                It "Should download a report from Reporting Services with Prosy and ReportServerUri parameter" {
+                        $localChildrenFolde | where {$_.extension -eq ".rdl"}
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
