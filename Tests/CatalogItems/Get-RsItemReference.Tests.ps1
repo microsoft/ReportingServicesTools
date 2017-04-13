@@ -1,8 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-Describe "Get-RsItemContent" {
-        Context "Get-RsItemContent with min parameters"{
+Describe "Get-RsItemReference" {
+        Context "Get-RsItemReference with min parameters"{
 
                 $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
