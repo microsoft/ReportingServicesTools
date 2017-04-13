@@ -21,6 +21,7 @@ Describe "Get-RsItemReference" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
                    $dataSourceReference.ReferenceType | Should Be 'DataSource'
                 }
+                Remove-RsCatalogItem -RsFolder $folderPath
         }
 
         Context "Get-RsItemContent with Proxy parameter"{
@@ -38,6 +39,7 @@ Describe "Get-RsItemReference" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
                    $dataSourceReference.ReferenceType | Should Be 'DataSource'
                 }
+                Remove-RsCatalogItem -RsFolder $folderPath
         }
 
         Context "Get-RsItemContent with ReportServerUri Parameter"{
@@ -55,6 +57,7 @@ Describe "Get-RsItemReference" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
                    $dataSourceReference.ReferenceType | Should Be 'DataSource'
                 }
+                Remove-RsCatalogItem -RsFolder $folderPath
         }
 
         Context "Get-RsItemContent with ReportServerUri and Proxy Parameter"{
@@ -73,5 +76,6 @@ Describe "Get-RsItemReference" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
                    $dataSourceReference.ReferenceType | Should Be 'DataSource'
                 }
+                Remove-RsCatalogItem -RsFolder $folderPath
         }
 }
