@@ -2,7 +2,7 @@
 # Licensed under the MIT License (MIT)
 
 Describe "Out-RsCatalogItem" {
-        Context "Out-RsFolderContent with min parameters"{
+        Context "Out-RsCatalogItem with min parameters"{
 
                 $folderName = 'SutOutRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
@@ -26,30 +26,28 @@ Describe "Out-RsCatalogItem" {
                 $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
                 $dataSetPath = $folderPath + '/' + $dataSet.Name 
                 Out-RsCatalogItem -RsFolder $dataSetPath -Destination $currentLocalPath
-                $localDataSetFile = $dataSet.Name + '.rsd'
-                $localDataSetPath = $currentLocalPath + '\' + $localDataSetFile
-                (Get-Item $localDataSetPath).Name | Should Be $localDataSetFile
+                $localDataSetName = $dataSet.Name + '.rsd'
+                $localDataSetPath = $currentLocalPath + '\' + $localDataSetName
+                (Get-Item $localDataSetPath).Name | Should Be $localDataSetName
                 # Removing local dataset downloaded from report server used for testing
                 Remove-Item  $localDataSetPath
                 }
                
                 It "Should download a RsDataSource from Reporting Services with min parameters" {
-                $dataSourceName = 'SutOutRsFolderContentDataSourceMinParam' + [guid]::NewGuid()
-                $extension = 'SQL'
-                $credentialRetrieval = 'None'
-                New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
-                $dataSourcePath = '/' + $dataSourceName
-                Out-RsCatalogItem -RsFolder $dataSourcePath -Destination $currentLocalPath
-                $localDataSourceFile = $dataSourceName + '.rsds'
-                $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceFile
-                (Get-Item $localDataSourcePath).Name | Should Be $localDataSourceFile
+                $dataSource = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSource'
+                $dataSourcePath = $folderPath + '/' + $dataSource.Name 
+                Out-RsCatalogItem -RsFolder $dataSetPath -Destination $currentLocalPath
+                $localDataSourceName = $dataSource.Name + '.rsds'
+                $localDataSourcePath = $currentLocalPath + '\' + $localDataSourceName
+                $localDataSourceFile = Get-Item $localDataSourcePath
+                $localDataSourceFile.Name | Should Be $localDataSourceName
                 # Removing local dataSource downloaded from report server and folder un report server used for testing
-                Remove-RsCatalogItem -RsFolder $dataSourcePath
                 Remove-Item  $localDataSourcePath
                 }
+                Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Out-RsFolderContent with ReportServerUri Parameter"{   
+        Context "Out-RsCatalogItem with ReportServerUri Parameter"{   
                 $dataSourceName = 'SutOutRsFolderContentReportServerUriParam' + [guid]::NewGuid()
                 $extension = 'SQL'
                 $credentialRetrieval = 'None'
@@ -70,7 +68,7 @@ Describe "Out-RsCatalogItem" {
                 Remove-Item  $localDataSourcePath
         }
 
-        Context "Out-RsFolderContent with Proxy Parameter"{
+        Context "Out-RsCatalogItem with Proxy Parameter"{
             
                 $dataSourceName = 'SutOutRsFolderContentProxyParam' + [guid]::NewGuid()
                 $extension = 'SQL'
