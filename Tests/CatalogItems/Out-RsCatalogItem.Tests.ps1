@@ -73,7 +73,7 @@ Describe "Out-RsCatalogItem" {
                 It "Should download a Report from Reporting Services with min parameters" {
                 $localDataSourceFile.Name | Should Be $localDataSourceFullName
                 }
-               
+                Remove-Item $localDataSourcePath
         }
 
         Context "Download a dataSource with Proxy Parameter"{
@@ -93,6 +93,7 @@ Describe "Out-RsCatalogItem" {
                 It "Should download a Report from Reporting Services with min parameters" {
                 $localDataSourceFile.Name | Should Be $localDataSourceFullName
                 }
+                Remove-Item $localDataSourcePath
         }
 
         Context "Download a dataSource with Proxy and Report ServerUri Parameter"{
@@ -113,5 +114,6 @@ Describe "Out-RsCatalogItem" {
                 It "Should download a Report from Reporting Services with min parameters" {
                 $localDataSourceFile.Name | Should Be $localDataSourceFullName
                 }
+                Remove-Item $localDataSourcePath
         } 
 }
