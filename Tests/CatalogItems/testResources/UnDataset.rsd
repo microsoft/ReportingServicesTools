@@ -2,7 +2,7 @@
 <SharedDataSet xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
   <DataSet Name="DataSet1">
     <Query>
-      <DataSourceReference>/ds/ref</DataSourceReference>
+      <DataSourceReference>/SutWriteRsFolderContent_DataSource/ref</DataSourceReference>
       <CommandText>select 'Alejandra' AS Name, 'Jaramillo' As LastName
 union
 select 'Barry' AS Name, 'Alen' As LastName
