@@ -74,6 +74,7 @@ Describe "Out-RsCatalogItem" {
                 $localDataSourceFile.Name | Should Be $localDataSourceFullName
                 }
                 Remove-Item $localDataSourcePath
+                Remove-RsCatalogItem $dataSourcePath
         }
 
         Context "Download a dataSource with Proxy Parameter"{
@@ -94,6 +95,7 @@ Describe "Out-RsCatalogItem" {
                 $localDataSourceFile.Name | Should Be $localDataSourceFullName
                 }
                 Remove-Item $localDataSourcePath
+                Remove-RsCatalogItem $dataSourcePath
         }
 
         Context "Download a dataSource with Proxy and Report ServerUri Parameter"{
@@ -115,5 +117,6 @@ Describe "Out-RsCatalogItem" {
                 $localDataSourceFile.Name | Should Be $localDataSourceFullName
                 }
                 Remove-Item $localDataSourcePath
+                Remove-RsCatalogItem $dataSourcePath
         } 
 }
