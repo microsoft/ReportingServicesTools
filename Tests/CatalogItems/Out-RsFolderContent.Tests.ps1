@@ -15,16 +15,20 @@ Describe "Out-RsFolderContent" {
                 New-Item -Path $destinationPath -type "directory"
                 Out-RsFolderContent -RsFolder $rsFolderPath -Destination $destinationPath
                 $localChildrenFolder = Get-ChildItem $destinationPath
-                $localFileExtension = $localChildrenFolder | ForEach-Object {[System.IO.Path]::GetExtension($_.ToString())}
-                It "Should download a report from Reporting Services with min parameters" {
+
+                It "Should download a report from Reporting Services with min parameters" { 
+                       $localReport = $localChildrenFolder | Where-Object Name -eq 'emptyReport.rdl'
+                       $localReport.Name | Should Be 'emptyReport.rdl'
                 }
 
                 It "Should download a RsDataSource from Reporting Services with min parameters" {
-                         $localChildrenFolde | where {$_.extension -eq ".rsds"}
+                        $localDataSource = $localChildrenFolder| Where-Object Name -eq 'SutWriteRsFolderContent_DataSource.rsds'
+                        $localDataSource.Name | Should Be 'SutWriteRsFolderContent_DataSource.rsds'
                 }
 
                 It "Should download a RsDataSet from Reporting Services with min parameters" {
-                        $localChildrenFolde | where {$_.extension -eq ".rsd"}
+                        $localDataSource = $localChildrenFolder | Where-Object Name -eq 'UnDataSet.rsd'
+                        $localDataSource.Name | Should Be 'UnDataSet.rsd'
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
@@ -46,7 +50,8 @@ Describe "Out-RsFolderContent" {
                 $localChildrenFolder = Get-ChildItem $destinationPath
 
                 It "Should download a report from Reporting Services with ReportServerUri parameters" {
-                        $localChildrenFolde | where {$_.extension -eq ".rdl"}
+                        $localReport = $localChildrenFolder | Where-Object Name -eq 'emptyReport.rdl'
+                        $localReport.Name | Should Be 'emptyReport.rdl'
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
@@ -68,7 +73,8 @@ Describe "Out-RsFolderContent" {
                 $localChildrenFolder = Get-ChildItem $destinationPath
 
                 It "Should download a report from Reporting Services with Proxy Parameters" {
-                        $localChildrenFolde | where {$_.extension -eq ".rdl"}
+                        $localReport = $localChildrenFolder | Where-Object Name -eq 'emptyReport.rdl'
+                        $localReport.Name | Should Be 'emptyReport.rdl'
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
@@ -90,8 +96,51 @@ Describe "Out-RsFolderContent" {
                 Out-RsFolderContent -RsFolder $rsFolderPath -Destination $destinationPath -Proxy $proxy -ReportServerUri $reportServerUri
                 $localChildrenFolder = Get-ChildItem $destinationPath
 
-                It "Should download a report from Reporting Services with Prosy and ReportServerUri parameter" {
-                        $localChildrenFolde | where {$_.extension -eq ".rdl"}
+                It "Should download a report from Reporting Services with Proxy and ReportServerUri parameter" {
+                        $localReport = $localChildrenFolder | Where-Object Name -eq 'emptyReport.rdl'
+                        $localReport.Name | Should Be 'emptyReport.rdl'
+                }
+                # Removing local folder content downloaded from report server used for testing
+                Remove-Item  $destinationPath -Confirm:$false -Recurse
+                Remove-RsCatalogItem -RsFolder $rsFolderPath
+        }
+
+        Context "Out-RsFolderContent with min parameters"{
+                $folderName = 'SutOutRsFolderContentMinParameters' + [guid]::NewGuid()
+                New-RsFolder -Path / -FolderName $folderName
+                $rsFolderPath = '/' + $folderName
+                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+                Write-RsFolderContent -Path $localResourcesPath -RsFolder $rsFolderPath -Recurse
+                $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+                $currentLocalPath = (Get-Item -Path ".\" ).FullName
+                $destinationPath = $currentLocalPath + '\' + $localFolderName
+                New-Item -Path $destinationPath -type "directory"
+                Out-RsFolderContent -RsFolder $rsFolderPath -Destination $destinationPath -Recurse
+                $localChildrenFolder = Get-ChildItem $destinationPath
+
+                It "Should download a report in a folder from Reporting Services with min parameters" { 
+                       $localReport = $localChildrenFolder | Where-Object Name -eq 'emptyReport.rdl'
+                       $localReport.Name | Should Be 'emptyReport.rdl'
+                }
+
+                It "Should download a RsDataSource from Reporting Services with min parameters" {
+                        $localDataSource = $localChildrenFolder| Where-Object Name -eq 'SutWriteRsFolderContent_DataSource.rsds'
+                        $localDataSource.Name | Should Be 'SutWriteRsFolderContent_DataSource.rsds'
+                }
+
+                It "Should download a RsDataSet from Reporting Services with min parameters" {
+                        $localDataSource = $localChildrenFolder | Where-Object Name -eq 'UnDataSet.rsd'
+                        $localDataSource.Name | Should Be 'UnDataSet.rsd'
+                }
+
+                It "Should download a report inside a subfolder from Reporting Services with min parameters" { 
+                       $localReport = $localChildrenFolder | Where-Object Name -eq 'emptyReport2.rdl'
+                       $localReport.Name | Should Be 'emptyReport2.rdl'
+                }
+
+                 It "Should download a subfolder from Reporting Services with min parameters" { 
+                       $localReport = $localChildrenFolder | Where-Object Name -eq 'emptyReport.rdl'
+                       $localReport.Name | Should Be 'testResources2'
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
