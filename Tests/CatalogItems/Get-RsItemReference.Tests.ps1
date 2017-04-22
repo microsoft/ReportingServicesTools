@@ -7,19 +7,19 @@ Describe "Get-RsItemReference" {
                 $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-                Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
+                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
                 $reportReferences = Get-RsItemReference -Path $report.Path
 
                 It "Should found a reference to a RsDataSet with min parameters" {
                    $dataSetReference = $reportReferences | Where-Object ReferenceType -eq 'DataSet'
-                   $dataSetReference.ReferenceType | Should Be 'DataSet'
+                   $dataSetReference.Name | Should Be 'UnDataset'
                 }
 
                 It "Should found a reference to a RsDataSource with min parameters" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.ReferenceType | Should Be 'DataSource'
+                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
@@ -29,15 +29,15 @@ Describe "Get-RsItemReference" {
                 $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-                Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
+                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
                 $proxy = New-RsWebServiceProxy
                 $reportReferences = Get-RsItemReference -Path $report.Path -Proxy $proxy
 
-                It "Should found a reference to a RsDataSource with min parameters" {
+                It "Should found a reference to a RsDataSource of a report with Proxy Parameter" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.ReferenceType | Should Be 'DataSource'
+                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
@@ -47,15 +47,15 @@ Describe "Get-RsItemReference" {
                 $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-                Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
+                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
                 $reportServerUri = 'http://localhost/reportserver'
                 $reportReferences = Get-RsItemReference -Path $report.Path -ReportServerUri $reportServerUri
 
-                It "Should found a reference to a RsDataSource with min parameters" {
+                It "Should found a reference to a RsDataSource of a report with ReportServerUri Parameter" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.ReferenceType | Should Be 'DataSource'
+                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
@@ -65,16 +65,16 @@ Describe "Get-RsItemReference" {
                 $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-                Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
+                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
                 $proxy = New-RsWebServiceProxy
                 $reportServerUri = 'http://localhost/reportserver'
                 $reportReferences = Get-RsItemReference -Path $report.Path -ReportServerUri $reportServerUri -Proxy $proxy
 
-                It "Should found a reference to a RsDataSource with min parameters" {
+                It "Should found a reference to a RsDataSource of a report with ReportServerUri and Proxy Parameters" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.ReferenceType | Should Be 'DataSource'
+                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
