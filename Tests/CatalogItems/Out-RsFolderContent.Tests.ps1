@@ -9,7 +9,7 @@ Describe "Out-RsFolderContent" {
                 $rsFolderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
                 Write-RsFolderContent -Path $localResourcesPath -RsFolder $rsFolderPath
-                $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+                $localFolderName = 'SutOutRsFolderContentTestMin' + [guid]::NewGuid()
                 $currentLocalPath = (Get-Item -Path ".\" ).FullName
                 $destinationPath = $currentLocalPath + '\' + $localFolderName
                 New-Item -Path $destinationPath -type "directory"
@@ -41,7 +41,7 @@ Describe "Out-RsFolderContent" {
                 $rsFolderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
                 Write-RsFolderContent -Path $localResourcesPath -RsFolder $rsFolderPath
-                $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+                $localFolderName = 'SutOutRsFolderContentTestReportUri' + [guid]::NewGuid()
                 $currentLocalPath = (Get-Item -Path ".\" ).FullName
                 $destinationPath = $currentLocalPath + '\' + $localFolderName
                 New-Item -Path $destinationPath -type "directory"
@@ -64,7 +64,7 @@ Describe "Out-RsFolderContent" {
                 $rsFolderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
                 Write-RsFolderContent -Path $localResourcesPath -RsFolder $rsFolderPath
-                $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+                $localFolderName = 'SutOutRsFolderContentTestProxy' + [guid]::NewGuid()
                 $currentLocalPath = (Get-Item -Path ".\" ).FullName
                 $destinationPath = $currentLocalPath + '\' + $localFolderName
                 New-Item -Path $destinationPath -type "directory"
@@ -87,7 +87,7 @@ Describe "Out-RsFolderContent" {
                 $rsFolderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
                 Write-RsFolderContent -Path $localResourcesPath -RsFolder $rsFolderPath
-                $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+                $localFolderName = 'SutOutRsFolderContentTestAllParam' + [guid]::NewGuid()
                 $currentLocalPath = (Get-Item -Path ".\" ).FullName
                 $destinationPath = $currentLocalPath + '\' + $localFolderName
                 New-Item -Path $destinationPath -type "directory"
@@ -105,13 +105,13 @@ Describe "Out-RsFolderContent" {
                 Remove-RsCatalogItem -RsFolder $rsFolderPath
         }
 
-        Context "Out-RsFolderContent with min parameters"{
-                $folderName = 'SutOutRsFolderContentMinParameters' + [guid]::NewGuid()
+        Context "Out-RsFolderContent with recurse parameters"{
+                $folderName = 'SutOutRsFolderContentRecurseParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $rsFolderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
                 Write-RsFolderContent -Path $localResourcesPath -RsFolder $rsFolderPath -Recurse
-                $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+                $localFolderName = 'SutOutRsFolderContentTestRecurse' + [guid]::NewGuid()
                 $currentLocalPath = (Get-Item -Path ".\" ).FullName
                 $destinationPath = $currentLocalPath + '\' + $localFolderName
                 New-Item -Path $destinationPath -type "directory"
@@ -143,7 +143,7 @@ Describe "Out-RsFolderContent" {
                        $localReport.Name | Should Be 'testResources2'
                 }
                 # Removing local folder content downloaded from report server used for testing
-                #Remove-Item  $destinationPath -Confirm:$false -Recurse
                 Remove-RsCatalogItem -RsFolder $rsFolderPath
+                Remove-Item  $destinationPath -Confirm:$false -Recurse
         }
 }
