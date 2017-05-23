@@ -78,6 +78,7 @@ test_script:
 deploy_script:
 - ps: |
     # Deploy to Powershell Gallery only where there is a tag which will have the version number
+    $ErrorActionPreference = 'Continue';
     $deploy = ($env:APPVEYOR_REPO_TAG -eq $true)
     if ($deploy)
     {
