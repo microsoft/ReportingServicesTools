@@ -97,6 +97,6 @@ Write-Output "Downloading archive from github"
 	Remove-Item -Path $zipfile
 	
 	Write-Output "Done!"
-	if ((Get-Command -Module ReportingServicesTools).count -eq 0) { Import-Module "$path\ReportingServicesTools.psd1" -Force }
+	if ((Get-Command -Module ReportingServicesTools).count -eq 0) { Import-Module "$path\src\ReportingServicesTools.psd1" -Force }
 	Get-Command -Module ReportingServicesTools
 	Write-Output "`n`nIf you experience any function missing errors after update, please restart PowerShell or reload your profile."

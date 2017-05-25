@@ -50,7 +50,7 @@ before_test:
 test_script:
 - ps: |
     # Execute the script analyzer
-    $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse | where severity -eq "Error"
+    $results = Invoke-ScriptAnalyzer -Path .\src\functions -Recurse | where severity -eq "Error"
     # Format the results
     $header = "<testsuite tests=`"$($results.Count)`">" 
     $body = $results | ForEach-Object {"<testcase classname=`"analyzer`" name=`"$($_.RuleName)`"><failure type=`"$($_.ScriptName)`">$($_.Message)</failure></testcase>"}
@@ -66,7 +66,7 @@ test_script:
     # Activate verbose on Powershell
     $VerbosePreference = "continue" 
     # Import Reporting Services tools 
-    Import-Module .\ReportingServicesTools.psd1 
+    Import-Module .\src\ReportingServicesTools.psd1 
     # Executing integration tests
     $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
     # Upload integration tests results
@@ -85,16 +85,16 @@ deploy_script:
       $gitOut = git checkout master 2>&1
       Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
       $moduleName = "ReportingServicesTools"
-      $currentVersion = (Import-PowerShellDataFile .\$moduleName.psd1).ModuleVersion
-      ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
-      Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey
+      $currentVersion = (Import-PowerShellDataFile .\src\$moduleName.psd1).ModuleVersion
+      ((Get-Content .\src\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\src\$moduleName.psd1
+      Publish-Module -Path .\src\ -NuGetApiKey $env:galleryPublishingKey
       
       git config --global core.safecrlf false
       git config --global credential.helper store
       Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
       git config --global user.email "jaimeta@microsoft.com"
       git config --global user.name "Jaime Tarquino"
-      git add ReportingServicesTools.psd1  
+      git add src\ReportingServicesTools.psd1  
       git commit -m "Automatic Version Update from CI"
       $gitOut = git push 2>&1
       if ($?) {$out} else {$out.Exception}
