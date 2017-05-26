@@ -16,7 +16,7 @@ Describe "Set-RsDatsSetReference" {
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path
 
-        It "Should be a new data source" {
+        It "Should set a RsDataSet reference" {
             $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
@@ -37,7 +37,7 @@ Describe "Set-RsDatsSetReference" {
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -Proxy $proxy
 
-        It "Should be a new data source" {
+        It "Should set a RsDataSet reference" {
             $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
@@ -59,7 +59,7 @@ Describe "Set-RsDatsSetReference" {
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -ReportServerUri $reportServerUri
         
-        It "Should be a new data source" {
+        It "Should set a RsDataSet referencee" {
             $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
@@ -81,7 +81,7 @@ Describe "Set-RsDatsSetReference" {
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -ReportServerUri $reportServerUri -Proxy $proxy
        
-        It "Should be a new data source" {
+        It "Should set a RsDataSet reference" {
             $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
