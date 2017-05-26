@@ -4,7 +4,7 @@
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="SutWriteRsFolderContent_DataSource">
-      <DataSourceReference>/SutWriteRsFolderContentMinParameters07dac266-4657-4a60-8d09-9f7aaf1ef503/SutWriteRsFolderContent_DataSource</DataSourceReference>
+      <DataSourceReference>/SutWriteRsFolderContent_DataSource</DataSourceReference>
       <rd:SecurityType>None</rd:SecurityType>
       <rd:DataSourceID>411018ea-e1ac-466a-b1b2-f00b6c606149</rd:DataSourceID>
     </DataSource>
@@ -12,7 +12,7 @@
   <DataSets>
     <DataSet Name="UnDataSet">
       <SharedDataSet>
-        <SharedDataSetReference>/SutWriteRsFolderContentMinParameters7960246b-ce24-4f7a-9109-b599dd353320/UnDataset</SharedDataSetReference>
+        <SharedDataSetReference>/UnDataset</SharedDataSetReference>
         <rd:ReportServerUrl>http://localhost/ReportServer</rd:ReportServerUrl>
       </SharedDataSet>
       <Fields>
