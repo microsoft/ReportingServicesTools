@@ -4,7 +4,7 @@
 Describe "Get-RsItemReference" {
         Context "Get-RsItemReference with min parameters"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
@@ -24,9 +24,9 @@ Describe "Get-RsItemReference" {
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Get-RsItemContent with Proxy parameter"{
+        Context "Get-RsItemReference with Proxy parameter"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReferenceProxynParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
@@ -42,9 +42,9 @@ Describe "Get-RsItemReference" {
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Get-RsItemContent with ReportServerUri Parameter"{
+        Context "Get-RsItemReference with ReportServerUri Parameter"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReference_ReportServerUriParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
@@ -60,9 +60,9 @@ Describe "Get-RsItemReference" {
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Get-RsItemContent with ReportServerUri and Proxy Parameter"{
+        Context "Get-RsItemReference with ReportServerUri and Proxy Parameter"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReference_ReportServerUriProxyParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
