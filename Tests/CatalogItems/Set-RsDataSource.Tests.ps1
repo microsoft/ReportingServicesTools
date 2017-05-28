@@ -8,8 +8,8 @@ Function Get-ExistingDataExtension
 }
 
 Describe "Set-RsDataSource" {
-        Context "Get-RsItemReference with min parameters"{
-                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+        Context "Set-RsDataSource with min parameters"{
+                $dataSourceName = 'SutSetDataSourceProxyParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -27,7 +27,7 @@ Describe "Set-RsDataSource" {
 
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource
         
-                It "Should set a RsDataSource" {
+                It "Should set a RsDataSource with min parameters" {
                  $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
                  $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
@@ -36,8 +36,8 @@ Describe "Set-RsDataSource" {
 
         
 
-        Context "Get-RsItemReference with Proxy parameter"{
-                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+        Context "Set-RsDataSource with Proxy parameter"{
+                $dataSourceName = 'SutSetDataSourceProxyParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -55,15 +55,15 @@ Describe "Set-RsDataSource" {
 
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -Proxy $proxy
         
-                It "Should set a RsDataSource" {
+                It "Should set a RsDataSource with proxy Parameter" {
                  $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
                  $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
 
-        Context "Get-RsItemReference with ReportServerUri parameter"{
-                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+        Context "Set-RsDataSource with ReportServerUri parameter"{
+                $dataSourceName = 'SutSetDataSourceReportServerUriParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -82,15 +82,15 @@ Describe "Set-RsDataSource" {
 
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -ReportServerUri $reportServerUri
         
-                It "Should set a RsDataSource" {
+                It "Should set a RsDataSource with reportServerUri parameter" {
                  $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
                  $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
 
-        Context "Get-RsItemReference with ReportServerUri and Proxy parameter"{
-                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+        Context "Set-RsDataSource with ReportServerUri and Proxy parameter"{
+                $dataSourceName = 'SutSetDataSourceReportServerUriProxyParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -109,7 +109,7 @@ Describe "Set-RsDataSource" {
 
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -Proxy $proxy -ReportServerUri $reportServerUri
         
-                It "Should set a RsDataSource" {
+                It "Should set a RsDataSource with proxy and ReportServerUri parameter" {
                  $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
                  $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
