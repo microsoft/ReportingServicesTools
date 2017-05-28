@@ -14,12 +14,12 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSet with min parameters" {
                    $dataSetReference = $reportReferences | Where-Object ReferenceType -eq 'DataSet'
-                   $dataSetReference.Name | Should Be 'UnDataset'
+                   $dataSetReference.Name | Should Be 'reportReferenceUnDataset'
                 }
 
                 It "Should found a reference to a RsDataSource with min parameters" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
@@ -37,7 +37,7 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSource of a report with Proxy Parameter" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
@@ -55,7 +55,7 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSource of a report with ReportServerUri Parameter" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
@@ -74,7 +74,7 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSource of a report with ReportServerUri and Proxy Parameters" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
