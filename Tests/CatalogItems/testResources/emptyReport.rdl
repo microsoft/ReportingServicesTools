@@ -3,14 +3,14 @@
   <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
-    <DataSource Name="SutWriteRsFolderContent_DataSource">
+    <DataSource Name="reportReferenceDataSource">
       <DataSourceReference>/SutWriteRsFolderContent_DataSource</DataSourceReference>
       <rd:SecurityType>None</rd:SecurityType>
       <rd:DataSourceID>411018ea-e1ac-466a-b1b2-f00b6c606149</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="UnDataSet">
+    <DataSet Name="reportReferenceUnDataSet">
       <SharedDataSet>
         <SharedDataSetReference>/UnDataset</SharedDataSetReference>
         <rd:ReportServerUrl>http://localhost/ReportServer</rd:ReportServerUrl>
