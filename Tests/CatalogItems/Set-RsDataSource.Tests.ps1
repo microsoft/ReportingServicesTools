@@ -9,36 +9,110 @@ Function Get-ExistingDataExtension
 
 Describe "Set-RsDataSource" {
         Context "Get-RsItemReference with min parameters"{
-            $folderName = 'SutSetRsDataSetReferenceMinParameters' + [guid]::NewGuid()
-            New-RsFolder -Path / -FolderName $folderName
-            $folderPath = '/' + $folderName
-            $localDataSourcePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\SutWriteRsFolderContent_DataSource.rsds'
-            Write-RsCatalogItem -Path $localDataSourcePath -RsFolder $folderPath
-            $dataSourcePath =  $folderPath + '/SutWriteRsFolderContent_DataSource'
-            # DataSource definition
-            $proxy = New-RsWebServiceProxy
-            $namespace = $proxy.GetType().Namespace
-            $datasourceDataType = "$namespace.DataSourceDefinition"
-            $datasource = New-Object $datasourceDataType  
-            $datasource.Extension = Get-ExistingDataExtension
-            $datasource.CredentialRetrieval = 'None'
-            $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
+                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+                $extension = Get-ExistingDataExtension
+                $credentialRetrieval = 'None'
+                $dataSourcePath = '/' + $dataSourceName
+                New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
+                $dataSourcePath =  '/' + $dataSourceName
+                $rsDataSource = Get-RsDataSource -Path $dataSourcePath 
+                # DataSource definition
+                $proxy = New-RsWebServiceProxy
+                $namespace = $proxy.GetType().Namespace
+                $datasourceDataType = "$namespace.DataSourceDefinition"
+                $datasource = New-Object $datasourceDataType  
+                $datasource.Extension = Get-ExistingDataExtension
+                $datasource.CredentialRetrieval = 'Prompt'
+                $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
 
-            Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource
+                Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource
+        
+                It "Should set a RsDataSource" {
+                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                }
+                Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
-         It "Should set a RsDataSource" {
-           
-        }
-        Remove-RsCatalogItem -RsFolder $folderPath
+
+        
 
         Context "Get-RsItemReference with Proxy parameter"{
+                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+                $extension = Get-ExistingDataExtension
+                $credentialRetrieval = 'None'
+                $dataSourcePath = '/' + $dataSourceName
+                New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval 
+                $dataSourcePath =  '/' + $dataSourceName
+                $rsDataSource = Get-RsDataSource -Path $dataSourcePath 
+                # DataSource definition
+                $proxy = New-RsWebServiceProxy
+                $namespace = $proxy.GetType().Namespace
+                $datasourceDataType = "$namespace.DataSourceDefinition"
+                $datasource = New-Object $datasourceDataType  
+                $datasource.Extension = Get-ExistingDataExtension
+                $datasource.CredentialRetrieval = 'Prompt'
+                $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
+
+                Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -Proxy $proxy
+        
+                It "Should set a RsDataSource" {
+                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                }
+                Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
 
         Context "Get-RsItemReference with ReportServerUri parameter"{
+                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+                $extension = Get-ExistingDataExtension
+                $credentialRetrieval = 'None'
+                $dataSourcePath = '/' + $dataSourceName
+                New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval
+                $dataSourcePath =  '/' + $dataSourceName
+                $rsDataSource = Get-RsDataSource -Path $dataSourcePath 
+                $reportServerUri = 'http://localhost/reportserver'
+                # DataSource definition
+                $proxy = New-RsWebServiceProxy
+                $namespace = $proxy.GetType().Namespace
+                $datasourceDataType = "$namespace.DataSourceDefinition"
+                $datasource = New-Object $datasourceDataType  
+                $datasource.Extension = Get-ExistingDataExtension
+                $datasource.CredentialRetrieval = 'Prompt'
+                $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
+
+                Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -ReportServerUri $reportServerUri
+        
+                It "Should set a RsDataSource" {
+                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                }
+                Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
 
         Context "Get-RsItemReference with ReportServerUri and Proxy parameter"{
+                $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+                $extension = Get-ExistingDataExtension
+                $credentialRetrieval = 'None'
+                $dataSourcePath = '/' + $dataSourceName
+                New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval 
+                $dataSourcePath =  '/' + $dataSourceName
+                $rsDataSource = Get-RsDataSource -Path $dataSourcePath 
+                $reportServerUri = 'http://localhost/reportserver'
+                # DataSource definition
+                $proxy = New-RsWebServiceProxy
+                $namespace = $proxy.GetType().Namespace
+                $datasourceDataType = "$namespace.DataSourceDefinition"
+                $datasource = New-Object $datasourceDataType  
+                $datasource.Extension = Get-ExistingDataExtension
+                $datasource.CredentialRetrieval = 'Prompt'
+                $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
+
+                Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -Proxy $proxy -ReportServerUri $reportServerUri
+        
+                It "Should set a RsDataSource" {
+                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                }
+                Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
-
-
 }
