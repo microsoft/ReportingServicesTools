@@ -2,7 +2,6 @@
 # Licensed under the MIT License (MIT)
 
 Describe "Write-RsCatalogItem" {
-
     Context "Write-RsCatalogItem with min parameters"{
         $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
