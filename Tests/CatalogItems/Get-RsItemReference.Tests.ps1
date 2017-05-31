@@ -4,7 +4,7 @@
 Describe "Get-RsItemReference" {
         Context "Get-RsItemReference with min parameters"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
@@ -14,19 +14,19 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSet with min parameters" {
                    $dataSetReference = $reportReferences | Where-Object ReferenceType -eq 'DataSet'
-                   $dataSetReference.Name | Should Be 'UnDataset'
+                   $dataSetReference.Name | Should Be 'reportReferenceUnDataset'
                 }
 
                 It "Should found a reference to a RsDataSource with min parameters" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Get-RsItemContent with Proxy parameter"{
+        Context "Get-RsItemReference with Proxy parameter"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReferenceProxynParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
@@ -37,14 +37,14 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSource of a report with Proxy Parameter" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Get-RsItemContent with ReportServerUri Parameter"{
+        Context "Get-RsItemReference with ReportServerUri Parameter"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReference_ReportServerUriParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
@@ -55,14 +55,14 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSource of a report with ReportServerUri Parameter" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Get-RsItemContent with ReportServerUri and Proxy Parameter"{
+        Context "Get-RsItemReference with ReportServerUri and Proxy Parameter"{
 
-                $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutGetRsItemReference_ReportServerUriProxyParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
@@ -74,7 +74,7 @@ Describe "Get-RsItemReference" {
 
                 It "Should found a reference to a RsDataSource of a report with ReportServerUri and Proxy Parameters" {
                    $dataSourceReference = $reportReferences | Where-Object ReferenceType -eq 'DataSource'
-                   $dataSourceReference.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+                   $dataSourceReference.Name | Should Be 'reportReferenceDataSource'
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
