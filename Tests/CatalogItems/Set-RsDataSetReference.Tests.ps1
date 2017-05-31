@@ -34,6 +34,7 @@ Describe "Set-RsDatsSetReference" {
         $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
         $reportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
+        $proxy = New-RsWebServiceProxy 
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -Proxy $proxy
 
         It "Should set a RsDataSet reference" {
@@ -77,6 +78,7 @@ Describe "Set-RsDatsSetReference" {
         $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
         $reportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
         $reportServerUri = 'http://localhost/reportserver'
+        $proxy = New-RsWebServiceProxy 
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -ReportServerUri $reportServerUri -Proxy $proxy
        
