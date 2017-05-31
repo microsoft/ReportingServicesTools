@@ -11,13 +11,12 @@ Describe "Set-RsDatsSetReference" {
         Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
         $report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
         $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-        $proxy = New-RsWebServiceProxy
-        $reportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
+        $reportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path
 
         It "Should set a RsDataSet reference" {
-            $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
+            $newReportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
@@ -33,13 +32,12 @@ Describe "Set-RsDatsSetReference" {
         Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
         $report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
         $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-        $proxy = New-RsWebServiceProxy
-        $reportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
+        $reportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -Proxy $proxy
 
         It "Should set a RsDataSet reference" {
-            $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
+            $newReportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
@@ -55,14 +53,13 @@ Describe "Set-RsDatsSetReference" {
         Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
         $report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
         $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-        $proxy = New-RsWebServiceProxy
+        $reportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
         $reportServerUri = 'http://localhost/reportserver'
-        $reportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -ReportServerUri $reportServerUri
         
         It "Should set a RsDataSet referencee" {
-            $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
+            $newReportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
@@ -78,14 +75,13 @@ Describe "Set-RsDatsSetReference" {
         Write-RsFolderContent -Path $localResourcesPath -RsFolder $folderPath
         $report = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
         $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-        $proxy = New-RsWebServiceProxy
+        $reportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
         $reportServerUri = 'http://localhost/reportserver'
-        $reportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
         $reportDataSetReferencePath =  $reportDataSetReference.Reference
         Set-RsDataSetReference -Path $report.path -DataSetName  $reportDataSetReference.Name -DataSetPath $dataSet.path -ReportServerUri $reportServerUri -Proxy $proxy
        
         It "Should set a RsDataSet reference" {
-            $newReportDataSetReference = $proxy.GetItemReferences($report.path, "DataSet")
+            $newReportDataSetReference = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
             $newReportDataSetReferencePath =  $newReportDataSetReference.Reference
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
