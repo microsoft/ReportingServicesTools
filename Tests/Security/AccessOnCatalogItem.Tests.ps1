@@ -5,17 +5,6 @@ function Get-TestUser() {
     return $env:RsUser
 }
 
-function Get-RsCatalogItemPolicies()
-{
-    param(
-        [Parameter(Mandatory = $True)]
-        [string]$Path
-    )
-
-    $inheritsParentProperties = $false
-    $rsProxy = New-RsWebServiceProxy
-    return $rsProxy.GetPolicies($Path, [ref] $inheritsParentProperties)
-}
 
 Describe "Grant and Revoke Access On RS Catalog Items" {
     $user = Get-TestUser
@@ -27,9 +16,9 @@ Describe "Grant and Revoke Access On RS Catalog Items" {
             $role = 'Browser'
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $policies = Get-RsCatalogItemPolicies -Path $catalogItemPath
+            $policies = Get-RsCatalogItemRole -Path $catalogItemPath
             
-            $userPolicy = $policies | Where-Object { $_.GroupUserName -eq $user }
+            $userPolicy = $policies | Where-Object { $_.Identity -eq $user }
             $userPolicy | Should Not BeNullOrEmpty
             
             $userPolicy.Roles.Length | Should Be 1
@@ -41,9 +30,9 @@ Describe "Grant and Revoke Access On RS Catalog Items" {
             $role = 'Content Manager'
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $policies = Get-RsCatalogItemPolicies -Path $catalogItemPath
+            $policies = Get-RsCatalogItemRole -Path $catalogItemPath
             
-            $userPolicy = $policies | Where-Object { $_.GroupUserName -eq $user }
+            $userPolicy = $policies | Where-Object { $_.Identity -eq $user }
             $userPolicy | Should Not BeNullOrEmpty
             
             $userPolicy.Roles.Length | Should Be 1
@@ -64,9 +53,9 @@ Describe "Grant and Revoke Access On RS Catalog Items" {
         It "Should revoke all access from test user" {
             Revoke-AccessOnCatalogItem -UserOrGroupName $user -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $policies = Get-RsCatalogItemPolicies -Path $catalogItemPath
+            $policies = Get-RsCatalogItemRole -Path $catalogItemPath
             
-            $userPolicy = $policies | Where-Object { $_.GroupUserName -eq $user }
+            $userPolicy = $policies | Where-Object { $_.Identity -eq $user }
             $userPolicy | Should BeNullOrEmpty
         }
     }
