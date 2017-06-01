@@ -64,9 +64,6 @@ function Get-RsCatalogItemRole
         [string]
         $Identity,
         
-        [string]
-        $RoleName,
-        
         [Alias('ItemPath')]
         [string]
         $Path = "/",
