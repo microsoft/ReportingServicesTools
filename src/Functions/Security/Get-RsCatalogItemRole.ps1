@@ -83,22 +83,6 @@ function Get-RsCatalogItemRole
 
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
 
-        $GetRsFolderContentParam = @{
-            Proxy = $Proxy
-            RsFolder = $Path
-            Recurse = $Recurse
-            ErrorAction = 'Stop'
-        }
-
-        try
-        {
-            $items = Get-RsFolderContent @GetRsFolderContentParam
-        }
-        catch
-        {
-            throw (New-Object System.Exception("Failed to retrieve items in '$RsFolder': $($_.Exception.Message)", $_.Exception))
-        }
-
     }
         
     Process
@@ -107,25 +91,52 @@ function Get-RsCatalogItemRole
         $inheritParent = $true
         $catalogItemRoles = @()
 
-        foreach($item in $items)
-        {
-            $policies = $Proxy.GetPolicies($item.path, [ref]$inheritParent)
+        # We must get the policies for the parent object first.
+        $parentPolicy = $Proxy.GetPolicies($Path, [ref]$inheritParent)
 
-            # Filter Polices by Identity
-            if($Identity) {
-                $policies = $policies | Where-Object { $_.GroupUserName -eq $Identity }
+        # Filter Polices by Identity
+        if($Identity) {
+            $parentPolicy = $parentPolicy | Where-Object { $_.GroupUserName -eq $Identity }
+        }
+
+        $parentType = $Proxy.GetItemType($Path)
+
+        $catalogItemRoles = New-RsCatalogItemRoleObject -Policy $parentPolicy -Path $Path -TypeName $parentType
+
+            
+        if($Recurse -and $parentType -eq "Folder") {
+
+            $GetRsFolderContentParam = @{
+                Proxy = $Proxy
+                RsFolder = $Path
+                Recurse = $Recurse
+                ErrorAction = 'Stop'
             }
 
-            foreach($policy in $policies)
+            try
             {
-                # Creating an object to merge data from both sources. 
-                $catalogItemRole = New-Object –TypeName PSCustomObject
-                $catalogItemRole | Add-Member –MemberType NoteProperty –Name Identity –Value $policy.GroupUserName
-                $catalogItemRole | Add-Member –MemberType NoteProperty –Name Path –Value $($item.Path + "/" + $item.Name)
-                $catalogItemRole | Add-Member –MemberType NoteProperty –Name TypeName –Value $item.TypeName
-                $catalogItemRole | Add-Member –MemberType NoteProperty –Name Roles –Value $policy.Roles
+                $items = Get-RsFolderContent @GetRsFolderContentParam
+            }
+            catch
+            {
+                throw (New-Object System.Exception("Failed to retrieve items in '$RsFolder': $($_.Exception.Message)", $_.Exception))
+            }
 
-                $catalogItemRoles += $catalogItemRole
+            foreach($item in $items)
+            {
+                $childPolicies = $Proxy.GetPolicies($item.path, [ref]$inheritParent)
+
+                # Filter Polices by Identity
+                if($Identity) {
+                    $childPolicies = $childPolicies | Where-Object { $_.GroupUserName -eq $Identity }
+                }
+
+                foreach($childPolicy in $childPolicies)
+                {
+                    $catalogItemRoles +=  New-RsCatalogItemRoleObject -Policy $childPolicy -Path $item.Path -TypeName $item.TypeName
+                }
+
+                
             }
         }
 
