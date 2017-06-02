@@ -38,7 +38,6 @@ Describe "Out-RsCatalogItem" {
                 Remove-Item $localDataSetDownloadedPath
                 }
                
-               
                 It "Should download a RsDataSource from Reporting Services with min parameters" {
                 $dataSource = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSource'
                 $dataSourcePath = $folderPath + '/' + $dataSource.Name 
