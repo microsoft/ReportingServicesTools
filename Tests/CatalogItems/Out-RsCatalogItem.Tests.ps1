@@ -4,7 +4,7 @@
 Describe "Out-RsCatalogItem" {
         Context "Out-RsCatalogItem with min parameters"{
                  # Upload the catalog items that are going to be downloaded
-                $folderName = 'SutOutRsCatalogItemMinParameters' + [guid]::NewGuid()
+                $folderName = 'SutOutRsCatalogItem_MinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
@@ -51,7 +51,7 @@ Describe "Out-RsCatalogItem" {
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Download a dataSource with ReportServerUri Parameter"{
+        Context "Download a report with ReportServerUri Parameter"{
                  # Upload the catalog items that are going to be downloaded
                 $folderName = 'SutOutRsCatalogItemMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
@@ -80,7 +80,7 @@ Describe "Out-RsCatalogItem" {
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Download a dataSource with Proxy and ReportServerUr Parameter"{
+        Context "Download a report with Proxy and ReportServerUr Parameter"{
                 # Upload the catalog items that are going to be downloaded
                 $folderName = 'SutOutRsCatalogItemMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
@@ -110,7 +110,7 @@ Describe "Out-RsCatalogItem" {
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
 
-        Context "Download a dataSource with Proxy Parameter"{
+        Context "Download a report with Proxy Parameter"{
                 # Upload the catalog items that are going to be downloaded
                 $folderName = 'SutOutRsCatalogItemMinParameters' + [guid]::NewGuid()
                 New-RsFolder -Path / -FolderName $folderName
