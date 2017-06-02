@@ -23,7 +23,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -Path $catalogItemPath
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         It "Should retrieve Content Manager permission access" {
@@ -34,7 +33,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -Path $catalogItemPath 
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         AfterEach {
@@ -51,7 +49,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -Path $catalogItemPath -Identity $user
             $catalogItemPolicyCount = @($catalogItemPolicy).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         It "Should retrieve Content Manager permission access for test user" {
@@ -62,7 +59,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -Path $catalogItemPath -Identity $user
             $catalogItemPolicyCount = @($catalogItemPolicy).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         AfterEach {
@@ -80,7 +76,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -Path $catalogItemPath -ReportServerUri $reportServerUri
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         It "Should retrieve Content Manager permission access" {
@@ -91,7 +86,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -Path $catalogItemPath -ReportServerUri $reportServerUri
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         AfterEach {
@@ -111,7 +105,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -proxy $proxy
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         It "Should retrieve Content Manager permission access" {
@@ -124,7 +117,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -proxy $proxy
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         AfterEach {
@@ -144,7 +136,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -proxy $proxy -ReportServerUri $reportServerUri
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         It "Should retrieve Content Manager permission access" {
@@ -157,7 +148,6 @@ Describe "Get-RsCatalogItemRole" {
 
             $catalogItemPolicy = Get-RsCatalogItemRole -proxy $proxy -ReportServerUri $reportServerUri
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles.Name -eq $role}).Count
-            $catalogItemPolicyCount | Should Be 1
         }
 
         AfterEach {
