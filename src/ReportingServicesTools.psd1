@@ -67,6 +67,7 @@
         'Get-RsDataSource',
         'Get-RsFolderContent',
         'Get-RsItemReference',
+        'Get-RsCatalogItemRole',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
         'New-RsConfigurationSettingObject',
