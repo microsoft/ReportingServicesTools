@@ -4,7 +4,7 @@
 Describe "Write-RsCatalogItem" {
     
     Context "Write-RsCatalogItem with min parameters"{
-        $folderName = 'SutWriteRsFolderContentMinParameters' + [guid]::NewGuid()
+        $folderName = 'SutWriteRsCatalogItem_MinParameters' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
@@ -34,7 +34,7 @@ Describe "Write-RsCatalogItem" {
     }
 
     Context "Write-RsCatalogItem with Proxy parameter"{
-        $folderName = 'SutWriteCatalogItem_ProxyParameter' + [guid]::NewGuid()
+        $folderName = 'SutWriteRsCatalogItem_ProxyParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $proxy = New-RsWebServiceProxy 
@@ -50,7 +50,7 @@ Describe "Write-RsCatalogItem" {
     }
 
     Context "Write-RsCatalogItem with Proxy and ReportServerUri parameter"{
-        $folderName = 'SutWriteCatalogItem_ReporServerUrioProxyParameters' + [guid]::NewGuid()
+        $folderName = 'SutWriteRsCatalogItem_ReporServerUrioProxyParameters' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $proxy = New-RsWebServiceProxy 
@@ -67,7 +67,7 @@ Describe "Write-RsCatalogItem" {
     }
 
      Context "Write-RsCatalogItem with ReportServerUri parameter"{
-        $folderName = 'SutWriteCatalogItem_ReportServerUriParameter' + [guid]::NewGuid()
+        $folderName = 'SutWriteRsCatalogItem_ReportServerUriParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $reportServerUri = 'http://localhost/reportserver'
