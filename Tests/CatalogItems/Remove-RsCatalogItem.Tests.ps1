@@ -41,76 +41,69 @@ Describe "Remove-RsCatalogItem" {
         }
 
         It "Should remove a RsFolder" {
-            $folderList = Get-RsFolderContent -RsFolder /
-            $folderCount = ($folderList | Where-Object name -eq $folderName).Count
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
             $folderPath = '/' + $folderName
-            $folderCount | Should Be 1
+            $folder.count | Should Be 1
             # Remove a RsFolder
             Remove-RsCatalogItem -RsFolder $folderPath
-            $folderList = Get-RsFolderContent -RsFolder /
-            $folderCount = ($folderList | Where-Object name -eq $folderName).Count
-            $folderPath = '/' + $folderName
-            $folderCount | Should Be 0
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 0
         }
     }
 
     Context "Remove-RsCatalogItem with Proxy parameter"{
-        $folderName = 'SutRemove-RsCatalogItem_ProxyParameters' + [guid]::NewGuid()
+        $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
-        $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsFolderContent -Path $localPath -RsFolder $folderPath
-
-        It "Should remove a Report with Proxy Parameter" {
-            $rsReportsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-            $rsReportsList.Count | Should Be 1
-            # Remove a report
-            $rsReportPath = $folderPath + '/emptyReport' 
-            $proxy = New-RsWebServiceProxy
-            Remove-RsCatalogItem -RsFolder $rsReportPath -Proxy $proxy
-            $rsReportsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-            $rsReportsList.Count | Should Be 0
+        $proxy = New-RsWebServiceProxy
+        It "Should remove a RsFolder" {
+            $folderList = Get-RsFolderContent -RsFolder '/' 
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 1
+            # Remove a RsFolder
+            Remove-RsCatalogItem -Path $folderPath -Proxy $proxy
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 0 
         }
 
     }
 
-    Context "Write-RsFolderContent with Proxy and ReportServerUri parameter"{
-        $folderName = 'SutRemove-RsCatalogItem_ProxyReportServerUriParameters' + [guid]::NewGuid()
+    Context "Remove-RsCatalogItem with Proxy and ReportServerUri parameter"{
+        $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
-        $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsFolderContent -Path $localPath -RsFolder $folderPath
-
-        It "Should remove a Report with Proxy Parameter" {
-            $rsReportsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-            $rsReportsList.Count | Should Be 1
-            # Remove a report
-            $rsReportPath = $folderPath + '/emptyReport' 
-            $proxy = New-RsWebServiceProxy
-            $reportServerUri = 'http://localhost/reportserver'
-            Remove-RsCatalogItem -RsFolder $rsReportPath -Proxy $proxy -ReportServerUri $reporServerUri
-            $rsReportsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-            $rsReportsList.Count | Should Be 0
+        $proxy = New-RsWebServiceProxy
+        $reportServerUri = 'http://localhost/reportserver'
+        It "Should remove a RsFolder with Proxy and ReportServerUri parameter" {
+            $folderList = Get-RsFolderContent -RsFolder '/' 
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 1
+            # Remove a RsFolder
+            Remove-RsCatalogItem -Path $folderPath -Proxy $proxy -ReportServerUri $reporServerUri
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 0 
         }
 
     }
 
     Context "Remove-RsCatalogItem with ReportServerUri parameter"{
-        $folderName = 'SutRemove-RsCatalogItem_ReportServerUrParameters' + [guid]::NewGuid()
+        $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
-        $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsFolderContent -Path $localPath -RsFolder $folderPath
-
-        It "Should remove a Report with ReportServer Parameter" {
-            $rsReportsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-            $rsReportsList.Count | Should Be 1
-            # Remove a report
-            $rsReportPath = $folderPath + '/emptyReport' 
-            $reportServerUri = 'http://localhost/reportserver'
-            Remove-RsCatalogItem -RsFolder $rsReportPath -ReportServerUri $reportServerUri
-            $rsReportsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
-            $rsReportsList.Count | Should Be 0
+        $reportServerUri = 'http://localhost/reportserver'
+        It "Should remove a RsFolder" {
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 1
+            # Remove a RsFolder
+            Remove-RsCatalogItem -ReportServerUri $reportServerUri -Path $folderPath
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 0 
         }
 
     }
@@ -119,18 +112,15 @@ Describe "Remove-RsCatalogItem" {
         $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
-        $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsFolderContent -Path $localPath -RsFolder $folderPath
         It "Should remove a RsFolder" {
-            $folderList = Get-RsFolderContent -RsFolder /
-            $folderCount = ($folderList | Where-Object name -eq $folderName).Count
-            $folderPath = '/' + $folderName
-            $folderCount | Should Be 1
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 1
             # Remove a RsFolder
-            Get-RsCatalogItems -RsFolder $folderPath | Remove-RsCatalogItem 
-            $folderList = Get-RsFolderContent -RsFolder /
-            $folderCount = ($folderList | Where-Object name -eq $folderName).Count
-            $folderPath = '/' + $folderName
-            $folderCount | Should Be 0
+            $folder | Remove-RsCatalogItem
+            $folderList = Get-RsFolderContent -RsFolder '/'
+            $folder = $folderList | Where-Object name -eq $folderName
+            $folder.count | Should Be 0 
         }
+    }
 }
