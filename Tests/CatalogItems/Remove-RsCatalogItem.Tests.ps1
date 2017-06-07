@@ -115,8 +115,8 @@ Describe "Remove-RsCatalogItem" {
 
     }
 
-    Context "Remove-RsCatalogItem with min parameters"{
-        $folderName = 'SutRemoveRsCatalogItem_MinParameters' + [guid]::NewGuid()
+    Context "Remove-RsCatalogItem with pipping " {
+        $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
