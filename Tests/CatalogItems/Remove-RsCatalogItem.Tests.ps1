@@ -58,7 +58,7 @@ Describe "Remove-RsCatalogItem" {
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $proxy = New-RsWebServiceProxy
-        It "Should remove a RsFolder" {
+        It "Should remove a RsFolder with Proxy parameter" {
             $folderList = Get-RsFolderContent -RsFolder '/' 
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 1
@@ -95,7 +95,7 @@ Describe "Remove-RsCatalogItem" {
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $reportServerUri = 'http://localhost/reportserver'
-        It "Should remove a RsFolder" {
+        It "Should remove a RsFolder with ReportServerUri parameter" {
             $folderList = Get-RsFolderContent -RsFolder '/'
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 1
