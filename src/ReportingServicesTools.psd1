@@ -7,7 +7,7 @@
     RootModule = 'ReportingServicesTools.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.0.0.9'
+    ModuleVersion = '0.0.1.1'
     
     # ID used to uniquely identify this module
     GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -67,6 +67,7 @@
         'Get-RsDataSource',
         'Get-RsFolderContent',
         'Get-RsItemReference',
+        'Get-RsCatalogItemRole',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
         'New-RsConfigurationSettingObject',

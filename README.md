@@ -33,6 +33,7 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
 |Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
+|Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
