@@ -114,4 +114,23 @@ Describe "Remove-RsCatalogItem" {
         }
 
     }
+
+    Context "Remove-RsCatalogItem with min parameters"{
+        $folderName = 'SutRemoveRsCatalogItem_MinParameters' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $folderName
+        $folderPath = '/' + $folderName
+        $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+        Write-RsFolderContent -Path $localPath -RsFolder $folderPath
+        It "Should remove a RsFolder" {
+            $folderList = Get-RsFolderContent -RsFolder /
+            $folderCount = ($folderList | Where-Object name -eq $folderName).Count
+            $folderPath = '/' + $folderName
+            $folderCount | Should Be 1
+            # Remove a RsFolder
+            Get-RsCatalogItems -RsFolder $folderPath | Remove-RsCatalogItem 
+            $folderList = Get-RsFolderContent -RsFolder /
+            $folderCount = ($folderList | Where-Object name -eq $folderName).Count
+            $folderPath = '/' + $folderName
+            $folderCount | Should Be 0
+        }
 }
