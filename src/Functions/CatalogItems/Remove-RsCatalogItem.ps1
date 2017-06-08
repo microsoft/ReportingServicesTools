@@ -47,7 +47,7 @@ function Remove-RsCatalogItem
     param (
         [Alias('ItemPath', 'Path')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
-        [string[]]
+        [ System.Object[] ]
         $RsFolder,
         
         [string]
@@ -74,8 +74,16 @@ function Remove-RsCatalogItem
                 try
                 {
                     Write-Verbose "Deleting catalog item $item..."
-                    $Proxy.DeleteItem($item)
+                    if( $item -is [string] )
+                    {
+                        $Proxy.DeleteItem($item)
+                    } 
+                    else
+                    {
+                        $Proxy.DeleteItem($item.path)
+                    }
                     Write-Verbose "Catalog item deleted successfully!"
+                    
                 }
                 catch
                 {
