@@ -9,7 +9,7 @@ Function Get-ExistingDataExtension
 
 Describe "Set-RsDataSource" {
         Context "Set-RsDataSource with min parameters"{
-                $dataSourceName = 'SutSetDataSourceProxyParameter' + [guid]::NewGuid()
+                $dataSourceName = 'SutSetDataSource_MinParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -24,20 +24,17 @@ Describe "Set-RsDataSource" {
                 $datasource.Extension = Get-ExistingDataExtension
                 $datasource.CredentialRetrieval = 'Prompt'
                 $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
-
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource
         
                 It "Should set a RsDataSource with min parameters" {
-                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
-                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                        $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                        $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
 
-        
-
         Context "Set-RsDataSource with Proxy parameter"{
-                $dataSourceName = 'SutSetDataSourceProxyParameter' + [guid]::NewGuid()
+                $dataSourceName = 'SutSetDataSource_ProxyParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -52,18 +49,17 @@ Describe "Set-RsDataSource" {
                 $datasource.Extension = Get-ExistingDataExtension
                 $datasource.CredentialRetrieval = 'Prompt'
                 $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
-
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -Proxy $proxy
-        
+
                 It "Should set a RsDataSource with proxy Parameter" {
-                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
-                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                        $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                        $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
 
         Context "Set-RsDataSource with ReportServerUri parameter"{
-                $dataSourceName = 'SutSetDataSourceReportServerUriParameter' + [guid]::NewGuid()
+                $dataSourceName = 'SutSetDataSource_ReportServerUriParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -79,18 +75,17 @@ Describe "Set-RsDataSource" {
                 $datasource.Extension = Get-ExistingDataExtension
                 $datasource.CredentialRetrieval = 'Prompt'
                 $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
-
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -ReportServerUri $reportServerUri
         
-                It "Should set a RsDataSource with reportServerUri parameter" {
-                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
-                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                It "Should set a RsDataSource with ReportServerUri parameter" {
+                        $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                        $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
 
         Context "Set-RsDataSource with ReportServerUri and Proxy parameter"{
-                $dataSourceName = 'SutSetDataSourceReportServerUriProxyParameter' + [guid]::NewGuid()
+                $dataSourceName = 'SutSetDataSource_ReportServerUriProxyParameter' + [guid]::NewGuid()
                 $extension = Get-ExistingDataExtension
                 $credentialRetrieval = 'None'
                 $dataSourcePath = '/' + $dataSourceName
@@ -106,12 +101,11 @@ Describe "Set-RsDataSource" {
                 $datasource.Extension = Get-ExistingDataExtension
                 $datasource.CredentialRetrieval = 'Prompt'
                 $datasource.ConnectString =  'Data Source=localhost;Initial Catalog=ReportServer'
-
                 Set-RsDataSource -Path $dataSourcePath -DataSourceDefinition $datasource -Proxy $proxy -ReportServerUri $reportServerUri
         
-                It "Should set a RsDataSource with proxy and ReportServerUri parameter" {
-                 $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
-                 $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
+                It "Should set a RsDataSource with Proxy and ReportServerUri parameter" {
+                        $setRsDataSource = Get-RsDataSource -Path $dataSourcePath
+                        $rsDataSource.CredentialRetrieval | Should Not Be $setRsDataSource.CredentialRetrieval
                 }
                 Remove-RsCatalogItem -RsFolder $dataSourcePath
         }
