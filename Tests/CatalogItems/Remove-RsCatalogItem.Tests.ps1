@@ -54,7 +54,7 @@ Describe "Remove-RsCatalogItem" {
     }
 
     Context "Remove-RsCatalogItem with Proxy parameter"{
-        $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
+        $folderName = 'SutRemoveRsCatalogItem_ProxyParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $proxy = New-RsWebServiceProxy
@@ -68,11 +68,10 @@ Describe "Remove-RsCatalogItem" {
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0 
         }
-
     }
 
     Context "Remove-RsCatalogItem with Proxy and ReportServerUri parameter"{
-        $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
+        $folderName = 'SutRemoveRsCatalogItem_ProxyReportServerUriParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $proxy = New-RsWebServiceProxy
@@ -87,11 +86,10 @@ Describe "Remove-RsCatalogItem" {
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0 
         }
-
     }
 
     Context "Remove-RsCatalogItem with ReportServerUri parameter"{
-        $folderName = 'SutRemoveRsCatalogItem_pipping' + [guid]::NewGuid()
+        $folderName = 'SutRemoveRsCatalogItem_ReportServerUriParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $reportServerUri = 'http://localhost/reportserver'
@@ -105,7 +103,6 @@ Describe "Remove-RsCatalogItem" {
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0 
         }
-
     }
 
     Context "Remove-RsCatalogItem with pipping " {

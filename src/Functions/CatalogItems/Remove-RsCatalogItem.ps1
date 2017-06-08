@@ -73,18 +73,16 @@ function Remove-RsCatalogItem
             {
                 try
                 {
+                    Write-Verbose "Deleting catalog item $item..."
                     if( $item -is [string] )
                     {
-                        Write-Verbose "Deleting catalog item $item..."
                         $Proxy.DeleteItem($item)
-                        Write-Verbose "Catalog item deleted successfully!"
                     } 
                     else
                     {
-                        Write-Verbose "Deleting catalog item $item..."
                         $Proxy.DeleteItem($item.path)
-                        Write-Verbose "Catalog item deleted successfully!"
                     }
+                    Write-Verbose "Catalog item deleted successfully!"
                     
                 }
                 catch
