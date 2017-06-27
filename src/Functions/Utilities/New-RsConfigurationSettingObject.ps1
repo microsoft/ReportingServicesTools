@@ -26,7 +26,7 @@ function New-RsConfigurationSettingObject
             The credentials with which to connect to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
         
-        .PARAMETER MinimumSqlServerVersion
+        .PARAMETER MinimumReportServerVersion
             The minimum SQL server version required in order to establish a connection. If trying to connect to a lower version, this function will error out.
             This allows a function to require such minimum version, without having to complicate code by looking up defaults and considering user input.
         
@@ -72,13 +72,14 @@ function New-RsConfigurationSettingObject
         [System.Management.Automation.PSCredential]
         $Credential = ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential),
         
+        [Alias('MinimumSqlServerVersion')]
         [Microsoft.ReportingServicesTools.SqlServerVersion]
-        $MinimumSqlServerVersion
+        $MinimumReportServerVersion
     )
     
-    if (($MinimumSqlServerVersion) -and ($MinimumSqlServerVersion -gt $ReportServerVersion))
+    if (($MinimumReportServerVersion) -and ($MinimumReportServerVersion -gt $ReportServerVersion))
     {
-        throw (New-Object System.Management.Automation.PSArgumentException("Trying to connect to $ComputerName \ $ReportServerInstance, but it is only $ReportServerVersion when at least $MinimumSqlServerVersion is required!"))
+        throw (New-Object System.Management.Automation.PSArgumentException("Trying to connect to $ComputerName \ $ReportServerInstance, but it is only $ReportServerVersion when at least $MinimumReportServerVersion is required!"))
     }
     
     $getWmiObjectParameters = @{

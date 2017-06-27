@@ -63,7 +63,7 @@ function New-RsConfigurationSettingObjectHelper
             - ReportServerVersion
             - ComputerName
             - Credential
-            - MinimumSqlServerVersion
+            - MinimumReportServerVersion
             These parameters are passed on to the New-RsConfigurationSettingObject function.
             All other bound parameters are ignored.
         
@@ -82,7 +82,7 @@ function New-RsConfigurationSettingObjectHelper
         $BoundParameters
     )
     
-    $goodKeys = @("ReportServerInstance", "ReportServerVersion", "ComputerName", "Credential", "MinimumSqlServerVersion")
+    $goodKeys = @("SqlServerInstance", "ReportServerInstance", "SqlServerVersion", "ReportServerVersion", "ComputerName", "Credential", "MinimumSqlServerVersion", "MinimumReportServerVersion")
     $NewRsConfigurationSettingObjectParam = @{ }
     
     foreach ($key in $BoundParameters.Keys)
