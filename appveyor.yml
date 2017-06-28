@@ -87,7 +87,7 @@ deploy_script:
       $moduleName = "ReportingServicesTools"
       $currentVersion = (Import-PowerShellDataFile .\src\$moduleName.psd1).ModuleVersion
       ((Get-Content .\src\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\src\$moduleName.psd1
-      Publish-Module -Path .\src\ -NuGetApiKey $env:galleryPublishingKey
+      Publish-Module -Path .\src\ReportingServicesTools.psd1 -NuGetApiKey $env:galleryPublishingKey
       
       git config --global core.safecrlf false
       git config --global credential.helper store
