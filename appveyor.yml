@@ -64,16 +64,16 @@ test_script:
 
     # Integration test section
     # Activate verbose on Powershell
-    $VerbosePreference = "continue" 
+    ##$VerbosePreference = "continue" 
     # Import Reporting Services tools 
-    Import-Module .\src\ReportingServicesTools.psd1 
+    ##Import-Module .\src\ReportingServicesTools.psd1 
     # Executing integration tests
-    $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
+    ##$resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
     # Upload integration tests results
-    $wcIT = New-Object 'System.Net.WebClient'
-    $wcIT.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResultsIT.xml))
+    ##$wcIT = New-Object 'System.Net.WebClient'
+    ##$wcIT.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResultsIT.xml))
     # Fail if thre are issues on integration tests
-    if($resultsIT.FailedCount -gt 0){throw "Integration Test found $($resultsIT.FailedCount) issues"}
+    ##if($resultsIT.FailedCount -gt 0){throw "Integration Test found $($resultsIT.FailedCount) issues"}
     
 deploy_script:
 - ps: |
@@ -87,7 +87,7 @@ deploy_script:
       $moduleName = "ReportingServicesTools"
       $currentVersion = (Import-PowerShellDataFile .\src\$moduleName.psd1).ModuleVersion
       ((Get-Content .\src\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\src\$moduleName.psd1
-      Publish-Module -Path .\src\ReportingServicesTools.psd1 -NuGetApiKey $env:galleryPublishingKey
+      Publish-Module -Path .\src -NuGetApiKey $env:galleryPublishingKey
       
       git config --global core.safecrlf false
       git config --global credential.helper store
