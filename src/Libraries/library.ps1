@@ -99,7 +99,12 @@ namespace Microsoft.ReportingServicesTools
         /// <summary>
         /// SQL Server 2016
         /// </summary>
-        SQLServer2016 = 13
+        SQLServer2016 = 13,
+
+        /// <summary>
+        /// SQL Server 2017
+        /// </summary>
+        SQLServer2017 = 14
     }
 }
 "@

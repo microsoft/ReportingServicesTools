@@ -68,6 +68,7 @@ Some of the commands listed above allow you to optionally specify the version of
 |SQL Server 2012|11|
 |SQL Server 2014|12|
 |SQL Server 2016|13|
+|SQL Server 2017|14|
 
 ## Motivation
 
