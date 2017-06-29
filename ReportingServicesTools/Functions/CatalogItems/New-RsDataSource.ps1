@@ -15,6 +15,9 @@ function New-RsDataSource
         
         .PARAMETER Name
             Specify the name of the the new data source
+
+        .PARAMETER Description
+            Specify the description to be added to the data source.
         
         .PARAMETER Extension
             Specify the extension of the new data source (e.g. SQL, SQLAZURE, OLEDB, OLEDB-MD, etc.) For full list, please look at <Extensions>\<Data> node in C:\Program Files\Microsoft SQL Server\MSRS{VersionNumber}.{InstanceName}\Reporting Services\ReportServer\RSReportServer.config.
@@ -111,6 +114,9 @@ function New-RsDataSource
         [Parameter(Mandatory = $True)]
         [string]
         $Name,
+
+        [string]
+        $Description,
         
         [Parameter(Mandatory = $True)]
         [string]
@@ -168,6 +174,7 @@ function New-RsDataSource
 
     $namespace = $proxy.GetType().Namespace
     $datasourceDataType = "$namespace.DataSourceDefinition"
+    $propertyDataType = "$namespace.Property"
     $credentialRetrievalEnumType = "$namespace.CredentialRetrievalEnum"
 
     $datasource = New-Object $datasourceDataType
@@ -198,10 +205,19 @@ function New-RsDataSource
         throw (New-Object System.Exception("Exception occurred while converting credential retrieval to enum! $($_.Exception.Message)", $_.Exception))
     }
 
+    $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
+    if ($Description)
+    {
+        $descriptionProperty = New-Object $propertyDataType
+        $descriptionProperty.Name = 'Description'
+        $descriptionProperty.Value = $Description
+        $additionalProperties.Add($descriptionProperty)
+    }
+
     try
     {
         Write-Verbose "Creating data source..."
-        $Proxy.CreateDataSource($Name, $RsFolder, $Overwrite, $datasource, $null)
+        $Proxy.CreateDataSource($Name, $RsFolder, $Overwrite, $datasource, $additionalProperties)
         Write-Verbose "Data source created successfully!"
     }
     catch
