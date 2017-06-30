@@ -13,6 +13,9 @@ function Set-RsDataSource
         
         .PARAMETER Path
             Specify the path to the data source.
+
+        .PARAMETER Description
+            Specify the updated description to display for the data source.
         
         .PARAMETER DataSourceDefinition
             Specify the data source definition of the Data Source to update
@@ -53,6 +56,9 @@ function Set-RsDataSource
         
         [Parameter(Mandatory = $True)]
         $DataSourceDefinition,
+
+        [string]
+        $Description,
         
         [string]
         $ReportServerUri,
@@ -99,6 +105,7 @@ function Set-RsDataSource
         Write-Verbose "Retrieving data extensions..."
         try
         {
+            Write-Verbose "Validating data extension..."
             if ($Proxy.ListExtensions("Data").Name -notcontains $DataSourceDefinition.Extension)
             {
                 throw "Extension specified is not supported by the report server!"
@@ -112,7 +119,30 @@ function Set-RsDataSource
         
         try
         {
-            Write-Verbose "Updating data source..."
+            if ($Description)
+            {
+                Write-Verbose "Retrieving existing data source description..."
+                $properties = $Proxy.GetProperties($Path, $null)
+                $descriptionProperty = $properties | Where { $_.Name -eq 'Description' }
+                if (!$descriptionProperty)
+                {
+                    $namespace = $proxy.GetType().Namespace
+                    $propertyDataType = "$namespace.Property"
+                    $descriptionProperty = New-Object $propertyDataType
+                    $descriptionProperty.Name = 'Description'
+                    $descriptionProperty.Value = $Description
+                    $properties.Add($descriptionProperty)
+                }
+                else
+                {
+                    $descriptionProperty.Value = $Description
+                }
+
+                Write-Verbose "Updating data source description..."
+                $Proxy.SetProperties($Path, $descriptionProperty)
+            }
+            
+            Write-Verbose "Updating data source contents..."
             $Proxy.SetDataSourceContents($Path, $DataSourceDefinition)
             Write-Verbose "Data source updated successfully!"
         }

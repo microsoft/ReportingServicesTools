@@ -21,7 +21,7 @@ Function Get-ExistingDataExtension
 }
 
 Describe "New-RsDataSource" {
-    Context "Create RsDataSource with minimun parameters"{
+    Context "Create RsDataSource with minimal parameters"{
         # Declare datasource Name, Extension, CredentialRetrieval, and DataSource path.
         $dataSourceName = 'SutDataSourceMinParameters' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
@@ -217,6 +217,30 @@ Describe "New-RsDataSource" {
         It "Should overwrite a datasource" {
             $dataSource.CredentialRetrieval | Should be  $credentialRetrievalChange 
             $dataSource.Count | Should Be 1
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $dataSourcePath
+    }
+
+    Context "Create RsDataSource with description"{
+        # Declare datasource Name, Extension, CredentialRetrieval, and DataSource path.
+        $dataSourceName = 'SutDataSourceDescription' + [guid]::NewGuid()
+        $extension = Get-ExistingDataExtension
+        $credentialRetrieval = 'None'
+        $dataSourcePath = '/' + $dataSourceName
+        $description = 'This is a description'
+        New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -Description $description
+        $dataSource = Get-RsDataSource -Path $dataSourcePath
+        $proxy = New-RsWebServiceProxy
+        $properties = $proxy.GetProperties($dataSourcePath, $null)
+        It "Should be a new data source" {
+            $dataSource.Count | Should Be 1
+            $dataSource.Extension | Should Be $extension
+            $dataSource.CredentialRetrieval | Should Be $credentialRetrieval
+            $descriptionProperty = $properties | Where { $_.Name -eq 'Description' }
+            $descriptionProperty | Should Not BeNullOrEmpty
+            $descriptionProperty.Value | Should Be $description
+            
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $dataSourcePath
