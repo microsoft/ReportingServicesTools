@@ -73,19 +73,22 @@ function Set-RsUrlReservation
     
     try
     {
+        Write-Output "Virtual Directory for ReportServerWebService"
         $rsWmiObject.SetVirtualDirectory("ReportServerWebService",$ReportServerVirtualDirectory,(Get-Culture).Lcid)
+        Write-Output "Url Reservation for ReportServerWebService"
         $rsWmiObject.ReserveURL("ReportServerWebService","http://+:80",(Get-Culture).Lcid)
         if($ReportServerVersion -and $ReportServerVersion -lt 13)
         {
-            Write-Output "Using legacy ReportManager"
             $reportServerWebappName = "ReportManager"
         }
         else
         {
-            Write-Output "Using Portal"
             $reportServerWebappName = "ReportServerWebApp"
         }
+
+        Write-Output "Virtual Directory for $reportServerWebappName"
         $rsWmiObject.SetVirtualDirectory($reportServerWebappName,$PortalVirtualDirectory,(Get-Culture).Lcid)
+        Write-Output "Url Reservation for $reportServerWebappName"
         $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:80",(Get-Culture).Lcid)
     }
     catch
