@@ -5,10 +5,10 @@ function Set-RsUrlReservation
 {
     <#
         .SYNOPSIS
-            This script configures the Email Settings for SQL Server Reporting Services.
+            This script configures the urls for Report Server
         
         .DESCRIPTION
-            This script configures the Email Settings for SQL Server Reporting Services.
+            This script configures the urls for Report Server
         
         .PARAMETER ReportServerVirtualDirectory
             Specify the name of the virtual directory for the Report Server Endpoint the default is ReportServer, it will configure it as http://myMachine/reportserver
