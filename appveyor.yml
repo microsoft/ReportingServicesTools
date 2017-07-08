@@ -49,7 +49,7 @@ before_test:
 
     Write-Host "Installing PBI RS" (Get-Date).DateTime
     $pbiServerSilentArgs = "/Q /NORESTART IACCEPTLICENSETERMS=true"
-    Start-Process $fileFullPathPbiRs "$silentArgs" -Wait
+    Start-Process $fileFullPathPbiRs "$pbiServerSilentArgs" -Wait
     Write-Host "Installation completed" (Get-Date).DateTime
 
     Write-Host "Importing SQLPS Module..." (Get-Date).DateTime
