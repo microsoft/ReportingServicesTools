@@ -29,7 +29,7 @@ Describe "RsEncryptionKey" {
 
         It "Should allow access of encrypted content post restore" {
             $dataSource = New-TestDataSource
-            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
+            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
             $itemsToClean.Add($dataSource.Path)
 
             $keyPassword = 'RS4Ever!'
@@ -44,7 +44,7 @@ Describe "RsEncryptionKey" {
 
         It "Should allow backup and restore of encryption key to relative paths" {
             $dataSource = New-TestDataSource
-            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
+            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
             $itemsToClean.Add($dataSource.Path)
 
             $keyPassword = 'RS4Ever!'
