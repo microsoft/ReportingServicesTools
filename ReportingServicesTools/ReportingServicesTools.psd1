@@ -70,6 +70,7 @@
         'Get-RsCatalogItemRole',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
+        'Initialize-Rs',
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
@@ -88,6 +89,7 @@
         'Set-RsDataSourcePassword',
         'Set-RsDataSourceReference',
         'Set-RsEmailSettings',
+        'Set-RsUrlReservation'
         'Write-RsCatalogItem',
         'Write-RsFolderContent'
     )
