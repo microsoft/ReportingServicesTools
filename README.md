@@ -89,6 +89,9 @@ After you clone the repo you can make local changes and install them in your loc
     Remove-Module ReportingServicesTools
     Import-Module .\ReportingServicesTools.psd1
 
+For debugging you can set the verbose logging with
+$VerbosePreference = "continue"
+
 ## Test
 
 For running tests locally you need a local default instance of  SQL Server Reporting Services and Pester

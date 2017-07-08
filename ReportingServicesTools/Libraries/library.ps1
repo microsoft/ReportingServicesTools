@@ -21,7 +21,7 @@ namespace Microsoft.ReportingServicesTools
         /// <summary>
         /// The version of the Report Server
         /// </summary>
-        public static SqlServerVersion Version = SqlServerVersion.SQLServer2016;
+        public static SqlServerVersion Version = SqlServerVersion.SQLServer2017;
 
         /// <summary>
         /// The credentials to use when connecting to the reporting services.
