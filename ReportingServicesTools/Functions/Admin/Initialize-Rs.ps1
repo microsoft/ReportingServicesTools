@@ -56,7 +56,7 @@ function Initialize-Rs
     
     try
     {
-        $rsWmiObject.InitializeReportServer($rsWmiObject.InstallationID)
+        $result = $rsWmiObject.InitializeReportServer($rsWmiObject.InstallationID)
     }
     catch
     {
