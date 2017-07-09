@@ -38,7 +38,7 @@ Describe "RsEncryptionKey" {
 
             Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
             Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
-
+            Start-Sleep -s 10
             Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
         }
 
@@ -52,7 +52,7 @@ Describe "RsEncryptionKey" {
 
             Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
             Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
-
+            Start-Sleep -s 10
             Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
         }
 
@@ -62,7 +62,7 @@ Describe "RsEncryptionKey" {
 
         AfterEach {
             if($itemsToClean.Count -gt 0){
-                ##Remove-RsCatalogItem -Path $itemsToClean
+                Remove-RsCatalogItem -Path $itemsToClean
             }
         }
     }
