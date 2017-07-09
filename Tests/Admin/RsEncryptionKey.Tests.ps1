@@ -29,29 +29,29 @@ Describe "RsEncryptionKey" {
 
         It "Should allow access of encrypted content post restore" {
             $dataSource = New-TestDataSource
-            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
             $itemsToClean.Add($dataSource.Path)
 
             $keyPassword = 'RS4Ever!'
             $currentDir = (Resolve-Path '.').Path
             $keyPath = Join-Path $currentDir -ChildPath 'key.snk'
 
-            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
-            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
+            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
 
             Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
         }
 
         It "Should allow backup and restore of encryption key to relative paths" {
             $dataSource = New-TestDataSource
-            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
             $itemsToClean.Add($dataSource.Path)
 
             $keyPassword = 'RS4Ever!'
             $keyPath = '.\key.snk'
 
-            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
-            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
+            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
 
             Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
         }
