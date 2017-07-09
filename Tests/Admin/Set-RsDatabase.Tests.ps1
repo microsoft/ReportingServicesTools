@@ -1,10 +1,10 @@
 function Get-DatabaseName() {
-    $wmiObject = New-RsConfigurationSettingObject -SqlServerInstance MSSQLSERVER
+    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
     return $wmiObject.DatabaseName
 }
 
 function Get-CredentialType() {
-    $wmiObject = New-RsConfigurationSettingObject -SqlServerInstance MSSQLSERVER
+    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
     switch ($wmiObject.DatabaseLogonType) {
         0 { return 'Windows' }
         1 { return 'SQL' }
