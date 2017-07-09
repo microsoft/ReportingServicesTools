@@ -81,7 +81,14 @@ function Restore-RSEncryptionKey
         
         if ($rsWmiObject.InstanceName -ne "MSSQLSERVER")
         {
-            $reportServerService = $reportServerService + '$' + $rsWmiObject.InstanceName
+            if($rsWmiObject.InstanceName -eq "PBIRS")
+            {
+                $reportServerService = 'PowerBIReportServer'
+            }
+            else
+            {
+                $reportServerService = $reportServerService + '$' + $rsWmiObject.InstanceName
+            }
         }
         
         Write-Verbose "Checking if key file path is valid..."
