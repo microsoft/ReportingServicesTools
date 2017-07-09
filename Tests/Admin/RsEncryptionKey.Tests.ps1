@@ -23,45 +23,45 @@ function Test-AccessToEncryptedContent() {
     $dataSource.CredentialRetrieval | Should be $ExpectedDataSource.CredentialRetrievalType
 }
 
-Describe "RsEncryptionKey" {
-    Context "Backing up and restoring encryption key" {
-        $itemsToClean = New-Object System.Collections.Generic.List[string]
+#Describe "RsEncryptionKey" {
+#    Context "Backing up and restoring encryption key" {
+#        $itemsToClean = New-Object System.Collections.Generic.List[string]
 
-        It "Should allow access of encrypted content post restore" {
-            $dataSource = New-TestDataSource
-            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
-            $itemsToClean.Add($dataSource.Path)
+#        It "Should allow access of encrypted content post restore" {
+#            $dataSource = New-TestDataSource
+#            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
+#            $itemsToClean.Add($dataSource.Path)
 
-            $keyPassword = 'RS4Ever!'
-            $currentDir = (Resolve-Path '.').Path
-            $keyPath = Join-Path $currentDir -ChildPath 'key.snk'
+#            $keyPassword = 'RS4Ever!'
+#            $currentDir = (Resolve-Path '.').Path
+#            $keyPath = Join-Path $currentDir -ChildPath 'key.snk'
 
-            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
-            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+#            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+#            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
 
-            Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
-        }
+#            Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
+#        }
 
-        It "Should allow backup and restore of encryption key to relative paths" {
-            $dataSource = New-TestDataSource
-            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
-            $itemsToClean.Add($dataSource.Path)
+#        It "Should allow backup and restore of encryption key to relative paths" {
+#            $dataSource = New-TestDataSource
+#            New-RsDataSource -RsFolder '/' -Name $dataSource.Name -Extension $dataSource.Extension -ConnectionString $dataSource.ConnectionString -CredentialRetrieval $dataSource.CredentialRetrievalType
+#            $itemsToClean.Add($dataSource.Path)
 
-            $keyPassword = 'RS4Ever!'
-            $keyPath = '.\key.snk'
+#            $keyPassword = 'RS4Ever!'
+#            $keyPath = '.\key.snk'
 
-            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
-            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+#            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+#            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
 
-            Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
-        }
+#            Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
+#        }
 
-        BeforeEach {
-            $itemsToClean.Clear()
-        }
+#        BeforeEach {
+#            $itemsToClean.Clear()
+#        }
 
-        AfterEach {
-            Remove-RsCatalogItem -Path $itemsToClean
-        }
-    }
-}
+#        AfterEach {
+#            Remove-RsCatalogItem -Path $itemsToClean
+#        }
+#    }
+#}
