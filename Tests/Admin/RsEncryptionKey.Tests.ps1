@@ -62,7 +62,7 @@ Describe "RsEncryptionKey" {
 
         AfterEach {
             if($itemsToClean.Count -gt 0){
-                Remove-RsCatalogItem -Path $itemsToClean
+                ##Remove-RsCatalogItem -Path $itemsToClean
             }
         }
     }
