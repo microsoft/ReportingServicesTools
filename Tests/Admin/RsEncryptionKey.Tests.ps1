@@ -36,9 +36,9 @@ Describe "RsEncryptionKey" {
             $currentDir = (Resolve-Path '.').Path
             $keyPath = Join-Path $currentDir -ChildPath 'key.snk'
 
-            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
-            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
-
+            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            Start-Sleep -s 10
             Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
         }
 
@@ -50,9 +50,9 @@ Describe "RsEncryptionKey" {
             $keyPassword = 'RS4Ever!'
             $keyPath = '.\key.snk'
 
-            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
-            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose
-
+            Backup-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            Restore-RsEncryptionKey -Password $keyPassword -KeyPath $keyPath -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+            Start-Sleep -s 10
             Test-AccessToEncryptedContent -ExpectedDataSource $dataSource
         }
 
@@ -61,7 +61,9 @@ Describe "RsEncryptionKey" {
         }
 
         AfterEach {
-            Remove-RsCatalogItem -Path $itemsToClean
+            if($itemsToClean.Count -gt 0){
+                Remove-RsCatalogItem -Path $itemsToClean
+            }
         }
     }
 }

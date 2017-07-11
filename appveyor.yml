@@ -26,15 +26,18 @@ before_test:
     [Environment]::SetEnvironmentVariable("RsUser", "$($env:ComputerName)\rsuser1")
     $url = "$($env:downloadUrl)/SQLServer2016-x64-ENU.exe"
     $urlBox = "$($env:downloadUrl)/SQLServer2016-x64-ENU.box"
+    $pbiRsUrl = "$($env:pbirsDownloadUrl)/PowerBIReportServer.exe"
     #arguments sqlserver needs for the installation 
-    $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine,RS /RSINSTALLMODE=DefaultNativeMode /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`" /SECURITYMODE=SQL /SAPWD=`"$($env:SqlSaPwd)`""
+    $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`" /SECURITYMODE=SQL /SAPWD=`"$($env:SqlSaPwd)`""
     $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2016Eval"
     if ((Test-Path $tempDir) -eq $false) { New-Item -ItemType Directory -Path $tempDir}
     $fileFullPath = "$tempDir\SQLServer.exe"
     $fileFullPathBox = "$tempDir\SQLServer.box"
+    $fileFullPathPbiRs = "$tempDir\PowerBIReportServer.exe"
     Write-Host "Downloading..." (Get-Date).DateTime
     (New-Object Net.WebClient).DownloadFile($url , $fileFullPath)
     (New-Object Net.WebClient).DownloadFile($urlBox , $fileFullPathBox)
+    (New-Object Net.WebClient).DownloadFile($pbiRsUrl , $fileFullPathPbiRs)
     Write-Host "Extracting..." (Get-Date).DateTime
     $extractPath = "$tempDir\SQL2016TEMP"
     Start-Process "$fileFullPath" "/Q /x:`"$extractPath`"" -Wait
@@ -43,9 +46,28 @@ before_test:
     $setupPath = "$extractPath\setup.exe"
     Start-Process $setupPath "$silentArgs" -Wait
     Write-Host "Installation completed" (Get-Date).DateTime
+
+    Write-Host "Installing PBI RS" (Get-Date).DateTime
+    $pbiServerSilentArgs = "/Q /NORESTART IACCEPTLICENSETERMS=true"
+    Start-Process $fileFullPathPbiRs "$pbiServerSilentArgs" -Wait
+    Write-Host "Installation completed" (Get-Date).DateTime
+
     Write-Host "Importing SQLPS Module..." (Get-Date).DateTime
-    Import-Module "C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\sqlps\sqlps.psd1" -Verbose
+    Import-Module "C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\sqlps\sqlps.psd1"
     Write-Host "SQLPS Module imported" (Get-Date).DateTime
+
+    # Activate verbose on Powershell
+    $VerbosePreference = "continue" 
+    # Import Reporting Services tools 
+
+    Import-Module .\ReportingServicesTools\ReportingServicesTools.psd1 
+    Write-Host "Configuring PBI RS" (Get-Date).DateTime
+    Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017 -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount -Confirm:$false
+    Set-RsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    Stop-Service PowerBIReportServer
+    Start-Service PowerBIReportServer
+    Write-Host "Configuration completed" (Get-Date).DateTime
 
 test_script:
 - ps: |
@@ -65,8 +87,6 @@ test_script:
     # Integration test section
     # Activate verbose on Powershell
     $VerbosePreference = "continue" 
-    # Import Reporting Services tools 
-    Import-Module .\ReportingServicesTools\ReportingServicesTools.psd1 
     # Executing integration tests
     $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
     # Upload integration tests results
