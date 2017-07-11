@@ -36,10 +36,10 @@ function Set-RsUrlReservation
             Set-RsUrlReservation
             Description
             -----------
-            This command will configure the Report Server with the default urls for Report Server and for the Portal
+            This command will configure the Report Server with the default urls http://myMachine/ReportServer and http://myMachine/Reports
         
         .EXAMPLE
-            Set-RsEmailSettings -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017 -ReportServerVersion '11' 
+            Set-RsUrlReservation -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017 
             Description
             -----------
             This command will configure the url for the server with http://myMachine/ReportServer2017 and http://myMachine/Reports2017
@@ -90,6 +90,8 @@ function Set-RsUrlReservation
         $result = $rsWmiObject.SetVirtualDirectory($reportServerWebappName,$PortalVirtualDirectory,(Get-Culture).Lcid)
         Write-Verbose "Reserving Url for $reportServerWebappName..."
         $result = $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:80",(Get-Culture).Lcid)
+
+        Write-Verbose "Success!"
     }
     catch
     {
