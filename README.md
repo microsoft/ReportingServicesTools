@@ -36,6 +36,7 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
+|Initialize-Rs|This command initializes Report Server post installation. The database MUST be configured and URLs MUST be reserved prior to running this command.|
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
@@ -56,6 +57,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
+|Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source.|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 

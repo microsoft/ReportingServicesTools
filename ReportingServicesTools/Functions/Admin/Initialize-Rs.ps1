@@ -5,10 +5,10 @@ function Initialize-Rs
 {
     <#
         .SYNOPSIS
-            This script initializes a instance of Report Server after the database and urls have been configured
+            This command initializes an instance of Report Server after the database and urls have been configured.
         
         .DESCRIPTION
-            This script initializes a instance of Report Server after the database and urls have been configured
+            This command initializes an instance of Report Server after the database and urls have been configured.
         
         .PARAMETER ReportServerInstance
             Specify the name of the SQL Server Reporting Services Instance.
@@ -56,7 +56,9 @@ function Initialize-Rs
     
     try
     {
+        Write-Verbose "Initializing Report Server..."
         $result = $rsWmiObject.InitializeReportServer($rsWmiObject.InstallationID)
+        Write-Verbose "Success!"
     }
     catch
     {

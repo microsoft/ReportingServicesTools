@@ -5,10 +5,10 @@ function Set-RsUrlReservation
 {
     <#
         .SYNOPSIS
-            This script configures the urls for Report Server
+            This command configures the urls for Report Server
         
         .DESCRIPTION
-            This script configures the urls for Report Server
+            This command configures the urls for Report Server
         
         .PARAMETER ReportServerVirtualDirectory
             Specify the name of the virtual directory for the Report Server Endpoint the default is ReportServer, it will configure it as http://myMachine/reportserver
@@ -36,10 +36,10 @@ function Set-RsUrlReservation
             Set-RsUrlReservation
             Description
             -----------
-            This command will configure the Report Server with the default urls for Report Server and for the Portal
+            This command will configure the Report Server with the default urls http://myMachine/ReportServer and http://myMachine/Reports
         
         .EXAMPLE
-            Set-RsEmailSettings -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017 -ReportServerVersion '11' 
+            Set-RsUrlReservation -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017 
             Description
             -----------
             This command will configure the url for the server with http://myMachine/ReportServer2017 and http://myMachine/Reports2017
@@ -73,9 +73,9 @@ function Set-RsUrlReservation
     
     try
     {
-        Write-Output "Virtual Directory for ReportServerWebService"
+        Write-Verbose "Setting Virtual Directory for ReportServerWebService..."
         $result = $rsWmiObject.SetVirtualDirectory("ReportServerWebService",$ReportServerVirtualDirectory,(Get-Culture).Lcid)
-        Write-Output "Url Reservation for ReportServerWebService"
+        Write-Verbose "Reserving Url for ReportServerWebService..."
         $result = $rsWmiObject.ReserveURL("ReportServerWebService","http://+:80",(Get-Culture).Lcid)
         if($ReportServerVersion -and $ReportServerVersion -lt 13)
         {
@@ -86,10 +86,12 @@ function Set-RsUrlReservation
             $reportServerWebappName = "ReportServerWebApp"
         }
 
-        Write-Output "Virtual Directory for $reportServerWebappName"
+        Write-Verbose "Setting Virtual Directory for $reportServerWebappName..."
         $result = $rsWmiObject.SetVirtualDirectory($reportServerWebappName,$PortalVirtualDirectory,(Get-Culture).Lcid)
-        Write-Output "Url Reservation for $reportServerWebappName"
+        Write-Verbose "Reserving Url for $reportServerWebappName..."
         $result = $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:80",(Get-Culture).Lcid)
+
+        Write-Verbose "Success!"
     }
     catch
     {
