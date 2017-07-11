@@ -56,6 +56,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
+|Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source.|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 
