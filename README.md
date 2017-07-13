@@ -8,10 +8,10 @@ This project contains PowerShell scripts that allows you to perform various oper
 
 All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.   
 
-#PowerShell Version
+## PowerShell Version
 Please ensure you're running PowerShell version 3.0+
 
-#Install
+## Install
 
     Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
 
