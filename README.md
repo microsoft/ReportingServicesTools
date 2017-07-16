@@ -12,16 +12,17 @@ All of our scripts were written with the assumption that you will be executing t
 Please ensure you're running PowerShell version 3.0+
 
 ## Install
-
-    Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
-
+```powershell
+Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
+```
 or
-
-    Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools)
-
+```powershell
+Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools)
+```
 or
-
-    Install-Module -Name ReportingServicesTools
+```powershell
+Install-Module -Name ReportingServicesTools
+```
 
 ## List of commands
 
@@ -83,28 +84,31 @@ All of the APIs used by this project are publicly available. There are 2 types o
 ## Local testing and development
 
 To verify the versions installed
-
-    Get-Module -ListAvailable | where Name -eq "reportingservicestools"
+```powershell
+Get-Module -ListAvailable | where Name -eq "reportingservicestools"
+```
 
 After you clone the repo you can make local changes and install them in your local machine with
+```powershell
+Remove-Module ReportingServicesTools
+Import-Module .\ReportingServicesTools.psd1
+```
 
-    Remove-Module ReportingServicesTools
-    Import-Module .\ReportingServicesTools.psd1
-
-For debugging you can set the verbose logging with
-$VerbosePreference = "continue"
+For debugging you can set the verbose logging with `$VerbosePreference = "continue"`
 
 ## Test
 
 For running tests locally you need a local default instance of  SQL Server Reporting Services and Pester
 
 To install Pester execute
-
-    Install-Module -Name Pester
+```powershell
+Install-Module -Name Pester
+```
 
 To excute the tests run (this will execute the CatalogItems test only which doesn't change the local Reporting Services Installation)
-    
-    .\Test.ps1
+```powershell
+.\Test.ps1
+```
 
 ## Style Guidelines
 
