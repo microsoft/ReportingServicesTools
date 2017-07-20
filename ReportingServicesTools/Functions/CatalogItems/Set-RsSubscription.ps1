@@ -113,12 +113,17 @@ function Set-RsSubscription
                 
                 try {
                     $object = $null
-                    $object = Get-RsItemReference -ReportServerUri $ReportServerUri -Path $Path -ErrorAction SilentlyContinue
+                    if ([System.String]::IsNullOrEmpty($ReportServerUri)) {
+                        $object = Get-RsItemReference -ReportServerUri $ReportServerUri -Path $Path -ErrorAction SilentlyContinue
+                    }
+                    else {
+                        $object = Get-RsItemReference -Path $Path -ErrorAction SilentlyContinue
+                    }
                 }
                 catch
                 {
-                    Write-Warning "Can't find a report on $Path. Skipping"
-                    #Continue
+                    Write-Warning "Can't find the report $Path. Skipping"
+                    Continue
                 }
                 
                 Write-Verbose "Creating Subscription..."
