@@ -81,12 +81,12 @@ Describe "Set-RsSubscription" {
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
-                Write-RsCatalogItem-Path $localResourcesPath -RsFolder $folderPath
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
                 $subscription = Get-NewSubscription
 
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
-                Write-RsCatalogItem-Path $localResourcesPath -RsFolder $folderPath
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
                 $DataSetPath = $folderPath + '/UnDataSet'
                 
@@ -130,12 +130,12 @@ Describe "Set-RsSubscription" {
                 New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
-                Write-RsCatalogItem-Path $localResourcesPath -RsFolder $folderPath
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
                 $subscription = Get-NewSubscription
 
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
-                Write-RsCatalogItem-Path $localResourcesPath -RsFolder $folderPath
+                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
                 $DataSetPath = $folderPath + '/UnDataSet'
                 
