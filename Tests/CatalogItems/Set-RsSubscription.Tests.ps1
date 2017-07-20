@@ -264,7 +264,7 @@ Describe "Set-RsSubscription" {
                 Set-RsSubscription -Subscription $subscription -Path $report.Path 
 
                 $proxy = New-RsWebServiceProxy
-                $reportSubscriptions = Set-RsSubscription -Path $report.Path -ReportServerUri $reportServerUri -Proxy $proxy
+                $reportSubscriptions = Get-RsSubscription -Path $report.Path -ReportServerUri $reportServerUri -Proxy $proxy
 
                 It "Should set a subscription" {
                    @($reportSubscriptions).Count | Should Be 1

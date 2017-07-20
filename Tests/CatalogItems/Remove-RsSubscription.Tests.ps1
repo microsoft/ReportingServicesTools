@@ -123,7 +123,7 @@ Describe "Remove-RsSubscription" {
 
                 }
 
-                Remove-RsSubscription -SubscriptionID $reportSubscriptions[0].SubscriptionID
+                Remove-RsSubscription -SubscriptionID $reportSubscriptions.SubscriptionID
 
                 $reportSubscriptions = Get-RsSubscription -Path $report.Path 
                 
@@ -182,7 +182,7 @@ Describe "Remove-RsSubscription" {
                 }
 
                 $proxy = New-RsWebServiceProxy
-                Remove-RsSubscription -SubscriptionID $reportSubscriptions[0].SubscriptionID -Proxy $proxy
+                Remove-RsSubscription -SubscriptionID $reportSubscriptions.SubscriptionID -Proxy $proxy
 
                 $reportSubscriptions = Get-RsSubscription -Path $report.Path 
                 
@@ -242,7 +242,7 @@ Describe "Remove-RsSubscription" {
                    $reportSubscriptions.IsDataDriven | Should Be $false
 
                 }
-                Remove-RsSubscription -ReportServerUri $ReportServerUri -SubscriptionID $reportSubscriptions[0].SubscriptionID
+                Remove-RsSubscription -ReportServerUri $ReportServerUri -SubscriptionID $reportSubscriptions.SubscriptionID
 
                 $reportSubscriptions = Get-RsSubscription -ReportServerUri $ReportServerUri -Path $report.Path 
                 
@@ -292,7 +292,7 @@ Describe "Remove-RsSubscription" {
                 Set-RsSubscription -Subscription $subscription -Path $report.Path 
 
                 
-                $reportSubscriptions = Set-RsSubscription -Path $report.Path
+                $reportSubscriptions = Get-RsSubscription -Path $report.Path
 
                 It "Should set a subscription" {
                    @($reportSubscriptions).Count | Should Be 1
@@ -303,7 +303,7 @@ Describe "Remove-RsSubscription" {
                 }
 
                 $proxy = New-RsWebServiceProxy
-                Remove-RsSubscription -SubscriptionID $reportSubscriptions[0].SubscriptionID -ReportServerUri $reportServerUri -Proxy $proxy
+                Remove-RsSubscription -SubscriptionID $reportSubscriptions.SubscriptionID -ReportServerUri $reportServerUri -Proxy $proxy
 
                 $reportSubscriptions = Get-RsSubscription -Path $report.Path 
                 
