@@ -152,7 +152,7 @@ Describe "Get-RsSubscription" {
                 Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
                 
-                Set-RsEmailSettings -SmtpServer "mail.rstools.com" -Authentication None -SenderAddress "mail@rstools.com" -ReportServerInstance PBIRS
+                Set-RsEmailSettings -SmtpServer "mail.rstools.com" -Authentication None -SenderAddress "mail@rstools.com" -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
 
                 $subscription = Get-NewEmailSubscription
                
