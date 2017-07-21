@@ -67,6 +67,7 @@ before_test:
     Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
     Stop-Service PowerBIReportServer
     Start-Service PowerBIReportServer
+    Start-Service SQLSERVERAGENT
     Write-Host "Configuration completed" (Get-Date).DateTime
 
 test_script:
