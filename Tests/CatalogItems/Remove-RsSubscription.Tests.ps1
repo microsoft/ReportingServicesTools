@@ -197,7 +197,6 @@ Describe "Remove-RsSubscription" {
                 
                 It "Subscription should not exist" {
                    @($reportSubscriptions).Count | Should Be 0
-                   $reportSubscriptions.Report | Should Be BeNullOrEmpty
                 }
 
                 Remove-RsCatalogItem -RsFolder $folderPath
@@ -256,7 +255,6 @@ Describe "Remove-RsSubscription" {
                 
                 It "Subscription should not exist" {
                    @($reportSubscriptions).Count | Should Be 0
-                   $reportSubscriptions.Report | Should Be BeNullOrEmpty
                 }
 
                 Remove-RsCatalogItem -RsFolder $folderPath
@@ -316,7 +314,6 @@ Describe "Remove-RsSubscription" {
                 
                 It "Subscription should not exist" {
                    @($reportSubscriptions).Count | Should Be 0
-                   $reportSubscriptions.Report | Should Be BeNullOrEmpty
                 }
                 Remove-RsCatalogItem -ReportServerUri $ReportServerUri -RsFolder $folderPath
         }
@@ -377,7 +374,6 @@ Describe "Remove-RsSubscription" {
                 
                 It "Subscription should not exist" {
                    @($reportSubscriptions).Count | Should Be 0
-                   $reportSubscriptions.Report | Should Be BeNullOrEmpty
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
