@@ -151,7 +151,11 @@ Describe "Get-RsSubscription" {
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
                 Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
                 $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
-                $subscription = Get-NewFileShareSubscription
+                
+                Set-RsEmailSettings -SmtpServer "mail.rstools.com" -Authentication None -SenderAddress "mail@rstools.com"
+
+                $subscription = Get-NewEmailSubscription
+               
 
                 $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
                 Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
