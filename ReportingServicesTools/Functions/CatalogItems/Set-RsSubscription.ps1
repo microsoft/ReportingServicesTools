@@ -114,8 +114,7 @@ function Set-RsSubscription
                 
                 try 
                 {
-                    $object = $null
-                    $object = Get-RsItemReference -ReportServerUri $ReportServerUri -Proxy $Proxy -Path $Path -ErrorAction SilentlyContinue
+                    $object = Get-RsItemReference -Proxy $Proxy -Path $Path -ErrorAction SilentlyContinue
                 }
                 catch
                 {
