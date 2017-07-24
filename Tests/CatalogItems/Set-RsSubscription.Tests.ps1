@@ -315,6 +315,8 @@ Describe "Set-RsSubscription from pipeline" {
 
                 $newReport = Set-FolderReportDataSource($folderPath)
 
+                $subscription = Get-NewFileShareSubscription
+
                 #Set first subscription
                 Set-RsSubscription -Subscription $subscription -Path $newReport.Path -Proxy $proxy
                 
@@ -339,6 +341,8 @@ Describe "Set-RsSubscription from pipeline" {
                 $reportServerUri = 'http://localhost/reportserver'
         
                 $newReport = Set-FolderReportDataSource($folderPath)
+
+                $subscription = Get-NewFileShareSubscription
 
                 #Set first subscription
                 Set-RsSubscription -ReportServerUri $reportServerUri -Subscription $subscription -Path $newReport.Path
@@ -365,6 +369,8 @@ Describe "Set-RsSubscription from pipeline" {
                 $proxy = New-RsWebServiceProxy
 
                 $newReport = Set-FolderReportDataSource($folderPath)
+
+                $subscription = Get-NewFileShareSubscription
 
                 #Set first subscription
                 Set-RsSubscription -ReportServerUri $reportServerUri -Proxy $proxy -Subscription $subscription -Path $newReport.Path
