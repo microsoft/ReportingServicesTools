@@ -42,7 +42,6 @@ function Get-RsSubscription
     [cmdletbinding()]
     param
     (
-        [Alias('ItemPath')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $Path,
@@ -50,7 +49,6 @@ function Get-RsSubscription
         [string]
         $ReportServerUri,
         
-        [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
         
@@ -63,12 +61,11 @@ function Get-RsSubscription
     }
     Process
     {
-        foreach ($Item in $Path)
+        foreach ($item in $Path)
         {
             try
             {
                 Write-Verbose "Retrieving subscriptions contents..."
-                #$Proxy.ListSubscriptions($Item)
                 
                 $subscriptions = $Proxy.ListSubscriptions($Item)
                 Write-Verbose "Subscriptions retrieved successfully!"
@@ -82,7 +79,9 @@ function Get-RsSubscription
                 $values = $null
                 
                 Write-Verbose "GetSubscriptionProperties"
-                foreach ($subscription in $subscriptions) {
+                foreach ($subscription in $subscriptions) 
+                
+                {
                     $null = $Proxy.GetSubscriptionProperties($subscription.SubscriptionID, [ref]$extSettings, [ref]$desc, [ref]$active, [ref]$status, [ref]$eventType, [ref]$matchData, [ref]$values)
 
                     $namespace = $proxy.GetType().Namespace
@@ -126,10 +125,9 @@ function Get-RsSubscription
                         ModifiedDate          = $subscription.ModifiedDate
                         EventType             = $subscription.EventType
                         IsDataDriven          = $subscription.IsDataDriven
-						MatchData             = $matchData
-						Values                = $values
+                        MatchData             = $matchData
+                        Values                = $values
 					}
-                
                 }
             }
             catch

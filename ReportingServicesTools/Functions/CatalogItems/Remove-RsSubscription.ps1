@@ -11,7 +11,7 @@ function Remove-RsSubscription
             This function removes an subscription from the report.
         
         .PARAMETER Subscription
-            An object that specify the subscriptionID to remove and also has the path of the report.
+            An object returned from Get-RsSubscription that ccontains one or multiple SubscriptionId to remove. It is exclusive with $SubscriptionId parameter.
     
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -26,12 +26,15 @@ function Remove-RsSubscription
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
         
+        .PARAMETER SubscriptionId
+            The SubscriptionId to remove. It is exclusive with $Subscription parameter.
+
         .EXAMPLE
-            Remove-RsSubscription -ReportServerUri http://localhost/ReportServer -SubscriptionID '1312-123r-asdas'1646'
+            Remove-RsSubscription -ReportServerUri http://localhost/ReportServer -SubscriptionId 'b4694569-99a9-4cb3-bd59-7bf710b04a0c'
    
             Description
             -----------
-            Removes the subscription with ID '1312-123r-asdas'1646'
+            Removes the subscription with ID 'b4694569-99a9-4cb3-bd59-7bf710b04a0c'
 
         .EXAMPLE
             Get-RsSubscription -ReportServerUri http://localhost/ReportServer_SQL2016 -Path '/path/to/my/report' |
@@ -51,8 +54,7 @@ function Remove-RsSubscription
         
         [string]
         $ReportServerUri,
-        
-        [Alias('ReportServerCredentials')]
+
         [System.Management.Automation.PSCredential]
         $Credential,
         
@@ -60,7 +62,7 @@ function Remove-RsSubscription
 
         [Parameter(ParameterSetName='SingleSubscription', Mandatory=$True)]
         [string]
-        $SubscriptionID
+        $SubscriptionId
     )
     
     Begin
@@ -70,30 +72,37 @@ function Remove-RsSubscription
     
     Process
     {
-        if ([System.String]::IsNullOrEmpty($SubscriptionID)) {
+        if ([System.String]::IsNullOrEmpty($SubscriptionId)) 
+        {
             foreach ($item in $Subscription)
             {
                 if ($PSCmdlet.ShouldProcess($item.SubscriptionId, "Delete the subscription")) {
-                    try {
+                    try 
+                    {
                         Write-Verbose "Deleting subscription $($item.SubscriptionId) ..."
                         $Proxy.DeleteSubscription($item.SubscriptionId)
                         Write-Verbose "Subscription deleted successfully!"
                     }
-                    catch {
+                    catch 
+                    {
                         throw (New-Object System.Exception("Exception occurred while deleting subscription id '$($item.SubscriptionId)'! $($_.Exception.Message)", $_.Exception))
                     }
                 }
             }
         }
-        else {
-            if ($PSCmdlet.ShouldProcess($SubscriptionID, "Delete the subscription")) {
-                try {
-                    Write-Verbose "Deleting subscription $SubscriptionID..."
-                    $Proxy.DeleteSubscription($SubscriptionID)
+        else 
+        {
+            if ($PSCmdlet.ShouldProcess($SubscriptionId, "Delete the subscription")) 
+            {
+                try 
+                {
+                    Write-Verbose "Deleting subscription $SubscriptionId..."
+                    $Proxy.DeleteSubscription($SubscriptionId)
                     Write-Verbose "Subscription deleted successfully!"
                 }
-                catch {
-                    throw (New-Object System.Exception("Exception occurred while deleting subscription id '$SubscriptionID'! $($_.Exception.Message)", $_.Exception))
+                catch 
+                {
+                    throw (New-Object System.Exception("Exception occurred while deleting subscription id '$SubscriptionId'! $($_.Exception.Message)", $_.Exception))
                 }
             }
         }

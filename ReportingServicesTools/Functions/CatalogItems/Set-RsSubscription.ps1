@@ -8,9 +8,9 @@ function Set-RsSubscription
             This script set a new reporting subscription.
         
         .DESCRIPTION
-            This script set a new reporting subscription based on the info retrieved using Get-RsSubscription.
+            This script set a new reporting subscription based on the info of an existing subscription (retrieved using Get-RsSubscription).
             You can choose a specific report or pass a folder. When using a folder, the report must have the same name.
-            NOTE: A new subscriptionID will be generated.
+            NOTE: A new subscriptionId will be generated.
                     
         .PARAMETER Path
             Specify the path to the destination report. Can't be used with -RsFolder parameter.
@@ -19,7 +19,7 @@ function Set-RsSubscription
             Specify the folder where the destination reports exists. Can't be used with -Path parameter.
 
         .PARAMETER Subscription
-            A object with all subscritpion configurations. The default output of Get-RsSubscription. You must use pieing it to this command.
+            A object with all subscritpion configurations. The default output of Get-RsSubscription. You must piping it to this command.
         
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -35,20 +35,20 @@ function Set-RsSubscription
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/subscription' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -Path '/path/to/new report'
+            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/oldReport' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -Path '/path/to/newReport'
             
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/subscription'
-            and pipe the results to Set-RsSubscription which will create a new subscription on report '/path/to/new report' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/oldReport'
+            and pipe the results to Set-RsSubscription which will create a new subscription on report '/path/to/newReport' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
 
         
         .EXAMPLE
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/report' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
+            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/oldReport' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
             
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/report'
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/oldReport'
             and pipe the results to Set-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
 
 
@@ -67,8 +67,7 @@ function Set-RsSubscription
     (
         [string]
         $ReportServerUri,
-        
-        [Alias('ReportServerCredentials')]
+
         [System.Management.Automation.PSCredential]
         $Credential,
         
@@ -96,7 +95,8 @@ function Set-RsSubscription
     Process
     {
         #region Input Validation
-        if ([System.String]::IsNullOrEmpty($Path) -and [System.String]::IsNullOrEmpty($RsFolder)) {
+        if ([System.String]::IsNullOrEmpty($Path) -and [System.String]::IsNullOrEmpty($RsFolder)) 
+        {
             throw 'No Folder or report Path was specified! You need to specify -RsFolder or -Path variable.'
         }
         #endregion Input Validation
@@ -104,21 +104,18 @@ function Set-RsSubscription
         try {
             $parameters = $null
 
-            foreach ($sub in $Subscription) {
+            foreach ($sub in $Subscription) 
+            {
                 if ($RsFolder) {
                     $Path = "$RsFolder/$($sub.Report)"
                 }
                 
                 Write-Verbose "Validating if destination exists..."
                 
-                try {
+                try 
+                {
                     $object = $null
-                    if ([System.String]::IsNullOrEmpty($ReportServerUri)) {
-                        $object = Get-RsItemReference -Path $Path -ErrorAction SilentlyContinue
-                    }
-                    else {
-                        $object = Get-RsItemReference -ReportServerUri $ReportServerUri -Path $Path -ErrorAction SilentlyContinue
-                    }
+                    $object = Get-RsItemReference -ReportServerUri $ReportServerUri -Proxy $Proxy -Path $Path -ErrorAction SilentlyContinue
                 }
                 catch
                 {

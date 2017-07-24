@@ -143,45 +143,59 @@ Function Get-NewFileShareSubscription
     return $subscription
 }
 
+Function Set-FolderReportDataSource
+{
+    param (
+        [string]
+        $NewFolderPath
+    )
+    
+    
+    $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
+    $null = Write-RsCatalogItem -Path $localResourcesPath -RsFolder $NewFolderPath
+    $report = (Get-RsFolderContent -RsFolder $NewFolderPath )| Where-Object TypeName -eq 'Report'
+
+    $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
+    $null = Write-RsCatalogItem -Path $localResourcesPath -RsFolder $NewFolderPath
+    $dataSet = (Get-RsFolderContent -RsFolder $NewFolderPath ) | Where-Object TypeName -eq 'DataSet'
+    $DataSetPath = $NewFolderPath + '/UnDataSet'
+                
+    $newRSDSName = "DataSource"
+    $newRSDSExtension = "SQL"
+    $newRSDSConnectionString = "Initial Catalog=DB; Data Source=Instance"
+    $newRSDSCredentialRetrieval = "Store"
+    #Dummy credentials
+    $Pass = ConvertTo-SecureString -String "123" -AsPlainText -Force
+    $newRSDSCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sql", $Pass
+    $null = New-RsDataSource -RsFolder $NewFolderPath -Name $newRSDSName -Extension $newRSDSExtension -ConnectionString $newRSDSConnectionString -CredentialRetrieval $newRSDSCredentialRetrieval -DatasourceCredentials $newRSDSCredential
+
+    $DataSourcePath = "$NewFolderPath/$newRSDSName"
+
+    $RsDataSet = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
+    $RsDataSource = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSource'
+    $RsDataSetSource = Get-RsItemReference -Path $DataSetPath | Where-Object ReferenceType -eq 'DataSource'
+
+    #Set data source and data set for all objects
+    $null = Set-RsDataSourceReference -Path $DataSetPath -DataSourceName $RsDataSetSource.Name -DataSourcePath $DataSourcePath
+    $null = Set-RsDataSourceReference -Path $report.Path -DataSourceName $RsDataSource.Name -DataSourcePath $DataSourcePath
+    $null = Set-RsDataSetReference -Path $report.Path -DataSetName $RsDataSet.Name -DataSetPath $dataSet.Path
+
+    return $report
+}
+
 Describe "Get-RsSubscription" {
         Context "Get-RsSubscription without parameters"{
                 $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
-                New-RsFolder -Path / -FolderName $folderName
+                $null = New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
-                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
-                $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
-                
+
+                $newReport = Set-FolderReportDataSource($folderPath)
+
                 $subscription = Get-NewFileShareSubscription
 
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
-                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
-                $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-                $DataSetPath = $folderPath + '/UnDataSet'
-                
-                $newRSDSName = "DataSource"
-                $newRSDSExtension = "SQL"
-                $newRSDSConnectionString = "Initial Catalog=DB; Data Source=Instance"
-                $newRSDSCredentialRetrieval = "Store"
-                #Dummy credentials
-                $Pass = ConvertTo-SecureString -String "123" -AsPlainText -Force
-                $newRSDSCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sql", $Pass
-                New-RsDataSource -RsFolder $folderPath -Name $newRSDSName -Extension $newRSDSExtension -ConnectionString $newRSDSConnectionString -CredentialRetrieval $newRSDSCredentialRetrieval -DatasourceCredentials $newRSDSCredential
+                Set-RsSubscription -Subscription $subscription -Path $newReport.Path
 
-                $DataSourcePath = "$folderPath/$newRSDSName"
-
-                $RsDataSet = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
-                $RsDataSource = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSource'
-                $RsDataSetSource = Get-RsItemReference -Path $DataSetPath | Where-Object ReferenceType -eq 'DataSource'
-
-                #Set data source and data set for all objects
-                Set-RsDataSourceReference -Path $DataSetPath -DataSourceName $RsDataSetSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSourceReference -Path $report.Path -DataSourceName $RsDataSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSetReference -Path $report.Path -DataSetName $RsDataSet.Name -DataSetPath $dataSet.Path
-
-                Set-RsSubscription -Subscription $subscription -Path $report.Path
-
-                $reportSubscriptions = Get-RsSubscription -Path $report.Path
+                $reportSubscriptions = Get-RsSubscription -Path $newReport.Path
 
                 It "Should found a reference to a subscription" {
                    @($reportSubscriptions).Count | Should Be 1
@@ -192,43 +206,18 @@ Describe "Get-RsSubscription" {
         
         Context "Get-RsSubscription with Proxy parameter"{
                 $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
-                New-RsFolder -Path / -FolderName $folderName
+                $null = New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
-                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
-                $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
-                
-                $subscription = Get-NewFileShareSubscription
-        
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
-                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
-                $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-                $DataSetPath = $folderPath + '/UnDataSet'
-                
-                $newRSDSName = "DataSource"
-                $newRSDSExtension = "SQL"
-                $newRSDSConnectionString = "Initial Catalog=DB; Data Source=Instance"
-                $newRSDSCredentialRetrieval = "Store"
-                #Dummy credentials
-                $Pass = ConvertTo-SecureString -String "123" -AsPlainText -Force
-                $newRSDSCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sql", $Pass
-                New-RsDataSource -RsFolder $folderPath -Name $newRSDSName -Extension $newRSDSExtension -ConnectionString $newRSDSConnectionString -CredentialRetrieval $newRSDSCredentialRetrieval -DatasourceCredentials $newRSDSCredential
-        
-                $DataSourcePath = "$folderPath/$newRSDSName"
-        
-                $RsDataSet = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
-                $RsDataSource = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSource'
-                $RsDataSetSource = Get-RsItemReference -Path $DataSetPath | Where-Object ReferenceType -eq 'DataSource'
-        
-                #Set data source and data set for all objects
-                Set-RsDataSourceReference -Path $DataSetPath -DataSourceName $RsDataSetSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSourceReference -Path $report.Path -DataSourceName $RsDataSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSetReference -Path $report.Path -DataSetName $RsDataSet.Name -DataSetPath $dataSet.Path
-                
+
                 $proxy = New-RsWebServiceProxy
-                Set-RsSubscription -Subscription $subscription -Path $report.Path -Proxy $proxy
+
+                $newReport = Set-FolderReportDataSource($folderPath)
+
+                $subscription = Get-NewFileShareSubscription
                 
-                $reportSubscriptions = Get-RsSubscription -Path $report.Path
+                Set-RsSubscription -Subscription $subscription -Path $newReport.Path
+                
+                $reportSubscriptions = Get-RsSubscription -Path $newReport.Path -Proxy $proxy
         
                 It "Should found a reference to a subscription" {
                    @($reportSubscriptions).Count | Should Be 1
@@ -238,44 +227,19 @@ Describe "Get-RsSubscription" {
         }
         
         Context "Get-RsSubscription with ReportServerUri Parameter"{
+                $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
+                $null = New-RsFolder -Path / -FolderName $folderName
+                $folderPath = '/' + $folderName
+                
                 $reportServerUri = 'http://localhost/reportserver'
         
-                $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
-                New-RsFolder -ReportServerUri $ReportServerUri -Path / -FolderName $folderName
-                $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
-                Write-RsCatalogItem -ReportServerUri $ReportServerUri -Path $localResourcesPath -RsFolder $folderPath
-                $report = (Get-RsFolderContent -ReportServerUri $ReportServerUri -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
+                $newReport = Set-FolderReportDataSource($folderPath)
+
                 $subscription = Get-NewFileShareSubscription
-        
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
-                Write-RsCatalogItem -ReportServerUri $ReportServerUri -Path $localResourcesPath -RsFolder $folderPath
-                $dataSet = (Get-RsFolderContent -ReportServerUri $ReportServerUri -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-                $DataSetPath = $folderPath + '/UnDataSet'
                 
-                $newRSDSName = "DataSource"
-                $newRSDSExtension = "SQL"
-                $newRSDSConnectionString = "Initial Catalog=DB; Data Source=Instance"
-                $newRSDSCredentialRetrieval = "Store"
-                #Dummy credentials
-                $Pass = ConvertTo-SecureString -String "123" -AsPlainText -Force
-                $newRSDSCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sql", $Pass
-                New-RsDataSource -ReportServerUri $reportServerUri -RsFolder $folderPath -Name $newRSDSName -Extension $newRSDSExtension -ConnectionString $newRSDSConnectionString -CredentialRetrieval $newRSDSCredentialRetrieval -DatasourceCredentials $newRSDSCredential
-        
-                $DataSourcePath = "$folderPath/$newRSDSName"
-        
-                $RsDataSet = Get-RsItemReference -ReportServerUri $reportServerUri -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
-                $RsDataSource = Get-RsItemReference -ReportServerUri $reportServerUri -Path $report.Path | Where-Object ReferenceType -eq 'DataSource'
-                $RsDataSetSource = Get-RsItemReference -ReportServerUri $reportServerUri -Path $DataSetPath | Where-Object ReferenceType -eq 'DataSource'
-        
-                #Set data source and data set for all objects
-                Set-RsDataSourceReference -ReportServerUri $reportServerUri -Path $DataSetPath -DataSourceName $RsDataSetSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSourceReference -ReportServerUri $reportServerUri -Path $report.Path -DataSourceName $RsDataSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSetReference -ReportServerUri $reportServerUri -Path $report.Path -DataSetName $RsDataSet.Name -DataSetPath $dataSet.Path
-        
-                Set-RsSubscription -Subscription $subscription -Path $report.Path -ReportServerUri $reportServerUri
+                Set-RsSubscription -Subscription $subscription -Path $newReport.Path
                 
-                $reportSubscriptions = Get-RsSubscription -ReportServerUri $ReportServerUri -Path $report.Path
+                $reportSubscriptions = Get-RsSubscription -ReportServerUri $ReportServerUri -Path $newReport.Path
         
                 It "Should found a reference to a subscription" {
                    @($reportSubscriptions).Count | Should Be 1
@@ -285,51 +249,25 @@ Describe "Get-RsSubscription" {
         }
         
         Context "Get-RsSubscription with ReportServerUri and Proxy Parameter"{
-                $reportServerUri = 'http://localhost/reportserver'
-        
                 $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
-                New-RsFolder -Path / -FolderName $folderName
+                $null = New-RsFolder -Path / -FolderName $folderName
                 $folderPath = '/' + $folderName
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\emptyReport.rdl'
-                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
-                $report = (Get-RsFolderContent -RsFolder $folderPath )| Where-Object TypeName -eq 'Report'
-                $subscription = Get-NewFileShareSubscription
-        
-                $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\UnDataset.rsd'
-                Write-RsCatalogItem -Path $localResourcesPath -RsFolder $folderPath
-                $dataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
-                $DataSetPath = $folderPath + '/UnDataSet'
                 
-                $newRSDSName = "DataSource"
-                $newRSDSExtension = "SQL"
-                $newRSDSConnectionString = "Initial Catalog=DB; Data Source=Instance"
-                $newRSDSCredentialRetrieval = "Store"
-                #Dummy credentials
-                $Pass = ConvertTo-SecureString -String "123" -AsPlainText -Force
-                $newRSDSCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sql", $Pass
-                New-RsDataSource -RsFolder $folderPath -Name $newRSDSName -Extension $newRSDSExtension -ConnectionString $newRSDSConnectionString -CredentialRetrieval $newRSDSCredentialRetrieval -DatasourceCredentials $newRSDSCredential
-        
-                $DataSourcePath = "$folderPath/$newRSDSName"
-        
-                $RsDataSet = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSet'
-                $RsDataSource = Get-RsItemReference -Path $report.Path | Where-Object ReferenceType -eq 'DataSource'
-                $RsDataSetSource = Get-RsItemReference -Path $DataSetPath | Where-Object ReferenceType -eq 'DataSource'
-        
-                #Set data source and data set for all objects
-                Set-RsDataSourceReference -Path $DataSetPath -DataSourceName $RsDataSetSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSourceReference -Path $report.Path -DataSourceName $RsDataSource.Name -DataSourcePath $DataSourcePath
-                Set-RsDataSetReference -Path $report.Path -DataSetName $RsDataSet.Name -DataSetPath $dataSet.Path
-                
-                $proxy = New-RsWebServiceProxy
                 $reportServerUri = 'http://localhost/reportserver'
-                Set-RsSubscription -Subscription $subscription -Path $report.Path -ReportServerUri $reportServerUri -Proxy $proxy
+                $proxy = New-RsWebServiceProxy
+
+                $newReport = Set-FolderReportDataSource($folderPath)
+
+                $subscription = Get-NewFileShareSubscription
                 
-                $reportSubscriptions = Get-RsSubscription -Path $report.Path
+                Set-RsSubscription -Subscription $subscription -Path $newReport.Path
+                
+                $reportSubscriptions = Get-RsSubscription -ReportServerUri $ReportServerUri -Path $newReport.Path -Proxy $proxy
         
                 It "Should found a reference to a subscription" {
                    @($reportSubscriptions).Count | Should Be 1
                    $reportSubscriptions.Report | Should Be "emptyReport"
                 }
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -ReportServerUri $ReportServerUri -RsFolder $folderPath
         }
 }
