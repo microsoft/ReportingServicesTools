@@ -54,7 +54,7 @@ function Remove-RsSubscription
 
         [Parameter(ParameterSetName='SingleSubscription', Mandatory=$True)]
         [string]
-        $SubscriptionId
+        $SubscriptionId,
         
         [string]
         $ReportServerUri,
