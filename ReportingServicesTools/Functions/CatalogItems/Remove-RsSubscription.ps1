@@ -12,6 +12,9 @@ function Remove-RsSubscription
         
         .PARAMETER Subscription
             An object returned from Get-RsSubscription that ccontains one or multiple SubscriptionId to remove. It is exclusive with $SubscriptionId parameter.
+
+        .PARAMETER SubscriptionId
+            The SubscriptionId to remove. It is exclusive with $Subscription parameter.
     
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -25,9 +28,6 @@ function Remove-RsSubscription
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
-        
-        .PARAMETER SubscriptionId
-            The SubscriptionId to remove. It is exclusive with $Subscription parameter.
 
         .EXAMPLE
             Remove-RsSubscription -ReportServerUri http://localhost/ReportServer -SubscriptionId 'b4694569-99a9-4cb3-bd59-7bf710b04a0c'
@@ -51,6 +51,10 @@ function Remove-RsSubscription
         [Parameter(ParameterSetName='MutipleSubscriptions', Mandatory = $True, ValueFromPipeline = $true)]
         [object[]]
         $Subscription,
+
+        [Parameter(ParameterSetName='SingleSubscription', Mandatory=$True)]
+        [string]
+        $SubscriptionId
         
         [string]
         $ReportServerUri,
@@ -58,11 +62,7 @@ function Remove-RsSubscription
         [System.Management.Automation.PSCredential]
         $Credential,
         
-        $Proxy,
-
-        [Parameter(ParameterSetName='SingleSubscription', Mandatory=$True)]
-        [string]
-        $SubscriptionId
+        $Proxy
     )
     
     Begin
