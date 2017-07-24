@@ -92,11 +92,9 @@
         'Set-RsUrlReservation'
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
-	'Get-RsSubscription',
-
-	'Set-RsSubscription',
-
-	'Remove-RsSubscription'
+        'Get-RsSubscription',
+        'Set-RsSubscription',
+        'Remove-RsSubscription'
     )
     
     # Cmdlets to export from this module

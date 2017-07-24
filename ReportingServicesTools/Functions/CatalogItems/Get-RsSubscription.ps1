@@ -80,7 +80,6 @@ function Get-RsSubscription
                 
                 Write-Verbose "GetSubscriptionProperties"
                 foreach ($subscription in $subscriptions) 
-                
                 {
                     $null = $Proxy.GetSubscriptionProperties($subscription.SubscriptionID, [ref]$extSettings, [ref]$desc, [ref]$active, [ref]$status, [ref]$eventType, [ref]$matchData, [ref]$values)
 
@@ -127,7 +126,7 @@ function Get-RsSubscription
                         IsDataDriven          = $subscription.IsDataDriven
                         MatchData             = $matchData
                         Values                = $values
-					}
+                    }
                 }
             }
             catch
