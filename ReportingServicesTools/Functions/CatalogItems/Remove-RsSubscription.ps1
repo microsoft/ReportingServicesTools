@@ -76,7 +76,8 @@ function Remove-RsSubscription
         {
             foreach ($item in $Subscription)
             {
-                if ($PSCmdlet.ShouldProcess($item.SubscriptionId, "Delete the subscription")) {
+                if ($PSCmdlet.ShouldProcess($item.SubscriptionId, "Delete the subscription")) 
+                {
                     try 
                     {
                         Write-Verbose "Deleting subscription $($item.SubscriptionId) ..."
