@@ -101,9 +101,8 @@ function Set-RsSubscription
         }
         #endregion Input Validation
 
-        try {
-            $parameters = $null
-
+        try 
+        {
             foreach ($sub in $Subscription) 
             {
                 if ($RsFolder) {
@@ -124,8 +123,9 @@ function Set-RsSubscription
                 
                 Write-Verbose "Creating Subscription..."
 
-                if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) {
-                    $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $parameters)
+                if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) 
+                {
+                    $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                 }
 
                 [pscustomobject]@{
