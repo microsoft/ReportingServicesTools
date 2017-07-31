@@ -105,19 +105,20 @@ function Set-RsSubscription
         {
             foreach ($sub in $Subscription) 
             {
-                if ($RsFolder) {
+                if ($RsFolder)
+                {
                     $Path = "$RsFolder/$($sub.Report)"
+                }
+                else 
+                {
+                    $RsFolder = (Split-Path $Path -Parent).Replace("\", "/")
                 }
                 
                 Write-Verbose "Validating if destination exists..."
                 
-                try 
+                if (((Get-RsFolderContent -Proxy $Proxy -RsFolder $RsFolder | Where-Object Path -eq $Path).Count) -eq 0)
                 {
-                    $report = Get-RsItemReference -Proxy $Proxy -Path $Path -ErrorAction SilentlyContinue
-                }
-                catch
-                {
-                    Write-Warning "Can't find the report $Path. Skipping. $($_.Exception.Message)"
+                    Write-Warning "Can't find the report $Path. Skipping."
                     Continue
                 }
                 
