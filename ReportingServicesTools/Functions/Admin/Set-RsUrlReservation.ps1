@@ -32,6 +32,9 @@ function Set-RsUrlReservation
             The credentials with which to connect to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
         
+        .PARAMETER ListeningPort
+            Specify the Listening Port
+
         .EXAMPLE
             Set-RsUrlReservation
             Description
@@ -43,6 +46,12 @@ function Set-RsUrlReservation
             Description
             -----------
             This command will configure the url for the server with http://myMachine/ReportServer2017 and http://myMachine/Reports2017
+
+        .EXAMPLE
+            Set-RsUrlReservation -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017  -ListeningPort 8080
+            Description
+            -----------
+            This command will configure the url for the server with http://myMachine:8080/ReportServer2017 and http://myMachine:8080/Reports2017
     #>
     
     [cmdletbinding()]
@@ -66,7 +75,10 @@ function Set-RsUrlReservation
         $ComputerName,
         
         [System.Management.Automation.PSCredential]
-        $Credential
+        $Credential,
+
+        [int]
+        $ListeningPort=80
     )
     
     $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
@@ -76,7 +88,7 @@ function Set-RsUrlReservation
         Write-Verbose "Setting Virtual Directory for ReportServerWebService..."
         $result = $rsWmiObject.SetVirtualDirectory("ReportServerWebService",$ReportServerVirtualDirectory,(Get-Culture).Lcid)
         Write-Verbose "Reserving Url for ReportServerWebService..."
-        $result = $rsWmiObject.ReserveURL("ReportServerWebService","http://+:80",(Get-Culture).Lcid)
+        $result = $rsWmiObject.ReserveURL("ReportServerWebService","http://+:$ListeningPort",(Get-Culture).Lcid)
         if($ReportServerVersion -and $ReportServerVersion -lt 13)
         {
             $reportServerWebappName = "ReportManager"
@@ -89,7 +101,7 @@ function Set-RsUrlReservation
         Write-Verbose "Setting Virtual Directory for $reportServerWebappName..."
         $result = $rsWmiObject.SetVirtualDirectory($reportServerWebappName,$PortalVirtualDirectory,(Get-Culture).Lcid)
         Write-Verbose "Reserving Url for $reportServerWebappName..."
-        $result = $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:80",(Get-Culture).Lcid)
+        $result = $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:$ListeningPort",(Get-Culture).Lcid)
 
         Write-Verbose "Success!"
     }
