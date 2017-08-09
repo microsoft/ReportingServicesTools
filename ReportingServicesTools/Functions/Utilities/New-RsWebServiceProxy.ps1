@@ -46,7 +46,7 @@ function New-RsWebServiceProxy
     param
     (
         [string]
-        $ReportServerUri = ([Microsoft.ReportingServicesTools.ConnectionHost]::Uri),
+        $ReportServerUri = ([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri),
         
         [Alias('Credentials')]
         [AllowNull()]
@@ -65,13 +65,13 @@ function New-RsWebServiceProxy
         {
             try
             {
-                $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::Uri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
+                $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
                 [Microsoft.ReportingServicesTools.ConnectionHost]::Proxy = $proxy
                 return $proxy
             }
             catch
             {
-                throw (New-Object System.Exception("Failed to establish proxy connection to $([Microsoft.ReportingServicesTools.ConnectionHost]::Uri) : $($_.Exception.Message)", $_.Exception))
+                throw (New-Object System.Exception("Failed to establish proxy connection to $([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri) : $($_.Exception.Message)", $_.Exception))
             }
         }
     }

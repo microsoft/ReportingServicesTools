@@ -31,7 +31,7 @@ function Connect-RsReportServer
             Only used by the WebApi.
         
         .EXAMPLE
-            Connect-RsReportServer -ComputerName "srv-foobar" -ReportServerInstance "Northwind" -Uri "http://srv-foobar/reportserver/"
+            Connect-RsReportServer -ComputerName "srv-foobar" -ReportServerInstance "Northwind" -ReportServerUri "http://srv-foobar/reportserver/"
     
             Configures WMI access to
             - Target the server "srv-foobar"
@@ -63,7 +63,10 @@ function Connect-RsReportServer
         $Credential,
         
         [string]
-        $Uri,
+        $ReportServerUri,
+
+        [string]
+        $ReportPortalUri,
         
         [switch]
         $RegisterProxy
@@ -86,17 +89,22 @@ function Connect-RsReportServer
         [Microsoft.ReportingServicesTools.ConnectionHost]::Credential = $Credential
     }
     
-    if ($PSBoundParameters.ContainsKey("Uri"))
+    if ($PSBoundParameters.ContainsKey("ReportServerUri"))
     {
-        [Microsoft.ReportingServicesTools.ConnectionHost]::Uri = $Uri
+        [Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri = $ReportServerUri
         try
         {
-            $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::Uri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
+            $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ErrorAction Stop
             [Microsoft.ReportingServicesTools.ConnectionHost]::Proxy = $proxy
         }
         catch
         {
-            throw (New-Object System.Exception("Failed to establish proxy connection to $Uri : $($_.Exception.Message)", $_.Exception))
+            throw (New-Object System.Exception("Failed to establish proxy connection to $ReportServerUri : $($_.Exception.Message)", $_.Exception))
         }
+    }
+
+    if ($PSBoundParameters.ContainsKey("ReportPortalUri"))
+    {
+        [Microsoft.ReportingServicesTools.ConnectionHost]::ReportPortalUri = $ReportPortalUri
     }
 }
