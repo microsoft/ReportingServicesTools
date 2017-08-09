@@ -74,6 +74,7 @@
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
+        'New-RsODataSession',
         'New-RsWebServiceProxy',
         'Out-RsCatalogItem',
         'Out-RsFolderContent',
