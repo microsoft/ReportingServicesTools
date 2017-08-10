@@ -8,17 +8,17 @@ function Get-TestUser() {
     return $env:RsUser
 }
 
-Describe "New-RsODataSession" { 
+Describe "New-RsRestSession" { 
     Context "Create a new session object" {
         It "Should work for default Url" {
-            $session = New-RsODataSession -Verbose
+            $session = New-RsRestSession -Verbose
             $session | Should Not BeNullOrEmpty
             $session.Headers | Should Not BeNullOrEmpty
             $session.Headers['X-XSRF-TOKEN'] | Should Not BeNullOrEmpty
         }
 
         It "Should work for explicit Url" {
-            $session = New-RsODataSession -ReportPortalUrl 'http://localhost/reports' -Verbose
+            $session = New-RsRestSession -ReportPortalUrl 'http://localhost/reports' -Verbose
             $session | Should Not BeNullOrEmpty
             $session.Headers | Should Not BeNullOrEmpty
             $session.Headers['X-XSRF-TOKEN'] | Should Not BeNullOrEmpty

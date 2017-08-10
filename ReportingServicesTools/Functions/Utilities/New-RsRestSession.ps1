@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function New-RsODataSession
+function New-RsRestSession
 {
     <#
         .SYNOPSIS
@@ -17,19 +17,19 @@ function New-RsODataSession
             Specify the Credential to use when connecting to your SQL Server Reporting Services Instance.
 
         .EXAMPLE
-            New-RsODataSession
+            New-RsRestSession
             Description
             -----------
             This command will fetch a new XSRF token to the default report portal URI using default credentials.
 
         .EXAMPLE
-            New-RsODataSession -ReportPortalUri http://myserver/reports_sql2016
+            New-RsRestSession -ReportPortalUri http://myserver/reports_sql2016
             Description
             -----------
             This command will fetch a new XSRF token to the Report Portal located at http://myserver/reports_sql2016 using current user's credentials.
 
         .EXAMPLE
-            New-RsODataSession -Credential 'CaptainAwesome'
+            New-RsRestSession -Credential 'CaptainAwesome'
             Description
             -----------
             This command will fetch a new XSRF token to the Report Portal located at http://localhost/reports using CaptainAwesome's credentials.
