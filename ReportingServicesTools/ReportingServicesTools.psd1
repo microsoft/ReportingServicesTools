@@ -22,7 +22,7 @@
     Copyright = '2016 Microsoft Corporation'
     
     # Description of the functionality provided by this module
-    Description = 'Provides extra functionality for SQL Server Reporting Services.'
+    Description = 'Provides extra functionality for SSRS (SQL Server Reporting Services).'
     
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '3.0'
