@@ -50,7 +50,7 @@ function New-RscatalogItemRoleObject
 
     $Policy | ForEach-Object {
     
-        $catalogItemRole = New-Object –TypeName PSCustomObject
+        $catalogItemRole = New-Object -TypeName PSCustomObject
         $catalogItemRole | Add-Member -MemberType NoteProperty -Name Identity -Value $_.GroupUserName
         $catalogItemRole | Add-Member -MemberType NoteProperty -Name Path -Value $Path
         $catalogItemRole | Add-Member -MemberType NoteProperty -Name TypeName -Value $TypeName
