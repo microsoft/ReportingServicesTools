@@ -41,7 +41,7 @@ The following is a list of commands which are available for you to use once you 
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
-|New-RsODataSession|This command creates a session object to be specified for all subsequent calls to OData Endpoint.|
+|New-RsRestSession|This command creates a session object to be specified for all subsequent calls to OData Endpoint.|
 |New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |Out-RsCatalogItem|This command downloads a catalog item.|
 |Out-RsFolderContent|This command all catalog items in folder.|
