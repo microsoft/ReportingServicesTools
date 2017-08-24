@@ -5,10 +5,10 @@ function New-RsRestSession
 {
     <#
         .SYNOPSIS
-            This script returns a new session variable to be used when making calls to Reporting Services OData endpoint.
+            This script returns a new WebSession object to be used when making calls to Reporting Services OData endpoint.
 
         .DESCRIPTION
-            This script returns a new session variable to be used when making calls to Reporting Services OData endpoint associated to the Report Portal URI specified by the user.
+            This script returns a new WebSession object to be used when making calls to Reporting Services OData endpoint associated to the Report Portal URI specified by the user.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
@@ -80,6 +80,7 @@ function New-RsRestSession
 
         Write-Verbose "Decoding XSRF Token cookie and setting it as a header of the session..."
         $mySession.Headers['X-XSRF-TOKEN'] = [System.Web.HttpUtility]::UrlDecode($mySession.Cookies.GetCookies($meUri)['XSRF-TOKEN'].Value)
+        $mySession.Headers['X-RSTOOLS-URL'] = $ReportPortalUri
         return $mySession
     }
     catch
