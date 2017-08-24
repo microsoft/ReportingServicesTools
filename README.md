@@ -45,6 +45,7 @@ The following is a list of commands which are available for you to use once you 
 |New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |Out-RsCatalogItem|This command downloads a catalog item.|
 |Out-RsFolderContent|This command all catalog items in folder.|
+|Out-RsRestCatalogItem|This command downloads a catalog item.|
 |Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services.|
 |Remove-RsCatalogItem|This command removes catalog item located at the specified path.|
 |Restore-RsEncryptionKey|This command restores encryption key on to the SQL Server Reporting Services.|

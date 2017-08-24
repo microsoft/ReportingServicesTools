@@ -78,6 +78,7 @@
         'New-RsWebServiceProxy',
         'Out-RsCatalogItem',
         'Out-RsFolderContent',
+        'Out-RsRestCatalogItem',
         'Register-RsPowerBI',
         'Remove-RsCatalogItem',
         'Restore-RsEncryptionKey',
