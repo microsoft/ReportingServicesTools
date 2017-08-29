@@ -5,10 +5,10 @@ function Out-RsRestCatalogItem
 {
     <#
         .SYNOPSIS
-            This downloads catalog items from a report server to disk.
+            This command downloads catalog items from a report server to disk.
         
         .DESCRIPTION
-            This downloads catalog items from a report server to disk.
+            This command downloads catalog items from a report server to disk.
         
         .PARAMETER RsFolder
             Path to catalog item to download.
@@ -24,9 +24,16 @@ function Out-RsRestCatalogItem
 
         .PARAMETER WebSession
             Specify the session to be used when making calls to REST Endpoint.
-        
+
         .EXAMPLE
             Out-RsCatalogItem -WebSession $mySession -RsFolder /Report -Destination C:\reports
+            
+            Description
+            -----------
+            Download catalog item 'Report' to folder 'C:\reports'.
+
+        .EXAMPLE
+            Out-RsCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -RsFolder /Report -Destination C:\reports
             
             Description
             -----------
@@ -59,7 +66,7 @@ function Out-RsRestCatalogItem
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = $WebSession.Headers['X-RSTOOLS-URL']
-        $DestinationFullPath = Resolve-Path $Destination
+        $DestinationFullPath = Convert-Path $Destination
     }
     Process
     {
