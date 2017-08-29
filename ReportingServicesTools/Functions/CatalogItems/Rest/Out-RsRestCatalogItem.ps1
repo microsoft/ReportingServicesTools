@@ -37,7 +37,14 @@ function Out-RsRestCatalogItem
             
             Description
             -----------
-            Download catalog item 'Report' to folder 'C:\reports'.
+            Downloads catalog item found at '/Report' to folder 'C:\reports'.
+
+        .EXAMPLE 
+            Out-RsCatalogItem -WebSession $mySession -RsFolder /Report -Destination C:\reports
+            
+            Description
+            -----------
+            Downloads catalog item found at '/Report' to folder 'C:\reports'.
     #>
 
     [CmdletBinding()]
@@ -58,14 +65,15 @@ function Out-RsRestCatalogItem
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
+        [Microsoft.PowerShell.Commands.WebRequestSession]
         $WebSession
     )
 
     Begin
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
-        $ReportPortalUri = $WebSession.Headers['X-RSTOOLS-URL']
+        $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $DestinationFullPath = Convert-Path $Destination
     }
     Process
