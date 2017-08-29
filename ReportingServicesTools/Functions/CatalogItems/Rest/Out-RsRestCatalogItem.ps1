@@ -33,14 +33,14 @@ function Out-RsRestCatalogItem
             Download catalog item 'Report' to folder 'C:\reports'.
 
         .EXAMPLE
-            Out-RsCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -RsFolder /Report -Destination C:\reports
+            Out-RsCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -ItemPath '/Report' -Destination 'C:\reports'
             
             Description
             -----------
             Downloads catalog item found at '/Report' to folder 'C:\reports'.
 
         .EXAMPLE 
-            Out-RsCatalogItem -WebSession $mySession -RsFolder /Report -Destination C:\reports
+            Out-RsCatalogItem -WebSession $mySession -ItemPath '/Report' -Destination 'C:\reports'
             
             Description
             -----------
