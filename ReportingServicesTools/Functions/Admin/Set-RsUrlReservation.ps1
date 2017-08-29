@@ -103,6 +103,18 @@ function Set-RsUrlReservation
         Write-Verbose "Reserving Url for $reportServerWebappName..."
         $result = $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:$ListeningPort",(Get-Culture).Lcid)
 
+        
+        if($ReportServerVersion -and $ReportServerVersion -gt 13)
+        {
+            $powerBiApp = "PowerBIWebApp"
+            Write-Verbose "Reserving Url for $powerBiApp..."
+            $result = $rsWmiObject.ReserveURL($powerBiApp,"http://+:$ListeningPort",(Get-Culture).Lcid)
+
+            $officeWebApp = "OfficeWebApp"
+            Write-Verbose "Reserving Url for $officeWebApp..."
+            $result = $rsWmiObject.ReserveURL($officeWebApp,"http://+:$ListeningPort",(Get-Culture).Lcid)
+        }
+
         Write-Verbose "Success!"
     }
     catch
