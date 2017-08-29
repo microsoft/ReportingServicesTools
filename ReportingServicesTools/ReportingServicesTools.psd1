@@ -7,7 +7,7 @@
     RootModule = 'ReportingServicesTools.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.0.2.4'
+    ModuleVersion = '0.0.2.6'
     
     # ID used to uniquely identify this module
     GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -22,7 +22,7 @@
     Copyright = '2016 Microsoft Corporation'
     
     # Description of the functionality provided by this module
-    Description = 'Provides extra functionality for SQL Server Reporting Services.'
+    Description = 'Provides extra functionality for SSRS (SQL Server Reporting Services).'
     
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '3.0'

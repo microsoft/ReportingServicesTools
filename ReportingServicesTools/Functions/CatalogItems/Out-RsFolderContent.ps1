@@ -84,8 +84,8 @@ function Out-RsFolderContent
         throw (New-Object System.Exception("Failed to retrieve items in '$RsFolder': $($_.Exception.Message)", $_.Exception))
     }
     
-    $Destination = Resolve-Path $Destination
-    
+    $Destination = Convert-Path $Destination
+
     foreach ($item in $items)
     {
         if (($item.TypeName -eq 'Folder') -and $Recurse)

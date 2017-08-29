@@ -73,7 +73,7 @@ function Out-RsCatalogItem
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
-        $DestinationFullPath = Resolve-Path $Destination
+        $DestinationFullPath = Convert-Path $Destination
     }
     
     Process
