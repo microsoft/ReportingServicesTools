@@ -78,11 +78,6 @@ function Out-RsRestCatalogItem
     }
     Process
     {
-        if ($ReportPortalUri -notlike '*/') 
-        {
-            $ReportPortalUri = $ReportPortalUri + '/'
-        }
-
         $catalogItemsByPathApi = $ReportPortalUri + 'api/v1.0/CatalogItemByPath(path=@path)?@path=%27{0}%27'
         $catalogItemContentApi = $ReportPortalUri + 'api/v1.0/CatalogItems({0})/Content/$value'
 

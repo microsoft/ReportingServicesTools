@@ -101,6 +101,47 @@ function New-RsRestSessionHelper
     New-RsRestSession @NewRsRestSessionParams
 }
 
+function Get-RsPortalUriHelper
+{
+    <#
+        .SYNOPSIS
+            Internal helper function. Facilitates determining the Portal Uri from WebSession object.
+        
+        .DESCRIPTION
+            Internal helper function. Facilitates determining the Portal Uri from WebSession object.
+        
+        .PARAMETER WebSession
+            The WebSession object returned from executing New-RsRestSession command.
+        
+        .EXAMPLE
+            $reportPortalUri = Get-RsPortalUriHelper -WebSession $mySession
+        
+            Retrieves the Portal Uri for which this web session was created.
+    #>
+
+    [CmdletBinding()]
+    Param (
+        [AllowNull()]
+        [Microsoft.PowerShell.Commands.WebRequestSession]
+        $WebSession
+    )
+
+    if ($WebSession -ne $null)
+    {
+        $reportPortalUri = $WebSession.Headers['X-RSTOOLS-PORTALURI']
+        if (![String]::IsNullOrEmpty($reportPortalUri))
+        {
+            if ($reportPortalUri -notlike '*/') 
+            {
+                $reportPortalUri = $reportPortalUri + '/'
+            }
+            return $reportPortalUri
+        }
+    }
+
+    throw "Invalid WebSession specified! Please specify a valid WebSession or run New-RsRestSession to create a new one."
+}
+
 function New-RsConfigurationSettingObjectHelper
 {
     <#
