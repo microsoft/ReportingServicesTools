@@ -66,26 +66,26 @@ function Write-RsRestCatalogItem
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
+        $catalogItemsUri = $ReportPortalUri + "api/v1.0/CatalogItems"
     }
     
     Process
     {
-        $catalogItemsUri = $ReportPortalUri + "api/v1.0/CatalogItems"
-
         foreach ($item in $Path)
         {
             if (!(Test-Path $item))
             {
                 throw "No item found at the specified path: $item!"
             }
-            
+
             $EntirePath = Convert-Path $item
             $item = Get-Item $EntirePath
             $itemType = Get-ItemType $item.Extension
             $itemName = $item.BaseName
 
-            if ($itemType -eq "DataSource") {
-                throw "DataSource creation is currently not supported!"
+            if ($itemType -eq "DataSource")
+            {
+                throw "Data Source creation is currently not supported!"
             }
 
             $itemPath = ""
@@ -100,6 +100,7 @@ function Write-RsRestCatalogItem
                 Write-Verbose "Uploading $EntirePath to $itemPath"
             }
 
+            Write-Verbose "Reading file content..."
             $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
             $payload = @{
                 "@odata.type" = "#Model.$itemType";
@@ -111,6 +112,8 @@ function Write-RsRestCatalogItem
 
             try
             {
+                Write-Verbose "Uploading $iteName to $itemPath..."
+
                 $payloadJson = ConvertTo-Json $payload
 
                 if ($Credential -ne $null)

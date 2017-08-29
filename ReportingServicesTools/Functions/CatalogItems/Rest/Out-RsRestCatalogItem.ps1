@@ -75,30 +75,32 @@ function Out-RsRestCatalogItem
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $DestinationFullPath = Convert-Path $Destination
+        $catalogItemsByPathApi = $ReportPortalUri + 'api/v1.0/CatalogItemByPath(path=@path)?@path=%27{0}%27'
+        $catalogItemContentApi = $ReportPortalUri + 'api/v1.0/CatalogItems({0})/Content/$value'
     }
     Process
     {
-        $catalogItemsByPathApi = $ReportPortalUri + 'api/v1.0/CatalogItemByPath(path=@path)?@path=%27{0}%27'
-        $catalogItemContentApi = $ReportPortalUri + 'api/v1.0/CatalogItems({0})/Content/$value'
-
         foreach ($item in $RsFolder)
         {
-            Write-Verbose "Fetching item metadata from server..."
-            $url = [string]::Format($catalogItemsByPathApi, $item)
-            if ($Credential -ne $null)
+            try
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential
+                Write-Verbose "Fetching item metadata from server..."
+                $url = [string]::Format($catalogItemsByPathApi, $item)
+                if ($Credential -ne $null)
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential
+                }
+                else
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials
+                }
             }
-            else
+            catch
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials
+                throw (New-Object System.Exception("Error while trying to fetch metadata for $item! Exception: $($_.Exception.Message)", $_.Exception))
             }
 
-            if ($response -ne $null -and $response.StatusCode -ne 200)
-            {
-                throw "Error while trying to fetch metadata for $item! Http Status Code: $($response.StatusCode), Response: $($response.Content)"
-            }
-
+            Write-Verbose "Parsing item metadata..."
             $itemInfo = ConvertFrom-Json $response.Content
             if ($itemInfo.Type -ne 'MobileReport')
             {
@@ -128,24 +130,26 @@ function Out-RsRestCatalogItem
                 }
             }
 
-            Write-Verbose "Downloading item from server..."
-            $url = [string]::Format($catalogItemContentApi, $itemId)
-            if ($Credential -ne $null)
+            try
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential
+                Write-Verbose "Downloading item from server..."
+                $url = [string]::Format($catalogItemContentApi, $itemId)
+                if ($Credential -ne $null)
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential -ErrorAction Stop
+                }
+                else
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials -ErrorAction Stop
+                }
             }
-            else
+            catch
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials
+                throw (New-Object System.Exception("Error while downloading $item! Exception: $($_.Exception.Message)", $_.Exception))
             }
 
-            if ($response -ne $null -and $response.StatusCode -ne 200)
-            {
-                throw "Error while downloading $item! Http Status Code: $($response.StatusCode), Response: $($response.Content)"
-            }
-
-            $destinationFilePath = Join-Path -Path $DestinationFullPath -ChildPath $fileName
             Write-Verbose "Writing content to $destinationFilePath..."
+            $destinationFilePath = Join-Path -Path $DestinationFullPath -ChildPath $fileName
             [System.IO.File]::WriteAllBytes($destinationFilePath, $response.Content)
             Write-Verbose "$item was downloaded to $destinationFilePath successfully!"
         }
