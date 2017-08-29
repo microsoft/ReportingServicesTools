@@ -80,7 +80,10 @@ function New-RsRestSession
 
         Write-Verbose "Decoding XSRF Token cookie and setting it as a header of the session..."
         $mySession.Headers['X-XSRF-TOKEN'] = [System.Web.HttpUtility]::UrlDecode($mySession.Cookies.GetCookies($meUri)['XSRF-TOKEN'].Value)
-        $mySession.Headers['X-RSTOOLS-URL'] = $ReportPortalUri
+
+        # This header is not required by the REST Endpoint. It is there so that user does not need to specify
+        # the Portal Uri every single time they run a command using the REST Endpoint.
+        $mySession.Headers['X-RSTOOLS-PORTALURI'] = $ReportPortalUri
         return $mySession
     }
     catch
