@@ -27,18 +27,18 @@ function Write-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
         
         .EXAMPLE
-            Write-RsRestCatalogItem -WebSession $mySession -Path c:\reports\monthlyreport.rdl -RsFolder /monthlyreports
+            Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
             Description
             -----------
-            Uploads the report monthlyreport.rdl to folder /monthlyreports
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports'
 
         .EXAMPLE
-            Write-RsRestCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -Path c:\reports\monthlyreport.rdl -RsFolder /monthlyreports
+            Write-RsRestCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
             Description
             -----------
-            Uploads the report monthlyreport.rdl to folder /monthlyreports
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports'
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
