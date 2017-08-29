@@ -64,10 +64,11 @@
     FunctionsToExport = @(
         'Backup-RsEncryptionKey',
         'Connect-RsReportServer',
+        'Get-RsCatalogItemRole',
         'Get-RsDataSource',
         'Get-RsFolderContent',
         'Get-RsItemReference',
-        'Get-RsCatalogItemRole',
+        'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
         'Initialize-Rs',
@@ -81,6 +82,7 @@
         'Out-RsRestCatalogItem',
         'Register-RsPowerBI',
         'Remove-RsCatalogItem',
+        'Remove-RsSubscription',
         'Restore-RsEncryptionKey',
         'Revoke-RsCatalogItemAccess',
         'Revoke-RsSystemAccess',
@@ -91,12 +93,11 @@
         'Set-RsDataSourcePassword',
         'Set-RsDataSourceReference',
         'Set-RsEmailSettings',
+        'Set-RsSubscription',
         'Set-RsUrlReservation'
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
-        'Get-RsSubscription',
-        'Set-RsSubscription',
-        'Remove-RsSubscription'
+        'Write-RsRestCatalogItem'
     )
     
     # Cmdlets to export from this module

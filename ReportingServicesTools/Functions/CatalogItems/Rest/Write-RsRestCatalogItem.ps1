@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Write-RsCatalogItem
+function Write-RsRestCatalogItem
 {
     <#
         .SYNOPSIS
@@ -16,9 +16,6 @@ function Write-RsCatalogItem
         
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
-        
-       .PARAMETER Overwrite
-            Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
         
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
@@ -54,10 +51,6 @@ function Write-RsCatalogItem
         [string]
         $RsFolder,
         
-        [Alias('Override')]
-        [switch]
-        $Overwrite,
-        
         [string]
         $ReportPortalUri,
         
@@ -77,7 +70,7 @@ function Write-RsCatalogItem
     
     Process
     {
-        $catalogItemsUri = $ReportPortalUri + 'api/v1.0/CatalogItems'
+        $catalogItemsUri = $ReportPortalUri + "api/v1.0/CatalogItems"
 
         foreach ($item in $Path)
         {
@@ -91,7 +84,7 @@ function Write-RsCatalogItem
             $itemType = Get-ItemType $item.Extension
             $itemName = $item.BaseName
 
-            if ($itemType -eq 'DataSource') {
+            if ($itemType -eq "DataSource") {
                 throw "DataSource creation is currently not supported!"
             }
 
@@ -111,27 +104,30 @@ function Write-RsCatalogItem
             $payload = @{
                 "@odata.type" = "#Model.$itemType";
                 "Content" = [System.Convert]::ToBase64String($bytes);
+                "ContentType"="";
                 "Name" = $itemName;
                 "Path" = $itemPath;
             }
 
             try
             {
+                $payloadJson = ConvertTo-Json $payload
+
                 if ($Credential -ne $null)
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -SessionVariable $WebSession -Body (ConvertTo-Json $payload) -Credential $Credential
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential | Out-Null
                 }
                 else
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -SessionVariable $WebSession -Body (ConvertTo-Json $payload) -UseDefaultCredentials
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials | Out-Null
                 }
+
+                Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
             }
             catch
             {
                 throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
             }
-            
-            Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
         }
     }
 }
