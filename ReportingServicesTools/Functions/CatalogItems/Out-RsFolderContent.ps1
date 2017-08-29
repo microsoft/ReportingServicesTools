@@ -84,16 +84,7 @@ function Out-RsFolderContent
         throw (New-Object System.Exception("Failed to retrieve items in '$RsFolder': $($_.Exception.Message)", $_.Exception))
     }
     
-    #Deal with UNC path
-    if ($Destination.StartsWith("\\"))
-    {
-        Write-Verbose "I'm here"
-        $Destination = ConvertTo-UNCPath $Destination
-    }
-    else
-    {
-        $Destination = Resolve-Path $Destination
-    }
+    $Destination = Convert-Path $Destination
 
     foreach ($item in $items)
     {

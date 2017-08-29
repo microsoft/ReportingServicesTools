@@ -73,14 +73,7 @@ function Out-RsCatalogItem
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
-        if ($Destination.StartsWith("\\"))
-        {
-            $DestinationFullPath = ConvertTo-UNCPath $Destination
-        }
-        else
-        {
-            $DestinationFullPath = Resolve-Path $Destination
-        }
+        $DestinationFullPath = Convert-Path $Destination
     }
     
     Process

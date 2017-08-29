@@ -76,29 +76,15 @@ function Write-RsCatalogItem
         foreach ($item in $Path)
         {
             #region Manage Paths
-            if ($item.StartsWith("\\"))
+            if (!(Test-Path $item))
             {
-                $EntirePath = ConvertTo-UNCFilePath $item
-
-                if (!(Test-Path $EntirePath))
-                {
-                    throw "No item found at the specified path: $EntirePath!"
-                }
-            }
-            else
-            {
-                if (!(Test-Path $item))
-                {
-                    throw "No item found at the specified path: $item!"
-                }
-
-                $EntirePath = Resolve-Path $item
+                throw "No item found at the specified path: $item!"
             }
             
+            $EntirePath = Convert-Path $item
             $item = Get-Item $EntirePath
             $itemType = Get-ItemType $item.Extension
             $itemName = $item.BaseName
-            
             
             if ($RsFolder -eq "/")
             {
@@ -150,7 +136,11 @@ function Write-RsCatalogItem
                     $warnings = $null
                     try
                     {
+                    Write-Verbose $EntirePath
+
                         $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null
+
+                    Write-Verbose $EntirePath
                     }
                     catch
                     {
