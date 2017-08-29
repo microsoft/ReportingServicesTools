@@ -1,14 +1,14 @@
-# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Set-RsUrlReservation
+function Set-PbiRsUrlReservation
 {
     <#
         .SYNOPSIS
-            This command configures the urls for Report Server
+            This command configures the urls for PBI Report Server
         
         .DESCRIPTION
-            This command configures the urls for Report Server
+            This command configures the urls for PBI Report Server
         
         .PARAMETER ReportServerVirtualDirectory
             Specify the name of the virtual directory for the Report Server Endpoint the default is ReportServer, it will configure it as http://myMachine/reportserver
@@ -33,19 +33,19 @@ function Set-RsUrlReservation
             Specify the Listening Port
 
         .EXAMPLE
-            Set-RsUrlReservation
+            Set-PbiRsUrlReservation
             Description
             -----------
             This command will configure the Report Server with the default urls http://myMachine/ReportServer and http://myMachine/Reports
         
         .EXAMPLE
-            Set-RsUrlReservation -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017 
+            Set-PbiRsUrlReservation -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017 
             Description
             -----------
             This command will configure the url for the server with http://myMachine/ReportServer2017 and http://myMachine/Reports2017
 
         .EXAMPLE
-            Set-RsUrlReservation -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017  -ListeningPort 8080
+            Set-PbiRsUrlReservation -ReportServerVirtualDirectory ReportServer2017 -PortalVirtualDirectory Reports2017  -ListeningPort 8080
             Description
             -----------
             This command will configure the url for the server with http://myMachine:8080/ReportServer2017 and http://myMachine:8080/Reports2017
@@ -78,27 +78,19 @@ function Set-RsUrlReservation
         $ListeningPort=80
     )
     
-    $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
+    $pbirsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
     
     try
     {
-        Write-Verbose "Setting Virtual Directory for ReportServerWebService..."
-        $result = $rsWmiObject.SetVirtualDirectory("ReportServerWebService",$ReportServerVirtualDirectory,(Get-Culture).Lcid)
-        Write-Verbose "Reserving Url for ReportServerWebService..."
-        $result = $rsWmiObject.ReserveURL("ReportServerWebService","http://+:$ListeningPort",(Get-Culture).Lcid)
-        if($ReportServerVersion -and $ReportServerVersion -lt 13)
-        {
-            $reportServerWebappName = "ReportManager"
-        }
-        else
-        {
-            $reportServerWebappName = "ReportServerWebApp"
-        }
+        Set-RsUrlReservation -ReportServerVirtualDirectory $ReportServerVirtualDirectory -PortalVirtualDirectory $PortalVirtualDirectory -ReportServerInstance $ReportServerInstance -ReportServerVersion $ReportServerVersion -ComputerName $ComputerName -Credential $Credential -ListeningPort $ListeningPort
 
-        Write-Verbose "Setting Virtual Directory for $reportServerWebappName..."
-        $result = $rsWmiObject.SetVirtualDirectory($reportServerWebappName,$PortalVirtualDirectory,(Get-Culture).Lcid)
-        Write-Verbose "Reserving Url for $reportServerWebappName..."
-        $result = $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:$ListeningPort",(Get-Culture).Lcid)
+        $powerBiApp = "PowerBIWebApp"
+        Write-Verbose "Reserving Url for $powerBiApp..."
+        $result = $pbirsWmiObject.ReserveURL($powerBiApp,"http://+:$ListeningPort",(Get-Culture).Lcid)
+
+        $officeWebApp = "OfficeWebApp"
+        Write-Verbose "Reserving Url for $officeWebApp..."
+        $result = $pbirsWmiObject.ReserveURL($officeWebApp,"http://+:$ListeningPort",(Get-Culture).Lcid)       
 
         Write-Verbose "Success!"
     }
