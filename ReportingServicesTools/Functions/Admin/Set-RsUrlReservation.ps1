@@ -12,6 +12,9 @@ function Set-RsUrlReservation
         
         .PARAMETER ReportServerVirtualDirectory
             Specify the name of the virtual directory for the Report Server Endpoint the default is ReportServer, it will configure it as http://myMachine/reportserver
+
+        .PARAMETER PortalVirtualDirectory
+            Specify the name of the virtual directory for the Portal Endpoint the default is ReportServer, it will configure it as http://myMachine/reports
         
         .PARAMETER ReportServerInstance
             Specify the name of the SQL Server Reporting Services Instance.
@@ -84,8 +87,20 @@ function Set-RsUrlReservation
     {
         Write-Verbose "Setting Virtual Directory for ReportServerWebService..."
         $result = $rsWmiObject.SetVirtualDirectory("ReportServerWebService",$ReportServerVirtualDirectory,(Get-Culture).Lcid)
+        
+        if ($result.HRESULT -ne 0)
+        {
+            throw "Failed Setting Virtual Directory for ReportServerWebService, Errocode: $($result.HRESULT)"
+        }
+
         Write-Verbose "Reserving Url for ReportServerWebService..."
         $result = $rsWmiObject.ReserveURL("ReportServerWebService","http://+:$ListeningPort",(Get-Culture).Lcid)
+
+        if ($result.HRESULT -ne 0)
+        {
+            throw "Failed Reserving Url for ReportServerWebService, Errocode: $($result.HRESULT)"
+        }
+
         if($ReportServerVersion -and $ReportServerVersion -lt 13)
         {
             $reportServerWebappName = "ReportManager"
@@ -97,8 +112,20 @@ function Set-RsUrlReservation
 
         Write-Verbose "Setting Virtual Directory for $reportServerWebappName..."
         $result = $rsWmiObject.SetVirtualDirectory($reportServerWebappName,$PortalVirtualDirectory,(Get-Culture).Lcid)
+
+        if ($result.HRESULT -ne 0)
+        {
+            throw "Failed Setting Virtual Directory for $reportServerWebappName, Errocode: $($result.HRESULT)"
+        }
+
         Write-Verbose "Reserving Url for $reportServerWebappName..."
         $result = $rsWmiObject.ReserveURL($reportServerWebappName,"http://+:$ListeningPort",(Get-Culture).Lcid)
+
+        if ($result.HRESULT -ne 0)
+        {
+            throw "Failed Reserving Url for $reportServerWebappName, Errocode: $($result.HRESULT)"
+        }
+
 
         Write-Verbose "Success!"
     }

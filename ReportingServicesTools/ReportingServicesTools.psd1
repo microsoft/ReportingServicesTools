@@ -89,8 +89,8 @@
         'Set-RsDataSourcePassword',
         'Set-RsDataSourceReference',
         'Set-RsEmailSettings',
-        'Set-RsUrlReservation'
-        'Set-PbiRsUrlReservation'
+        'Set-RsUrlReservation',
+        'Set-PbiRsUrlReservation',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
         'Get-RsSubscription',

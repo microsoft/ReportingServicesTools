@@ -12,6 +12,9 @@ function Set-PbiRsUrlReservation
         
         .PARAMETER ReportServerVirtualDirectory
             Specify the name of the virtual directory for the Report Server Endpoint the default is ReportServer, it will configure it as http://myMachine/reportserver
+
+        .PARAMETER PortalVirtualDirectory
+            Specify the name of the virtual directory for the Portal Endpoint the default is ReportServer, it will configure it as http://myMachine/reports
         
         .PARAMETER ReportServerInstance
             Specify the name of the SQL Server Reporting Services Instance.
@@ -88,9 +91,19 @@ function Set-PbiRsUrlReservation
         Write-Verbose "Reserving Url for $powerBiApp..."
         $result = $pbirsWmiObject.ReserveURL($powerBiApp,"http://+:$ListeningPort",(Get-Culture).Lcid)
 
+        if ($result.HRESULT -ne 0)
+        {
+            throw "Failed Reserving Url for $powerBiApp, Errocode: $($result.HRESULT)"
+        }
+
         $officeWebApp = "OfficeWebApp"
         Write-Verbose "Reserving Url for $officeWebApp..."
-        $result = $pbirsWmiObject.ReserveURL($officeWebApp,"http://+:$ListeningPort",(Get-Culture).Lcid)       
+        $result = $pbirsWmiObject.ReserveURL($officeWebApp,"http://+:$ListeningPort",(Get-Culture).Lcid)
+        
+        if ($result.HRESULT -ne 0)
+        {
+            throw "Reserving Url for $officeWebApp, Errocode: $($result.HRESULT)"
+        }       
 
         Write-Verbose "Success!"
     }
