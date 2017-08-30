@@ -132,10 +132,5 @@ function Set-RsUrlReservation
     catch
     {
         throw (New-Object System.Exception("Failed to reserve Urls $($_.Exception.Message)", $_.Exception))
-    }
-    
-    if ($result.HRESULT -ne 0)
-    {
-        throw "Failed to reserve Urls, Errocode: $($result.HRESULT)"
-    }
+    }   
 }

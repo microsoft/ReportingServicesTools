@@ -102,7 +102,7 @@ function Set-PbiRsUrlReservation
         
         if ($result.HRESULT -ne 0)
         {
-            throw "Reserving Url for $officeWebApp, Errocode: $($result.HRESULT)"
+            throw "Failed Reserving Url for $officeWebApp, Errocode: $($result.HRESULT)"
         }       
 
         Write-Verbose "Success!"
