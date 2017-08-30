@@ -136,11 +136,11 @@ function Write-RsRestCatalogItem
 
                 if ($Credential -ne $null)
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential | Out-Null
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
                 }
                 else
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials | Out-Null
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
                 }
 
                 Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
@@ -155,11 +155,11 @@ function Write-RsRestCatalogItem
                         $uri = [String]::Format($catalogItemsByPathApi, $itemPath)
                         if ($Credential -ne $null)
                         {
-                            $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -Credential $Credential
+                            $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
                         }
                         else
                         {
-                            $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -UseDefaultCredentials
+                            $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
                         }
 
                         # parsing response to get Id
@@ -170,11 +170,11 @@ function Write-RsRestCatalogItem
                         $uri = [String]::Format($catalogItemsUpdateUri, $itemId)
                         if ($Credential -ne $null)
                         {
-                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential | Out-Null
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
                         }
                         else
                         {
-                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials | Out-Null
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
                         }
                         Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
                     }

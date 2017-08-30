@@ -97,11 +97,11 @@ function Out-RsRestCatalogItem
                 $url = [string]::Format($catalogItemsByPathApi, $item)
                 if ($Credential -ne $null)
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
                 }
                 else
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
                 }
             }
             catch
@@ -145,11 +145,11 @@ function Out-RsRestCatalogItem
                 $url = [string]::Format($catalogItemContentApi, $itemId)
                 if ($Credential -ne $null)
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential -ErrorAction Stop
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
                 }
                 else
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials -ErrorAction Stop
+                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
                 }
             }
             catch

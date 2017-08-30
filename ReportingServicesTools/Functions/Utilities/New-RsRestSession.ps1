@@ -63,11 +63,11 @@ function New-RsRestSession
         Write-Verbose "Making call to $meUri to create a session..."
         if ($Credential)
         {
-            $result = Invoke-WebRequest -Uri $meUri -Credential $Credential -SessionVariable mySession -ErrorAction Stop
+            $result = Invoke-WebRequest -Uri $meUri -Credential $Credential -SessionVariable mySession -Verbose:$false -ErrorAction Stop
         }
         else
         {
-            $result = Invoke-WebRequest -Uri $meUri -UseDefaultCredentials -SessionVariable mySession -ErrorAction Stop
+            $result = Invoke-WebRequest -Uri $meUri -UseDefaultCredentials -SessionVariable mySession -Verbose:$false -ErrorAction Stop
         }
 
         if ($result.StatusCode -ne 200)
