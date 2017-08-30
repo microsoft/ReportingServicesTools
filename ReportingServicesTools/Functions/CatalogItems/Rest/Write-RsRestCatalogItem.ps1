@@ -34,14 +34,14 @@ function Write-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
         
         .EXAMPLE
-            Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
+            Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
             
             Description
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports'
 
         .EXAMPLE
-            Write-RsRestCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
+            Write-RsRestCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
             
             Description
             -----------
@@ -65,7 +65,7 @@ function Write-RsRestCatalogItem
         [Parameter(Mandatory = $True)]
         [ValidateSet("v1.0")]
         [string]
-        $ApiVersion = "v1.0",
+        $ApiVersion,
         
         [string]
         $ReportPortalUri,
@@ -182,6 +182,7 @@ function Write-RsRestCatalogItem
                     {
                         throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
                     }
+                    return
                 }
 
                 throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))

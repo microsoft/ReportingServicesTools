@@ -37,14 +37,14 @@ function Out-RsRestCatalogItem
             Download catalog item 'Report' to folder 'C:\reports'.
 
         .EXAMPLE
-            Out-RsCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -RsFolder '/Report' -Destination 'C:\reports'
+            Out-RsCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -RsFolder '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
             
             Description
             -----------
             Downloads catalog item found at '/Report' to folder 'C:\reports'.
 
-        .EXAMPLE 
-            Out-RsCatalogItem -WebSession $mySession -RsFolder '/Report' -Destination 'C:\reports'
+        .EXAMPLE
+            Out-RsCatalogItem -WebSession $mySession -RsFolder '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
             
             Description
             -----------
@@ -66,7 +66,7 @@ function Out-RsRestCatalogItem
         [Parameter(Mandatory = $True)]
         [ValidateSet("v1.0")]
         [string]
-        $ApiVersion = "v1.0",
+        $ApiVersion,
         
         [string]
         $ReportPortalUri,
