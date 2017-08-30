@@ -16,7 +16,14 @@ function Write-RsRestCatalogItem
         
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
+
+        .PARAMETER Overwrite
+            Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
         
+        .PARAMETER ApiVersion
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
+            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
         
@@ -50,6 +57,15 @@ function Write-RsRestCatalogItem
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
+
+        [Alias('Override')]
+        [switch]
+        $Overwrite,
+        
+        [Parameter(Mandatory = $True)]
+        [ValidateSet("v1.0")]
+        [string]
+        $ApiVersion = "v1.0",
         
         [string]
         $ReportPortalUri,
@@ -66,7 +82,9 @@ function Write-RsRestCatalogItem
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemsUri = $ReportPortalUri + "api/v1.0/CatalogItems"
+        $catalogItemsUri = $ReportPortalUri + "api/$ApiVersion/CatalogItems"
+        $catalogItemsByPathApi = $ReportPortalUri + "api/$ApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        $catalogItemsUpdateUri = $ReportPortalUri + "api/$ApiVersion/CatalogItems({0})"
     }
     
     Process
@@ -129,6 +147,43 @@ function Write-RsRestCatalogItem
             }
             catch
             {
+                if ($_.Exception.Response -ne $null -and $_.Exception.Response.StatusCode -eq 409 -and $Overwrite)
+                {
+                    try
+                    {
+                        Write-Verbose "$itemName already exists at $itemPath. Retrieving id in order to overwrite it..."
+                        $uri = [String]::Format($catalogItemsByPathApi, $itemPath)
+                        if ($Credential -ne $null)
+                        {
+                            $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -Credential $Credential
+                        }
+                        else
+                        {
+                            $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -UseDefaultCredentials
+                        }
+
+                        # parsing response to get Id
+                        $itemInfo = ConvertFrom-Json $response.Content
+                        $itemId = $itemInfo.Id
+
+                        Write-Verbose "Overwriting $itemName at $itemPath..."
+                        $uri = [String]::Format($catalogItemsUpdateUri, $itemId)
+                        if ($Credential -ne $null)
+                        {
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential | Out-Null
+                        }
+                        else
+                        {
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials | Out-Null
+                        }
+                        Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
+                    }
+                    catch
+                    {
+                        throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                    }
+                }
+
                 throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
             }
         }

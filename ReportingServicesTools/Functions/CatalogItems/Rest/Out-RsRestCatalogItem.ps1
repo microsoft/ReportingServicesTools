@@ -16,6 +16,10 @@ function Out-RsRestCatalogItem
         .PARAMETER Destination
             Folder to download catalog item to.
         
+        .PARAMETER ApiVersion
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
+            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
         
@@ -58,6 +62,11 @@ function Out-RsRestCatalogItem
         [Parameter(Mandatory = $True)]
         [string]
         $Destination,
+
+        [Parameter(Mandatory = $True)]
+        [ValidateSet("v1.0")]
+        [string]
+        $ApiVersion = "v1.0",
         
         [string]
         $ReportPortalUri,
@@ -75,8 +84,8 @@ function Out-RsRestCatalogItem
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $DestinationFullPath = Convert-Path $Destination
-        $catalogItemsByPathApi = $ReportPortalUri + 'api/v1.0/CatalogItemByPath(path=@path)?@path=%27{0}%27'
-        $catalogItemContentApi = $ReportPortalUri + 'api/v1.0/CatalogItems({0})/Content/$value'
+        $catalogItemsByPathApi = $ReportPortalUri + "api/$ApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        $catalogItemContentApi = $ReportPortalUri + "api/$ApiVersion/CatalogItems({0})/Content/$value"
     }
     Process
     {
