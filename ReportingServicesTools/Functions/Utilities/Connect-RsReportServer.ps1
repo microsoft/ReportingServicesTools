@@ -26,9 +26,11 @@ function Connect-RsReportServer
             The credentials used to execute all requests. Null it in order to use your current user's credentials.
             Used both for WMI access as well as WebApi access.
         
-        .PARAMETER Uri
-            The Uri to connect to for accessing the WebApi.
-            Only used by the WebApi.
+        .PARAMETER ReportServerUri
+            The Uri to connect to for accessing the SOAP Endpoint.
+        
+        .PARAMETER ReportPortalUri
+            The Uri to connect to for accessing the REST Endpoint. This exists in SQL Server Reporting Services 2016 and later.
         
         .EXAMPLE
             Connect-RsReportServer -ComputerName "srv-foobar" -ReportServerInstance "Northwind" -ReportServerUri "http://srv-foobar/reportserver/"
