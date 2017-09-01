@@ -109,20 +109,68 @@ function Write-RsCatalogItem
                     {
                         throw (New-Object System.Exception("Failed to access XML content of '$EntirePath': $($_.Exception.Message)", $_.Exception))
                     }
-                    if ($content.DataSourceDefinition -eq $null)
-                    {
-                        throw "Data Source Definition not found in the specified file: $EntirePath!"
-                    }
 
-                    $NewRsDataSourceParam = @{
-                        Proxy = $Proxy
-                        RsFolder = $RsFolder
-                        Name = $itemName
-                        Extension = $content.DataSourceDefinition.Extension
-                        ConnectionString = $content.DataSourceDefinition.ConnectString
-                        Disabled = ("false" -like $content.DataSourceDefinition.Enabled)
-                        CredentialRetrieval = 'None'
-                        Overwrite = $Overwrite
+                    if ($item.Extension -eq '.rsds')
+                    {
+                        if ($content.DataSourceDefinition -eq $null)
+                        {
+                            throw "Data Source Definition not found in the specified file: $EntirePath!"
+                        }
+    
+                        $NewRsDataSourceParam = @{
+                            Proxy = $Proxy
+                            RsFolder = $RsFolder
+                            Name = $itemName
+                            Extension = $content.DataSourceDefinition.Extension
+                            ConnectionString = $content.DataSourceDefinition.ConnectString
+                            Disabled = ("false" -like $content.DataSourceDefinition.Enabled)
+                            CredentialRetrieval = 'None'
+                            Overwrite = $Overwrite
+                        }
+                    }
+                    elseif ($item.Extension -eq '.rds')
+                    {
+                        if ($content -eq $null -or 
+                            $content.RptDataSource -eq $null -or
+                            $content.RptDataSource.Name -eq $null -or
+                            $content.RptDataSource.ConnectionProperties -eq $null -or
+                            $content.RptDataSource.ConnectionProperties.ConnectString -eq $null -or
+                            $content.RptDataSource.ConnectionProperties.Extension -eq $null)
+                        {
+                            throw 'Invalid data source file!'
+                        }
+
+                        $connectionProperties = $content.RptDataSource.ConnectionProperties
+                        $credentialRetrieval = "None"
+                        if ($connectionProperties.Prompt -ne $null)
+                        {
+                            $credentialRetrieval = "Prompt"
+                            $prompt = $connectionProperties.Prompt
+                        }
+                        elseif ($connectionProperties.IntegratedSecurity -eq $true)
+                        {
+                            $credentialRetrieval = "Integrated"
+                        }
+                        $NewRsDataSourceParam = @{
+                            Proxy = $Proxy
+                            RsFolder = $RsFolder
+                            Name = $content.RptDataSource.Name
+                            Extension = $connectionProperties.Extension
+                            ConnectionString = $connectionProperties.ConnectString
+                            Disabled = $false
+                            CredentialRetrieval = $credentialRetrieval
+                            Overwrite = $Overwrite
+                        }
+
+                        if ($credentialRetrieval -eq "prompt")
+                        {
+                            $NewRsDataSourceParam.Add("Prompt", $prompt)
+                            $NewRsDataSourceParam.Add("WindowsCredentials", $true)
+                        }
+                    }
+                    else
+                    {
+                        throw 'Invalid data source file specified!'
                     }
 
                     New-RsDataSource @NewRsDataSourceParam

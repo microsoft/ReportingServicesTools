@@ -8,7 +8,7 @@ function Write-RsRestCatalogItem
             This command uploads an item from disk to a report server. It is for SQL Server Reporting Service 2016 and later.
         
         .DESCRIPTION
-            This command uploads an item from disk to a report server. It is for SQL Server Reporting Service 2016 and later. Currently, we only support uploading Reports, DataSets and Mobile Report.
+            This command uploads an item from disk to a report server. It is for SQL Server Reporting Service 2016 and later. Currently, we only support uploading Reports, DataSources, DataSets and Mobile Reports.
         
         .PARAMETER Path
             Path to item to upload on disk.
@@ -107,36 +107,103 @@ function Write-RsRestCatalogItem
             $itemType = Get-ItemType $item.Extension
             $itemName = $item.BaseName
 
-            if ($itemType -eq "DataSource")
-            {
-                throw "Data Source creation is currently not supported!"
-            }
-
             $itemPath = ""
             if ($RsFolder -eq "/")
             {
                 $itemPath = "/$itemName"
-                Write-Verbose "Uploading $EntirePath to $itemPath"
             }
             else
             {
                 $itemPath = "$RsFolder/$itemName"
-                Write-Verbose "Uploading $EntirePath to $itemPath"
             }
 
             Write-Verbose "Reading file content..."
-            $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
-            $payload = @{
-                "@odata.type" = "#Model.$itemType";
-                "Content" = [System.Convert]::ToBase64String($bytes);
-                "ContentType"="";
-                "Name" = $itemName;
-                "Path" = $itemPath;
+            if ($itemType -ne 'DataSource')
+            {
+                $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
+                $payload = @{
+                    "@odata.type" = "#Model.$itemType";
+                    "Content" = [System.Convert]::ToBase64String($bytes);
+                    "ContentType"="";
+                    "Name" = $itemName;
+                    "Path" = $itemPath;
+                }
+            }
+            else
+            {
+                [xml] $dataSourceXml = Get-Content -Path $EntirePath
+                if ($item.Extension -eq '.rsds')
+                {
+                    if ($dataSourceXml -eq $null -or 
+                        $dataSourceXml.DataSourceDefinition -eq $null -or
+                        $dataSourceXml.DataSourceDefinition.Extension -eq $null -or
+                        $dataSourceXml.DataSourceDefinition.ConnectString -eq $null)
+                    {
+                        throw 'Invalid data source file!'
+                    }
+
+                    $connectionString = $dataSourceXml.DataSourceDefinition.ConnectString
+                    $dataSourceType = $dataSourceXml.DataSourceDefinition.Extension
+                    $credentialRetrieval = "none"
+                    $enabled = "true" -like $content.DataSourceDefinition.Enabled
+                }
+                elseif ($item.Extension -eq '.rds')
+                {
+                    if ($dataSourceXml -eq $null -or 
+                        $dataSourceXml.RptDataSource -eq $null -or
+                        $dataSourceXml.RptDataSource.Name -eq $null -or
+                        $dataSourceXml.RptDataSource.ConnectionProperties -eq $null -or
+                        $dataSourceXml.RptDataSource.ConnectionProperties.ConnectString -eq $null -or
+                        $dataSourceXml.RptDataSource.ConnectionProperties.Extension -eq $null)
+                    {
+                        throw 'Invalid data source file!'
+                    }
+
+                    $itemName = $dataSourceXml.RptDataSource.Name
+                    $itemPath = $itemPath.Substring(0, $itemPath.LastIndexOf('/') + 1) + $itemName 
+                    $enabled = $true
+                    $connectionProperties = $dataSourceXml.RptDataSource.ConnectionProperties
+                    $connectionString = $connectionProperties.ConnectString
+                    $dataSourceType = $connectionProperties.Extension
+                    $credentialRetrieval = "none"
+                    if ($connectionProperties.Prompt -ne $null)
+                    {
+                        $credentialRetrieval = "prompt"
+                        $prompt = $connectionProperties.Prompt
+                    }
+                    elseif ($connectionProperties.IntegratedSecurity -eq $true)
+                    {
+                        $credentialRetrieval = "integrated"
+                    }
+                }
+
+                $payload = @{
+                    "@odata.type" = "#Model.$itemType";
+                    "Path" = $itemPath;
+                    "Name" = $itemName;
+                    "Description" = "";
+                    "DataSourceType" = $dataSourceType;
+                    "ConnectionString" = $connectionString;
+                    "CredentialRetrieval" = $credentialRetrieval;
+                    "CredentialsByUser" = $null;
+                    "CredentialsInServer" = $null;
+                    "Hidden" = $false;
+                    "IsConnectionStringOverridden" = $true;
+                    "IsEnabled" = $enabled;
+                }
+
+                if ($credentialRetrieval -eq "Prompt")
+                {
+                    $payload["CredentialsByUser"] = @{
+                        "DisplayText" = $prompt;
+                        "UseAsWindowsCredentials" = $true;
+                    }
+                }
             }
 
             try
             {
-                Write-Verbose "Uploading $iteName to $itemPath..."
+                Write-Verbose "Uploading $EntirePath to $RsFolder..."
 
                 $payloadJson = ConvertTo-Json $payload
 
@@ -157,7 +224,7 @@ function Write-RsRestCatalogItem
                 {
                     try
                     {
-                        Write-Verbose "$itemName already exists at $itemPath. Retrieving id in order to overwrite it..."
+                        Write-Verbose "$itemName already exists at $RsFolder. Retrieving id in order to overwrite it..."
                         $uri = [String]::Format($catalogItemsByPathApi, $itemPath)
                         if ($Credential -ne $null)
                         {
