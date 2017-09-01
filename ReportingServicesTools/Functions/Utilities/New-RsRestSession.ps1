@@ -5,10 +5,10 @@ function New-RsRestSession
 {
     <#
         .SYNOPSIS
-            This script returns a new WebSession object to be used when making calls to Reporting Services OData endpoint.
+            This script returns a new WebSession object to be used when making calls to Reporting Services REST endpoint. This exists in SQL Server Reporting Services 2016 and later.
 
         .DESCRIPTION
-            This script returns a new WebSession object to be used when making calls to Reporting Services OData endpoint associated to the Report Portal URI specified by the user.
+            This script returns a new WebSession object to be used when making calls to Reporting Services REST endpoint associated to the Report Portal URI specified by the user. This exists in SQL Server Reporting Services 2016 and later.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
