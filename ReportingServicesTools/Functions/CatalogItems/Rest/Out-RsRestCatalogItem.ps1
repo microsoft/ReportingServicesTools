@@ -53,7 +53,7 @@ function Out-RsRestCatalogItem
 
     [CmdletBinding()]
     param (
-        [Alias('RsFolder')]
+        [Alias('ItemPath', 'Path', 'RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $RsItem,
