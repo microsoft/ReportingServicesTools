@@ -12,7 +12,7 @@ function Out-RsCatalogItem
             This downloads catalog items from a report server to disk.
             Currently supported types to download are reports, datasources, datasets and resources.
         
-        .PARAMETER RsFolder
+        .PARAMETER RsItem
             Path to catalog item to download.
         
         .PARAMETER Destination
@@ -32,14 +32,14 @@ function Out-RsCatalogItem
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -RsFolder /Report -Destination C:\reports
+            Out-RsCatalogItem -ReportServerUri 'http://localhost/reportserver_sql2012' -RsItem /Report -Destination C:\reports
             
             Description
             -----------
             Download catalog item 'Report' to folder 'C:\reports'.
-			
+
         .EXAMPLE
-            Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder '/SQL Server Performance Dashboard' | 
+            Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsItem '/SQL Server Performance Dashboard' | 
             WHERE Name -Like Wait* | 
             Out-RsCatalogItem -ReportServerUri http://localhost/ReportServer -Destination c:\SQLReports
    
@@ -49,10 +49,10 @@ function Out-RsCatalogItem
     #>
     [CmdletBinding()]
     param (
-        [Alias('ItemPath', 'Path')]
+        [Alias('ItemPath', 'Path', 'RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $RsFolder,
+        $RsItem,
         
         [ValidateScript({ Test-Path $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
@@ -79,7 +79,7 @@ function Out-RsCatalogItem
     Process
     {
         #region Processing each path passed to it
-        foreach ($item in $RsFolder)
+        foreach ($item in $RsItem)
         {
             #region Retrieving content from Report Server
             try

@@ -10,7 +10,7 @@ function Out-RsRestCatalogItem
         .DESCRIPTION
             This command downloads catalog items from a report server to disk. It is for SQL Server Reporting Service 2016 and later.
         
-        .PARAMETER RsFolder
+        .PARAMETER RsItem
             Path to catalog item to download.
         
         .PARAMETER Destination
@@ -30,21 +30,21 @@ function Out-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            Out-RsCatalogItem -RsFolder /Report -Destination C:\reports -ApiVersion 'v1.0'
+            Out-RsCatalogItem -RsItem /Report -Destination C:\reports -ApiVersion 'v1.0'
             
             Description
             -----------
             Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://localhost/reports.
 
         .EXAMPLE
-            Out-RsCatalogItem -WebSession $mySession -RsFolder /Report -Destination C:\reports -ApiVersion 'v1.0'
+            Out-RsCatalogItem -WebSession $mySession -RsItem /Report -Destination C:\reports -ApiVersion 'v1.0'
             
             Description
             -----------
             Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint.
 
         .EXAMPLE
-            Out-RsCatalogItem -ReportPortalUri 'http://myserver/reports' -RsFolder '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
+            Out-RsCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
             
             Description
             -----------
@@ -53,10 +53,10 @@ function Out-RsRestCatalogItem
 
     [CmdletBinding()]
     param (
-        [Alias('ItemPath', 'Path')]
+        [Alias('RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $RsFolder,
+        $RsItem,
         
         [ValidateScript({ Test-Path $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
@@ -89,7 +89,7 @@ function Out-RsRestCatalogItem
     }
     Process
     {
-        foreach ($item in $RsFolder)
+        foreach ($item in $RsItem)
         {
             try
             {
