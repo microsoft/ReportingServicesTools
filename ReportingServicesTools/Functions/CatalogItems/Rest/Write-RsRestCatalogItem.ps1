@@ -5,11 +5,10 @@ function Write-RsRestCatalogItem
 {
     <#
         .SYNOPSIS
-            This command uploads an item from disk to a report server.
+            This command uploads an item from disk to a report server. It is for SQL Server Reporting Service 2016 and later.
         
         .DESCRIPTION
-            This command uploads an item from disk to a report server.
-            Currently, we are only supporting Report, DataSource, DataSet and Mobile Report for uploads
+            This command uploads an item from disk to a report server. It is for SQL Server Reporting Service 2016 and later. Currently, we only support uploading Reports, DataSets and Mobile Report.
         
         .PARAMETER Path
             Path to item to upload on disk.
@@ -34,18 +33,25 @@ function Write-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
         
         .EXAMPLE
+            Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
+            
+            Description
+            -----------
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://localhost/reports/.
+
+        .EXAMPLE
             Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports'
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
+            Write-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports'
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://myserver/reports.
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(

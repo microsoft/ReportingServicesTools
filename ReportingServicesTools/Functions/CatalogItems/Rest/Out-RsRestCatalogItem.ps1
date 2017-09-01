@@ -5,10 +5,10 @@ function Out-RsRestCatalogItem
 {
     <#
         .SYNOPSIS
-            This command downloads catalog items from a report server to disk.
+            This command downloads catalog items from a report server to disk. It is for SQL Server Reporting Service 2016 and later.
         
         .DESCRIPTION
-            This command downloads catalog items from a report server to disk.
+            This command downloads catalog items from a report server to disk. It is for SQL Server Reporting Service 2016 and later.
         
         .PARAMETER RsFolder
             Path to catalog item to download.
@@ -30,25 +30,25 @@ function Out-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            Out-RsCatalogItem -WebSession $mySession -RsFolder /Report -Destination C:\reports
+            Out-RsCatalogItem -RsFolder /Report -Destination C:\reports -ApiVersion 'v1.0'
             
             Description
             -----------
-            Download catalog item 'Report' to folder 'C:\reports'.
+            Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://localhost/reports.
 
         .EXAMPLE
-            Out-RsCatalogItem -ReportPortalUri 'http://localhost/reports_sql2016' -RsFolder '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
+            Out-RsCatalogItem -WebSession $mySession -RsFolder /Report -Destination C:\reports -ApiVersion 'v1.0'
             
             Description
             -----------
-            Downloads catalog item found at '/Report' to folder 'C:\reports'.
+            Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint.
 
         .EXAMPLE
-            Out-RsCatalogItem -WebSession $mySession -RsFolder '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
+            Out-RsCatalogItem -ReportPortalUri 'http://myserver/reports' -RsFolder '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
             
             Description
             -----------
-            Downloads catalog item found at '/Report' to folder 'C:\reports'.
+            Downloads the catalog item found at '/Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://myserver/reports.
     #>
 
     [CmdletBinding()]
