@@ -23,7 +23,7 @@ function Out-RsCatalogItem
             Use the "Connect-RsReportServer" function to set/update a default value.
         
         .PARAMETER Credential
-            Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+            Specify the credentials to use when connecting to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
         
         .PARAMETER Proxy

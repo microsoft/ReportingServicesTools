@@ -28,7 +28,7 @@ function Write-RsRestCatalogItem
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
         
         .PARAMETER Credential
-            Specify the password to use when connecting to your SQL Server Reporting Services Instance.
+            Specify the credentials to use when connecting to the Report Server.
         
         .PARAMETER WebSession
             Specify the session to be used when making calls to REST Endpoint.
