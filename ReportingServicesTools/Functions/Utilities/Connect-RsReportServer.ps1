@@ -64,6 +64,7 @@ function Connect-RsReportServer
         [PSCredential]
         $Credential,
         
+        [Alias('Uri')]
         [string]
         $ReportServerUri,
 
