@@ -136,11 +136,11 @@ function Get-ShouldProcessTargetWeb
     {
         if ($Target)
         {
-            return "$([Microsoft.ReportingServicesTools.ConnectionHost]::Uri) : $Target"
+            return "$([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri) : $Target"
         }
         else
         {
-            return [Microsoft.ReportingServicesTools.ConnectionHost]::Uri
+            return [Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri
         }
     }
 }

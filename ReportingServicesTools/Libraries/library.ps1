@@ -29,9 +29,14 @@ namespace Microsoft.ReportingServicesTools
         public static PSCredential Credential;
 
         /// <summary>
-        /// The uri through which to connect to the web api of the reporting services
+        /// The uri through which to connect to the Report Server SOAP endpoint
         /// </summary>
-        public static string Uri = @"http://localhost/reportserver/";
+        public static string ReportServerUri = @"http://localhost/reportserver/";
+
+        /// <summary>
+        /// The uri through which to connect to the Report Portal OData endpoint
+        /// </summary>
+        public static string ReportPortalUri = @"http://localhost/reports/";
 
         /// <summary>
         /// Stores an existing WebProxy object, to avoid having to process a new object each and every time

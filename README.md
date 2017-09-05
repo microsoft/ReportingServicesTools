@@ -41,9 +41,11 @@ The following is a list of commands which are available for you to use once you 
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
+|New-RsRestSession|This command creates a session object to be specified for all subsequent calls to the REST Endpoint.|
 |New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |Out-RsCatalogItem|This command downloads a catalog item.|
 |Out-RsFolderContent|This command all catalog items in folder.|
+|Out-RsRestCatalogItem|This command downloads a catalog item using the REST Endpoint.|
 |Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services.|
 |Remove-RsCatalogItem|This command removes catalog item located at the specified path.|
 |Restore-RsEncryptionKey|This command restores encryption key on to the SQL Server Reporting Services.|
@@ -60,8 +62,9 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
 |Set-PbiRsUrlReservation|This command configures the Power BI Report Server URLs.|
-|Write-RsCatalogItem|This command uploads a report, a dataset or a data source.|
+|Write-RsCatalogItem|This command uploads a report, a dataset or a data source using the SOAP Endpoint..|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
+|Write-RsRestCatalogItem|This command uploads a report, a dataset or a mobile report using the REST Endpoint.|
 
 ## SQL Server Versions
 

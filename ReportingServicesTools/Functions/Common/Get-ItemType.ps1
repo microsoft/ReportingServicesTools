@@ -8,7 +8,9 @@
     {
         '.rdl'  {return 'Report'}
         '.rsds' {return 'DataSource'}
+        '.rds' {return 'DataSource'}
         '.rsd'  {return 'DataSet'}
-        default {throw 'Currently only .rdl, .rsds and .rsd files are supported'}
+        '.rsmobile' {return 'MobileReport'}
+        default {throw 'Currently only .rdl, .rds, .rsds, .rsd and .rsmobile files are supported'}
     }
 }

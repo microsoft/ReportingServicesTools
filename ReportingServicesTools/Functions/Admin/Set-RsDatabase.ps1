@@ -25,7 +25,7 @@ function Set-RsDatabase
             Use the "Connect-RsReportServer" function to set/update a default value.
         
         .PARAMETER Credential
-            The credentials with which to connect to the Report Server.
+            Specify the credentials to use when connecting to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
         
         .PARAMETER DatabaseServerName
