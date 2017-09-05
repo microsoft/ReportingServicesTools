@@ -33,6 +33,13 @@ function Write-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
         
         .EXAMPLE
+            Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
+            
+            Description
+            -----------
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://localhost/reports/.
+
+        .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
             
             Description
@@ -40,14 +47,14 @@ function Write-RsRestCatalogItem
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://localhost/reports/.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
+            Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
             Description
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
+            Write-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
             Description
             -----------
@@ -68,10 +75,9 @@ function Write-RsRestCatalogItem
         [switch]
         $Overwrite,
         
-        [Parameter(Mandatory = $True)]
         [ValidateSet("v1.0")]
         [string]
-        $ApiVersion,
+        $ApiVersion = "v1.0",
         
         [string]
         $ReportPortalUri,

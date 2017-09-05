@@ -30,6 +30,13 @@ function Out-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
+            Out-RsCatalogItem -RsItem /Report -Destination C:\reports
+            
+            Description
+            -----------
+            Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://localhost/reports.
+
+        .EXAMPLE
             Out-RsCatalogItem -RsItem /Report -Destination C:\reports -ApiVersion 'v1.0'
             
             Description
@@ -37,14 +44,14 @@ function Out-RsRestCatalogItem
             Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://localhost/reports.
 
         .EXAMPLE
-            Out-RsCatalogItem -WebSession $mySession -RsItem /Report -Destination C:\reports -ApiVersion 'v1.0'
+            Out-RsCatalogItem -WebSession $mySession -RsItem /Report -Destination C:\reports 
             
             Description
             -----------
             Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint.
 
         .EXAMPLE
-            Out-RsCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
+            Out-RsCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports'
             
             Description
             -----------
@@ -63,10 +70,9 @@ function Out-RsRestCatalogItem
         [string]
         $Destination,
 
-        [Parameter(Mandatory = $True)]
         [ValidateSet("v1.0")]
         [string]
-        $ApiVersion,
+        $ApiVersion = "v1.0",
         
         [string]
         $ReportPortalUri,
