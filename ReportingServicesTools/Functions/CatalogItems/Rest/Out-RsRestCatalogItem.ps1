@@ -5,10 +5,10 @@ function Out-RsRestCatalogItem
 {
     <#
         .SYNOPSIS
-            This command downloads catalog items from a report server to disk. It is for SQL Server Reporting Service 2016 and later.
+            This command downloads catalog items from a report server to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
         
         .DESCRIPTION
-            This command downloads catalog items from a report server to disk. It is for SQL Server Reporting Service 2016 and later.
+            This command downloads catalog items from a report server to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
         
         .PARAMETER RsItem
             Path to catalog item to download.
@@ -30,32 +30,32 @@ function Out-RsRestCatalogItem
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            Out-RsCatalogItem -RsItem /Report -Destination C:\reports
+            Out-RsRestCatalogItem -RsItem '/Report' -Destination 'C:\reports'
             
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://localhost/reports.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint located at http://localhost/reports.
 
         .EXAMPLE
-            Out-RsCatalogItem -RsItem /Report -Destination C:\reports -ApiVersion 'v1.0'
+            Out-RsRestCatalogItem -RsItem '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
             
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://localhost/reports.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint located at http://localhost/reports.
 
         .EXAMPLE
-            Out-RsCatalogItem -WebSession $mySession -RsItem /Report -Destination C:\reports 
-            
+            Out-RsRestCatalogItem -WebSession $mySession -RsItem '/Report' -Destination 'C:\reports'
+
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' from v1.0 REST Endpoint.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint.
 
         .EXAMPLE
-            Out-RsCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports'
+            Out-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports'
             
             Description
             -----------
-            Downloads the catalog item found at '/Report' to folder 'C:\reports' from v1.0 REST Endpoint located at http://myserver/reports.
+            Downloads the catalog item found at '/Report' to folder 'C:\reports' using v1.0 REST Endpoint located at http://myserver/reports.
     #>
 
     [CmdletBinding()]
@@ -89,9 +89,7 @@ function Out-RsRestCatalogItem
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $DestinationFullPath = Convert-Path $Destination
         $catalogItemsByPathApi = $ReportPortalUri + "api/$ApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
-        $catalogItemContentApi = $ReportPortalUri + "api/$ApiVersion/CatalogItems({0})/Content/$value"
     }
     Process
     {
@@ -99,15 +97,15 @@ function Out-RsRestCatalogItem
         {
             try
             {
-                Write-Verbose "Fetching item metadata from server..."
+                Write-Verbose "Fetching metadata for $item from server..."
                 $url = [string]::Format($catalogItemsByPathApi, $item)
                 if ($Credential -ne $null)
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                    $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
                 }
                 else
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                    $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
                 }
             }
             catch
@@ -115,58 +113,10 @@ function Out-RsRestCatalogItem
                 throw (New-Object System.Exception("Error while trying to fetch metadata for $item! Exception: $($_.Exception.Message)", $_.Exception))
             }
 
-            Write-Verbose "Parsing item metadata..."
+            Write-Verbose "Parsing metadata for $item..."
             $itemInfo = ConvertFrom-Json $response.Content
-            if ($itemInfo.Type -ne 'MobileReport')
-            {
-                $itemId = $itemInfo.Id
-                $fileName = $itemInfo.Name + (Get-FileExtension -TypeName $itemInfo.Type)
-            }
-            else
-            {
-                $packageIdProperty = $itemInfo.Properties | Where-Object { $_.Name -eq 'PackageId' }
-                if ($packageIdProperty -ne $null)
-                {
-                    $itemId = $packageIdProperty.Value
-                }
-                else
-                {
-                    throw "Unable to determine Id for $item!"
-                }
 
-                $packageNameProperty = $itemInfo.Properties | Where-Object { $_.Name -eq 'PackageName' }
-                if ($packageNameProperty -ne $null)
-                {
-                    $fileName = $packageNameProperty.Value
-                }
-                else
-                {
-                    $fileName = $itemInfo.Name + '.rsmobile'
-                }
-            }
-
-            try
-            {
-                Write-Verbose "Downloading item from server..."
-                $url = [string]::Format($catalogItemContentApi, $itemId)
-                if ($Credential -ne $null)
-                {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
-                }
-                else
-                {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
-                }
-            }
-            catch
-            {
-                throw (New-Object System.Exception("Error while downloading $item! Exception: $($_.Exception.Message)", $_.Exception))
-            }
-
-            Write-Verbose "Writing content to $destinationFilePath..."
-            $destinationFilePath = Join-Path -Path $DestinationFullPath -ChildPath $fileName
-            [System.IO.File]::WriteAllBytes($destinationFilePath, $response.Content)
-            Write-Verbose "$item was downloaded to $destinationFilePath successfully!"
+            Out-RsRestCatalogItemId -RsItemInfo $itemInfo -Destination $Destination -ApiVersion $ApiVersion -ReportPortalUri $ReportPortalUri -Credential $Credential -WebSession $WebSession 
         }
     }
 }

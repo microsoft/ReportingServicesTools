@@ -80,6 +80,7 @@
         'Out-RsCatalogItem',
         'Out-RsFolderContent',
         'Out-RsRestCatalogItem',
+        'Out-RsRestFolderContent',
         'Register-RsPowerBI',
         'Remove-RsCatalogItem',
         'Remove-RsSubscription',
