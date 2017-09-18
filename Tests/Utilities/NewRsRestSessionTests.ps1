@@ -18,10 +18,14 @@ Describe "New-RsRestSession" {
         }
 
         It "Should work for explicit Url" {
-            $session = New-RsRestSession -ReportPortalUrl 'http://localhost/reports' -Verbose
+            $session = New-RsRestSession -ReportPortalUri 'http://localhost/reports' -Verbose
             $session | Should Not BeNullOrEmpty
             $session.Headers | Should Not BeNullOrEmpty
             $session.Headers['X-XSRF-TOKEN'] | Should Not BeNullOrEmpty
+        }
+
+        It "Shouldn't work when incorrect Url is specified" {
+            { New-RsRestSession -ReportPortalUri 'http://localhost/reportserver' -Verbose } | Should Throw "Invalid Report Portal Uri specified! Please make sure ReportPortalUri is the URL to the Report Portal!"
         }
     }
 }
