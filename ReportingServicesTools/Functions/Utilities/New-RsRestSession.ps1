@@ -74,12 +74,38 @@ function New-RsRestSession
         {
             throw "Encountered non-success status code while contacting Report Portal. Status Code: $($result.StatusCode)"
         }
+        else
+        {
+            # parsing body to validate ReportPortalUri is URL to Report Portal and not Report Server which is something user might do accidentally
+            # as most of our commands ask for URL to Report Server!
+            try
+            {
+                $body = ConvertFrom-Json $result.Content
+                if ($body -eq $null -or 
+                    $body.Username -eq $null)
+                {
+                    throw "Invalid Report Portal Uri specified! Please make sure ReportPortalUri is the URL to the Report Portal!"
+                }
+            }
+            catch
+            {
+                throw "Invalid Report Portal Uri specified! Please make sure ReportPortalUri is the URL to the Report Portal!"
+            }
+        }
 
-        Write-Verbose "Loading System.Web assembly..."
-        Add-Type -AssemblyName 'System.Web'
-
-        Write-Verbose "Decoding XSRF Token cookie and setting it as a header of the session..."
-        $mySession.Headers['X-XSRF-TOKEN'] = [System.Web.HttpUtility]::UrlDecode($mySession.Cookies.GetCookies($meUri)['XSRF-TOKEN'].Value)
+        Write-Verbose "Reading XSRF Token cookie..."
+        $xsrfToken = $mySession.Cookies.GetCookies($meUri)['XSRF-TOKEN'].Value
+        if ($xsrfToken -eq $null)
+        {
+            Write-Warning "No XSRF Token detected! This might be due to XSRF token disabled."
+        }
+        else
+        {
+            Add-Type -AssemblyName 'System.Web' -ErrorAction Stop
+            
+            Write-Verbose "Decoding XSRF Token and setting it as a header of the session..."
+            $mySession.Headers['X-XSRF-TOKEN'] = [System.Web.HttpUtility]::UrlDecode($xsrfToken)
+        }
 
         # This header is not required by the REST Endpoint. It is there so that user does not need to specify
         # the Portal Uri every single time they run a command using the REST Endpoint.
