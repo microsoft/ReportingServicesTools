@@ -112,7 +112,8 @@ function Write-RsFolderContent
             
             if ($item.Extension -eq ".rdl" -or
                 $item.Extension -eq ".rsds" -or
-                $item.Extension -eq ".rsd")
+                $item.Extension -eq ".rsd" -or
+                $item.Extension -eq ".rds")
             {
                 $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
                 $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
