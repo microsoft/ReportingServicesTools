@@ -44,7 +44,7 @@ The following is a list of commands which are available for you to use once you 
 |New-RsRestSession|This command creates a session object to be specified for all subsequent calls to the REST Endpoint.|
 |New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |Out-RsCatalogItem|This command downloads a catalog item.|
-|Out-RsFolderContent|This command all catalog items in folder.|
+|Out-RsFolderContent|This command downloads all catalog items in a folder.|
 |Out-RsRestCatalogItem|This command downloads a catalog item using the REST Endpoint.|
 |Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services.|
 |Remove-RsCatalogItem|This command removes catalog item located at the specified path.|
