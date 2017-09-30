@@ -59,6 +59,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
+|Update-RsSubscription|This command updates existing subscriptions piped from Get-RsSubscription|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source.|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 
@@ -98,7 +99,7 @@ For debugging you can set the verbose logging with `$VerbosePreference = "contin
 
 ## Test
 
-For running tests locally you need a local default instance of  SQL Server Reporting Services and Pester
+For running tests locally you need a local default instance of SQL Server Reporting Services and Pester
 
 To install Pester execute
 ```powershell
