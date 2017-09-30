@@ -94,7 +94,8 @@
         'Write-RsFolderContent',
         'Get-RsSubscription',
         'Set-RsSubscription',
-        'Remove-RsSubscription'
+        'Remove-RsSubscription',
+        'Update-RsSubscription'
     )
     
     # Cmdlets to export from this module
