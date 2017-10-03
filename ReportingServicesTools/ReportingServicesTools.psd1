@@ -98,7 +98,11 @@
         'Set-PbiRsUrlReservation',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
-        'Write-RsRestCatalogItem'
+        'Write-RsRestCatalogItem',
+        'New-RsSubscription',
+        'New-RsScheduleXML',
+        'Import-RsSubscription',
+        'Export-RsSubscription'
     )
     
     # Cmdlets to export from this module
