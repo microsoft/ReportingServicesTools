@@ -30,12 +30,20 @@
         $Path,
 
         [Parameter(Mandatory = $True, ValueFromPipeline=$true)]
-        [object[]]
-        $Subscription 
+        [object]
+        $Subscription
     )
-
-    If ($PSCmdlet.ShouldProcess($Path, "Exporting subscriptions")) {
-        Write-Verbose "Exporting Subscriptions to $Path..."
-        $Subscription | Export-Clixml $Path
+    Begin {
+        $Subscriptions = @()
+    }
+    Process {
+        Write-Verbose 'Collating subscription..'
+        $Subscriptions = $Subscriptions + $Subscription
+    }
+    End {
+        If ($PSCmdlet.ShouldProcess($Path, "Exporting subscriptions")) {
+            Write-Verbose "Exporting subscriptions to $Path..."
+            $Subscriptions | Export-Clixml $Path
+        }
     }
 }
