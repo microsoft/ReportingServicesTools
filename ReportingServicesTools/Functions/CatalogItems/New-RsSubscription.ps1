@@ -1,4 +1,7 @@
-﻿Function New-RsSubscription {
+﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Licensed under the MIT License (MIT)
+
+Function New-RsSubscription {
     <#
         .SYNOPSIS
             This script creates a new reporting subscription.
@@ -100,6 +103,7 @@
         [string]
         $Destination,
 
+        [Parameter(Mandatory=$True)]
         [string]
         $Schedule,
 

@@ -1,4 +1,7 @@
-﻿Function Export-RsSubscription {
+﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Licensed under the MIT License (MIT)
+
+Function Export-RsSubscription {
     <#
         .SYNOPSIS
             This script exports one or more subscriptions that have been retrieved via Get-RsSubscription.

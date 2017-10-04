@@ -1,4 +1,7 @@
-﻿Function Import-RsSubscription {
+﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Licensed under the MIT License (MIT)
+
+Function Import-RsSubscription {
     <#
         .SYNOPSIS
             This script imports a subscription that has been exported e.g via Get-RsSubscription | Export-RsSubscription .\somepath.xml

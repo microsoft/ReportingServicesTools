@@ -1,4 +1,7 @@
-﻿Function New-RsScheduleXML {
+﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Licensed under the MIT License (MIT)
+
+Function New-RsScheduleXML {
     <#
         .SYNOPSIS
             This script creates an XML string representation of a subscription schedule.
@@ -119,9 +122,9 @@
         [Switch]      
         $Once,
 
-        [Parameter(ParameterSetName='Minute',Mandatory=$True,Position=0)]
-        [Parameter(ParameterSetName='Daily',Mandatory=$True,Position=0)]
-        [Parameter(ParameterSetName='Weekly',Mandatory=$True,Position=0)]
+        [Parameter(ParameterSetName='Minute',Position=0)]
+        [Parameter(ParameterSetName='Daily',Position=0)]
+        [Parameter(ParameterSetName='Weekly',Position=0)]
         [Int]
         $Interval = 1,
 
