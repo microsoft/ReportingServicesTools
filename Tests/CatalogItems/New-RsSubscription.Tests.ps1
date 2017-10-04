@@ -41,7 +41,7 @@ Function Set-FolderReportDataSource {
 }
 
 Function New-RsScheduleXML {
-    Return '<ScheduleDefinition><StartDateTime>2017-10-04T09:38:34</StartDateTime><WeeklyRecurrence><WeeksInterval>1</WeeksInterval>    <DaysOfWeek>     <Monday>True</Monday>     <Tuesday>True</Tuesday>     <Wednesday>True</Wednesday>     <Thursday>True</Thursday>     <Friday>True</Friday>     </DaysOfWeek>    </WeeklyRecurrence></ScheduleDefinition>'
+    Return '<ScheduleDefinition><StartDateTime>2017-10-04T09:38:34</StartDateTime><WeeklyRecurrence><WeeksInterval>1</WeeksInterval><DaysOfWeek><Monday>True</Monday><Tuesday>True</Tuesday><Wednesday>True</Wednesday><Thursday>True</Thursday><Friday>True</Friday></DaysOfWeek></WeeklyRecurrence></ScheduleDefinition>'
 }
 
 

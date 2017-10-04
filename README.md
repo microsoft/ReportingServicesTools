@@ -31,7 +31,6 @@ The following is a list of commands which are available for you to use once you 
 |Command|Description|
 |-------|-----------|
 |Backup-RsEncryptionKey|This command backs up the encryption key used by SQL Server Reporting Services to protect sensitive content.|
-|Export-RsSubscription|This command exports the subscriptions for a specified report to disk in XML format.|
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
 |Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
@@ -40,7 +39,6 @@ The following is a list of commands which are available for you to use once you 
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
 |Initialize-Rs|This command initializes Report Server post installation. The database MUST be configured and URLs MUST be reserved prior to running this command.|
-|Import-RsSubscription|This command imports subscriptions that have been saved to disk via Export-RsSubscription or Export-CliXML. Use with Set-RsSubscription to add the imported subscriptions to a report.|
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
@@ -65,7 +63,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
-|Set-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription or Import-RsSubscription.|
+|Set-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
 |Set-PbiRsUrlReservation|This command configures the Power BI Report Server URLs.|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source using the SOAP Endpoint..|

@@ -90,6 +90,7 @@ function Set-RsSubscription
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
+        $Namespace = $Proxy.GetType().NameSpace
     }
     
     Process
@@ -99,6 +100,7 @@ function Set-RsSubscription
         {
             throw 'No Folder or report Path was specified! You need to specify -RsFolder or -Path variable.'
         }
+
         #endregion Input Validation
 
         try 
@@ -122,10 +124,33 @@ function Set-RsSubscription
                     Continue
                 }
                 
-                Write-Verbose "Creating Subscription..."
+                Write-Verbose "Validating if subscription object is valid..."
+                
+                if (-not $sub.DeliverySettings)
+                {
+                    Write-Warning ".DeliverySettings property not found. Skipping."
+                    Continue
+                }
+                
+                if (($sub).DeliverySettings.pstypenames[0] -match '^Deserialized\.')
+                {
+                    $ParameterValues = @()
+            
+                    $Sub.DeliverySettings.ParameterValues | ForEach-Object {
+                        $ParameterValues = $ParameterValues + (New-Object "$Namespace.ParameterValue" -Property @{ Name = $_.Name; Value = $_.Value })
+                    }
+                    
+                    $DeliverySettings = @{ 
+                        Extension = $Sub.DeliverySettings.Extension
+                        ParameterValues = $ParameterValues 
+                    }
 
+                    $Sub.DeliverySettings = (New-Object "$Namespace.ExtensionSettings" -Property $DeliverySettings)   
+                }
+                                
                 if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) 
                 {
+                    Write-Verbose "Creating Subscription..."
                     $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                 }
 

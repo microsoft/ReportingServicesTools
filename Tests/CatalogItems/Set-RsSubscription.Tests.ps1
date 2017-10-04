@@ -387,4 +387,39 @@ Describe "Set-RsSubscription from pipeline" {
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
+
+        Context "Set-RsSubscription from pipeline with input from disk"{
+                $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
+                $null = New-RsFolder -Path / -FolderName $folderName
+                $folderPath = '/' + $folderName
+                
+                $reportServerUri = 'http://localhost/reportserver'
+                $proxy = New-RsWebServiceProxy
+
+                $newReport = Set-FolderReportDataSource($folderPath)
+
+                $TestPath = 'TestDrive:\Subscription.xml'
+
+                $subscription = Get-NewFileShareSubscription
+                $subscription | Export-Clixml $TestPath
+
+                $subscriptionFromDisk = Import-Clixml $TestPath
+
+                #Set first subscription
+                Set-RsSubscription -ReportServerUri $reportServerUri -Proxy $proxy -Subscription $subscriptionFromDisk -Path $newReport.Path
+                
+                # Duplicate subscription
+                Get-RsSubscription -Path $newReport.Path | Set-RsSubscription -Path $newReport.Path
+                
+                # Get both subscription
+                $reportSubscriptions = Get-RsSubscription -Path $newReport.Path
+
+                It "Should set a subscription" {
+                   @($reportSubscriptions).Count | Should Be 2
+                   ($reportSubscriptions | Select-Object SubscriptionId -Unique).Count | Should Be 2
+                }
+                Remove-RsCatalogItem -RsFolder $folderPath
+        }
 }
+
+
