@@ -58,23 +58,17 @@
         ForEach ($Sub in $Subscription) {
 
             $Namespace = $Proxy.GetType().NameSpace
-            $ParameterValues = @(New-Object "$Namespace.ParameterValue") * $Sub.DeliverySettings.ParameterValues.count
-
-            $Sub.DeliverySettings.ParameterValues | ForEach-Object -Begin {$i = 0} {
-                $ParameterValues[$i] = New-Object "$Namespace.ParameterValue"
-                $ParameterValues[$i].Name = $_.Name
-                $ParameterValues[$i].Value = $_.Value
-                $i++
+            
+            $ParameterValues = @()
+            
+            $Sub.DeliverySettings.ParameterValues | ForEach-Object {
+                $ParameterValues = $ParameterValues + (New-Object "$Namespace.ParameterValue" -Property @{ Name = $_.Name; Value = $_.Value })
             }
     
-            $DeliverySettings = New-Object "$Namespace.ExtensionSettings"
-            $DeliverySettings.Extension = $Sub.DeliverySettings.Extension
-            $DeliverySettings.ParameterValues = $ParameterValues
-    
+            $DeliverySettings = New-Object "$Namespace.ExtensionSettings" -Property @{ Extension = $Sub.DeliverySettings.Extension; ParameterValues = $ParameterValues }
             $Sub.DeliverySettings = $DeliverySettings
 
             $Sub
-
         }
     }
 }

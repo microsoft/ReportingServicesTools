@@ -144,6 +144,8 @@
         If ([System.String]::IsNullOrEmpty($Path)) {
             Throw 'No report Path was specified! You need to specify -Path variable.'
         }
+
+        If ($Destination -eq 'DocumentLibrary') { Throw 'DocumentLibrary is not yet supported by this cmdlet. Sorry!' }
         
         Try {
             Write-Verbose "Validating if destination exists..."
@@ -158,7 +160,7 @@
             $Params = Switch ($Destination) {
                 'DocumentLibrary' { 
                     @{
-                        # Settings need to be defined
+                        # Not yet supported
                     } 
                 }
                 'Email' {
@@ -180,18 +182,13 @@
                 }
             }
     
-            $ParameterValues = @(New-Object "$Namespace.ParameterValue") * $Params.Count
+            $ParameterValues = @()
 
-            $Params.GetEnumerator() | ForEach-Object -Begin {$i = 0} {
-                $ParameterValues[$i] = New-Object "$Namespace.ParameterValue"
-                $ParameterValues[$i].Name = $_.Name
-                $ParameterValues[$i].Value = $_.Value
-                $i++
+            $Params.GetEnumerator() | ForEach-Object {
+                $ParameterValues = $ParameterValues + (New-Object "$Namespace.ParameterValue" -Property @{ Name = $_.Name; Value = $_.Value })
             }
-
-            $ExtensionSettings = New-Object "$Namespace.ExtensionSettings"
-            $ExtensionSettings.Extension = "Report Server $Destination"
-            $ExtensionSettings.ParameterValues = $ParameterValues
+            
+            $ExtensionSettings = New-Object "$Namespace.ExtensionSettings" -Property @{ Extension = "Report Server $Destination"; ParameterValues = $ParameterValues }
         
             $MatchData = $Schedule
             $Parameters = $Null
