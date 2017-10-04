@@ -54,6 +54,10 @@ function Write-RsFolderContent
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
+
+        [Alias('Override')]
+        [switch]
+        $Overwrite,
         
         [string]
         $ReportServerUri,
@@ -130,7 +134,7 @@ function Write-RsFolderContent
                 
                 try
                 {
-                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder -ErrorAction Stop
+                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -ErrorAction Stop
                 }
                 catch
                 {
