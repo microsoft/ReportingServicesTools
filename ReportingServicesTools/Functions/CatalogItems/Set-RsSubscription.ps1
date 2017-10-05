@@ -126,9 +126,10 @@ function Set-RsSubscription
                 
                 Write-Verbose "Validating if subscription object is valid..."
                 
-                if (-not $sub.DeliverySettings)
+                if (-not $sub.DeliverySettings.Extension)
                 {
-                    Write-Warning ".DeliverySettings property not found. Skipping."
+                    Write-Warning "DeliverySettings.Extension property is missing or empty. Skipping."
+                    Write-Verbose $sub
                     Continue
                 }
                 
