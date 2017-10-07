@@ -100,9 +100,7 @@
         'Write-RsFolderContent',
         'Write-RsRestCatalogItem',
         'New-RsSubscription',
-        'New-RsScheduleXML',
-        'Import-RsSubscription',
-        'Export-RsSubscription'
+        'New-RsScheduleXML'
     )
     
     # Cmdlets to export from this module
