@@ -64,6 +64,7 @@
     FunctionsToExport = @(
         'Backup-RsEncryptionKey',
         'Connect-RsReportServer',
+        'Export-RsSubscriptionXml',
         'Get-RsCatalogItemRole',
         'Get-RsDataSource',
         'Get-RsFolderContent',
@@ -71,11 +72,14 @@
         'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
-        'Initialize-Rs',
+        'Import-RsSubscriptionXml',
+	    'Initialize-Rs',
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
         'New-RsRestSession',
+        'New-RsSubscription',
+        'New-RsScheduleXML',
         'New-RsWebServiceProxy',
         'Out-RsCatalogItem',
         'Out-RsFolderContent',
@@ -98,9 +102,7 @@
         'Set-PbiRsUrlReservation',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
-        'Write-RsRestCatalogItem',
-        'New-RsSubscription',
-        'New-RsScheduleXML'
+        'Write-RsRestCatalogItem'
     )
     
     # Cmdlets to export from this module

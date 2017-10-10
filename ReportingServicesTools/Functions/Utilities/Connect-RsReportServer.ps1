@@ -32,7 +32,7 @@ function Connect-RsReportServer
         .PARAMETER ReportPortalUri
             The Uri to connect to for accessing the REST Endpoint. This exists in SQL Server Reporting Services 2016 and later.
         
-        .PARAMETER APIVersion
+        .PARAMETER SoapEndpointApiVersion
             The version of the API to use, 2010 by default. Sepcifiy '2005' or '2006' if you need
             to query a Sql Server Reporting Service Instance running a version prior to
             SQL Server 2008 R2 to access those respective APIs.
@@ -81,7 +81,7 @@ function Connect-RsReportServer
 
         [ValidateSet('2005','2006','2010')]
         [string]
-        $APIVersion = '2010'
+        $SoapEndpointApiVersion = '2010'
     )
     
     if ($PSBoundParameters.ContainsKey("ComputerName"))
@@ -106,7 +106,7 @@ function Connect-RsReportServer
         [Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri = $ReportServerUri
         try
         {
-            $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ApiVersion $APIVersion -ErrorAction Stop
+            $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ApiVersion $SoapEndpointApiVersion -ErrorAction Stop
             [Microsoft.ReportingServicesTools.ConnectionHost]::Proxy = $proxy
         }
         catch

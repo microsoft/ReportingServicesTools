@@ -16,6 +16,11 @@ function Get-RsSubscription
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
+
+        .PARAMETER ApiVersion
+            The version of the API to use, 2010 by default. Sepcifiy '2005' if you need
+            to query a Sql Server Reporting Service Instance running a version prior to
+            SQL Server 2008 R2.
         
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
@@ -25,11 +30,6 @@ function Get-RsSubscription
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
-        
-        .PARAMETER APIVersion
-            The version of the API to use, 2010 by default. Sepcifiy '2005' if you need
-            to query a Sql Server Reporting Service Instance running a version prior to
-            SQL Server 2008 R2.
         
         .EXAMPLE
             Get-RsSubscription -Path '/path/to/my/report'
@@ -53,15 +53,15 @@ function Get-RsSubscription
         
         [string]
         $ReportServerUri,
-        
+
+        [ValidateSet('2005','2006','2010')]
+        [string]
+        $ApiVersion = '2010',
+                
         [System.Management.Automation.PSCredential]
         $Credential,
         
-        $Proxy,
-
-        [ValidateSet('2005','2010')]
-        [string]
-        $APIVersion = '2010'
+        $Proxy
     )
     
     Begin
@@ -78,7 +78,7 @@ function Get-RsSubscription
                 
                 if ($Proxy.Url -match 'ReportService2005.asmx') 
                 {
-                    If ($item = '/') { $item = $null }
+                    if ($item -eq '/') { $item = $null }
                     $subscriptions = $Proxy.ListSubscriptions($Item,$null)
                 } 
                 else 
@@ -88,37 +88,43 @@ function Get-RsSubscription
 
                 Write-Verbose "Subscriptions retrieved successfully!"
 
-                $extSettings = $null
-                $desc = $null
-                $active = $null
-                $status = $null
-                $eventType = $null
-                $matchData = $null
-                $values = $null
+                $namespace = $proxy.GetType().Namespace
+                $DataRetrievalPlanDataType = "$namespace.DataRetrievalPlan"
+                $ExtensionSettingsDataType = "$namespace.ExtensionSettings"
+                $ActiveStateDataType = "$namespace.ActiveState"
                 
-                Write-Verbose "GetSubscriptionProperties"
                 foreach ($subscription in $subscriptions) 
                 {
+                    $extSettings = $null
+                    $DataRetrievalPlan = $null
+                    $desc = $null
+                    $active = $null
+                    $status = $null
+                    $eventType = $null
+                    $matchData = $null
+                    $values = $null
+                    $Result = $null
+
                     try
                     {
                         Write-Verbose "Retrieving subscription properties for $($subscription.SubscriptionID)"
-                    
-                        $null = $Proxy.GetSubscriptionProperties($subscription.SubscriptionID, [ref]$extSettings, [ref]$desc, [ref]$active, [ref]$status, [ref]$eventType, [ref]$matchData, [ref]$values)
 
-                        $namespace = $proxy.GetType().Namespace
-
-                        $ExtensionSettingsDataType = "$namespace.ExtensionSettings"
-                        $ActiveStateDataType = "$namespace.ActiveState"
-                    
-                        #Set ExtensionSettings
+                        if ($subscription.IsDataDriven)
+                        {
+                            $null = $Proxy.GetDataDrivenSubscriptionProperties($subscription.SubscriptionID, [ref]$extSettings, [ref]$DataRetrievalPlan, [ref]$desc, [ref]$active, [ref]$status, [ref]$eventType, [ref]$matchData, [ref]$values)
+                        }
+                        else
+                        {
+                            $null = $Proxy.GetSubscriptionProperties($subscription.SubscriptionID, [ref]$extSettings, [ref]$desc, [ref]$active, [ref]$status, [ref]$eventType, [ref]$matchData, [ref]$values)
+                        }
+                        
+                        #Set ExtensionSetting/s
                         $ExtensionSettings = New-Object $ExtensionSettingsDataType
-                    
                         $ExtensionSettings.Extension = $subscription.DeliverySettings.Extension
                         $ExtensionSettings.ParameterValues = $subscription.DeliverySettings.ParameterValues
 
                         #Set ActiveState
                         $ActiveState = New-Object $ActiveStateDataType
-
                         $ActiveState.DeliveryExtensionRemoved          = $subscription.Active.DeliveryExtensionRemoved
                         $ActiveState.DeliveryExtensionRemovedSpecified = $subscription.Active.DeliveryExtensionRemovedSpecified
                         $ActiveState.SharedDataSourceRemoved           = $subscription.Active.SharedDataSourceRemoved
@@ -130,7 +136,7 @@ function Get-RsSubscription
                         $ActiveState.UnknownReportParameter            = $subscription.Active.UnknownReportParameter
                         $ActiveState.UnknownReportParameterSpecified   = $subscription.Active.UnknownReportParameterSpecified
                     
-                        [pscustomobject]@{
+                        $Result = @{
                             SubscriptionID        = $subscription.SubscriptionID
                             Owner                 = $subscription.Owner
                             Path                  = $subscription.Path
@@ -149,10 +155,17 @@ function Get-RsSubscription
                             MatchData             = $matchData
                             Values                = $values
                         }
+                        if ($subscription.IsDataDriven) 
+                        { 
+                            $Result.Add('DataRetrievalPlan',$DataRetrievalPlan) 
+                        }
+
+                        [pscustomobject]$Result
                     }
                     catch
                     {
                         Write-Error (New-Object System.Exception("Exception while retrieving subscription properties! $($_.Exception.Message)", $_.Exception))
+                        Write-Verbose ($subscription | format-list | out-string)
                     }
                 }
             }

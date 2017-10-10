@@ -36,7 +36,7 @@
         return $BoundParameters["Proxy"]
     }
     
-    $goodKeys = @("ReportServerUri", "Credential","APIVersion")
+    $goodKeys = @("ReportServerUri", "Credential", "ApiVersion")
     $NewRsWebServiceProxyParam = @{ }
     
     foreach ($key in $BoundParameters.Keys)

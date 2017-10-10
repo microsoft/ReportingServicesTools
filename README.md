@@ -31,6 +31,7 @@ The following is a list of commands which are available for you to use once you 
 |Command|Description|
 |-------|-----------|
 |Backup-RsEncryptionKey|This command backs up the encryption key used by SQL Server Reporting Services to protect sensitive content.|
+|Export-RsSubscriptionXml|This command exports a collection of subscriptions to an XML file on disk.|
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
 |Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
@@ -38,14 +39,15 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsSubscription|This command retrieves information about subscriptions for a report.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
+|Import-RsSubscriptionXml|This command imports a collection of subscriptions from an XML file on disk, typically created via Export-RsSubscriptionXml.|
 |Initialize-Rs|This command initializes Report Server post installation. The database MUST be configured and URLs MUST be reserved prior to running this command.|
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
 |New-RsRestSession|This command creates a session object to be specified for all subsequent calls to the REST Endpoint.|
-|New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |New-RsSubscription|This command adds a new subscription to an existing report.|
-|New-RsScheduleXML|This command creates an XML string definition of a subscription schedule. For use with the -Schedule parameter or New-RsSubscription.|
+|New-RsScheduleXml|This command creates an XML string definition of a subscription schedule. For use with the -Schedule parameter or New-RsSubscription.|
+|New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |Out-RsCatalogItem|This command downloads a catalog item.|
 |Out-RsFolderContent|This command downloads all catalog items in a folder.|
 |Out-RsRestCatalogItem|This command downloads a catalog item using the REST Endpoint.|

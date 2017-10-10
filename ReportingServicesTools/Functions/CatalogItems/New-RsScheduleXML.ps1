@@ -1,7 +1,8 @@
 ﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-Function New-RsScheduleXML {
+function New-RsScheduleXml
+{
     <#
         .SYNOPSIS
             This script creates an XML string representation of a subscription schedule.
@@ -50,35 +51,35 @@ Function New-RsScheduleXML {
             The date and time the schedule should end.
 
         .EXAMPLE
-            New-RsScheduleXML -Once -Start '01/02/2017 12:34'
+            New-RsScheduleXml -Once -Start '01/02/2017 12:34'
 
             Description
             -----------
             Creates an XML string to schedule a subscription to run once at the date/time specified.
 
         .EXAMPLE
-            New-RsScheduleXML -Minute -Interval 90 -Start '21:00'
+            New-RsScheduleXml -Minute -Interval 90 -Start '21:00'
 
             Description
             -----------
             Creates an XML string to schedule a subscription to run every 90 minutes starting at 9pm.
 
         .EXAMPLE
-            New-RsScheduleXML -Daily -Interval 5
+            New-RsScheduleXml -Daily -Interval 5
 
             Description
             -----------
             Creates an XML string to schedule a subscription to run every 5 days starting at the current date/time.
 
         .EXAMPLE
-            New-RsScheduleXML -Weekly -Interval 2 -DaysOfWeek Monday,Tuesday,Wednesday,Thursday,Friday
+            New-RsScheduleXml -Weekly -Interval 2 -DaysOfWeek Monday,Tuesday,Wednesday,Thursday,Friday
 
             Description
             -----------
             Creates an XML string to schedule a subscription to run every 2 weeks on weekdays at the current time.
        
        .EXAMPLE
-            New-RsScheduleXML -Monthly -DaysOfMonth '1-15,20' -Months January,March,May -Start 5pm -End 12/12/2017
+            New-RsScheduleXml -Monthly -DaysOfMonth '1-15,20' -Months January,March,May -Start 5pm -End 12/12/2017
 
             Description
             -----------
@@ -88,16 +89,17 @@ Function New-RsScheduleXML {
             Note that -DaysOfMonth is always provided a single string.
 
         .EXAMPLE
-            New-RsScheduleXML -MonthlyDayOfWeek -DaysOfWeek Saturday -WeekOfMonth LastWeek -Months January,July
+            New-RsScheduleXml -MonthlyDayOfWeek -DaysOfWeek Saturday -WeekOfMonth LastWeek -Months January,July
 
             Description
             -----------
             Creates an XML string to schedule a subscription to run on the last Saturday of January and July.
     #>
 
-    [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'Low',DefaultParameterSetName='Once')]
+    [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='Low', DefaultParameterSetName='Once')]
     [OutputType(‘System.String’)]
-    Param(
+    param
+    (
         [Parameter(ParameterSetName='Minute')]
         [Switch]      
         $Minute,
@@ -149,49 +151,61 @@ Function New-RsScheduleXML {
         [String]
         $WeekOfMonth,
 
+        [ValidateNotNullOrEmpty()]
         [DateTime]
         $Start = (Get-Date),
 
         [DateTime]
         $End
-
     )
+
     Process {
-        $Schedule = $null
-        If ($Minute)           { $Schedule = 'Minute' }
-        If ($Daily)            { $Schedule = 'Daily' }
-        If ($Weekly)           { $Schedule = 'Weekly' }
-        If ($Monthly)          { $Schedule = 'Monthly' }
-        If ($MonthlyDayOfWeek) { $Schedule = 'MonthlyDOW' }
+        $StartDateTime = (Get-Date $Start -Format s)
 
-        $StartDateTime = Get-Date $Start -Format s
-
-        If ($End) { $EndDateTime = Get-Date $End -Format s }
-        
-        $Recurrence = Switch ($Schedule) {
-            'Minute'     { @{ MinutesInterval = $Interval } }
-            'Daily'      { @{ DaysInterval    = $Interval } }
-            'Weekly'     { @{ WeeksInterval   = $Interval } }
-            'Monthly'    { @{ Days            = $DaysOfMonth } }
-            'MonthlyDOW' { @{ WhichWeek       = $WeekOfMonth } }
-            default      { $null }
+        if ($End) 
+        { 
+            $EndDateTime = (Get-Date $End -Format s)
         }
 
-        If ($Recurrence) { $ScheduleXML     = $Recurrence.GetEnumerator() | ForEach-Object { If ($_.Value) { "<$($_.Name)>$($_.Value)</$($_.Name)>`n" } } }
-        If ($DaysOfWeek) { $DaysOfWeekXML   = $DaysOfWeek | ForEach-Object -Begin { "<DaysOfWeek>`n" } { "<$_>$True</$_>`n" } -End  { "</DaysOfWeek>`n" } }
-        If ($Months)     { $MonthsOfYearXML = $Months     | ForEach-Object -Begin { "<MonthsOfYear>`n" } { "<$_>$True</$_>`n" } -End  { "</MonthsOfYear>`n" } }
+        $Schedule = $PSCmdlet.ParameterSetName
 
-        If ($PSCmdlet.ShouldProcess("Outputting Subscription Schedule XML")) {
-            $XML =  "<ScheduleDefinition>"
-            $XML += "<StartDateTime>$StartDateTime</StartDateTime>"
-            If ($EndDateTime)     { $XML += "<EndDate>$EndDateTime</EndDate>" }
-            If ($Schedule)        { $XML += "<$Schedule`Recurrence>" }
-            If ($ScheduleXML)     { $XML += $ScheduleXML }
-            If ($DaysOfWeekXML)   { $XML += $DaysOfWeekXML }
-            If ($MonthsOfYearXML) { $XML += $MonthsOfYearXML }
-            If ($Schedule)        { $XML += "</$Schedule`Recurrence>" }
-            $XML += "</ScheduleDefinition>"
+        switch ($Schedule) {
+            'Minute'     { $ScheduleXML = "<MinutesInterval>$Interval</MinutesInterval>`n" }
+            'Daily'      { $ScheduleXML = "<DaysInterval>$Interval</DaysInterval>`n" }
+            'Weekly'     { $ScheduleXML = "<WeeksInterval>$Interval</WeeksInterval>`n" }
+            'Monthly'    { $ScheduleXML = "<Days>$DaysOfMonth</Days>`n" }
+            'MonthlyDOW' { $ScheduleXML = "<WhichWeek>$WeekOfMonth</WhichWeek>`n" }
+            default      { $ScheduleXML = $null }
+        }
+        
+        if ($DaysOfWeek) 
+        {
+            $DaysOfWeekXML = "<DaysOfWeek>`n"
+            $DaysOfWeek | ForEach-Object { $DaysOfWeekXML = $DaysOfWeekXML + "<$_>$True</$_>`n" }
+            $DaysOfWeekXML = $DaysOfWeekXML + "</DaysOfWeek>`n"
+        }
+        
+        if ($Months) 
+        {
+            $MonthsOfYearXML = "<MonthsOfYear>`n"
+            $Months | ForEach-Object { $MonthsOfYearXML = $MonthsOfYearXML + "<$_>$True</$_>`n" } 
+            $MonthsOfYearXML = $MonthsOfYearXML + "</MonthsOfYear>`n"
+        }
 
+        $XML =  '<ScheduleDefinition>'
+        $XML = $XML + "<StartDateTime>$StartDateTime</StartDateTime>"
+        
+        if ($EndDateTime)     { $XML = $XML + "<EndDate>$EndDateTime</EndDate>" }
+        if ($ScheduleXML)     { $XML = $XML + "<$Schedule`Recurrence>" }
+        if ($ScheduleXML)     { $XML = $XML + $ScheduleXML }
+        if ($DaysOfWeekXML)   { $XML = $XML + $DaysOfWeekXML }
+        if ($MonthsOfYearXML) { $XML = $XML + $MonthsOfYearXML }
+        if ($ScheduleXML)     { $XML = $XML + "</$Schedule`Recurrence>" }
+        
+        $XML = $XML + '</ScheduleDefinition>'
+
+        if ($PSCmdlet.ShouldProcess('Outputting Subscription Schedule XML')) 
+        {
             $XML
         }
     }

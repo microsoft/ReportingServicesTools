@@ -23,7 +23,7 @@ function New-RsWebServiceProxy
             Specify the Credential to use when connecting to your SQL Server Reporting Services Instance.
             By Default, this parameter uses the credentials (if any) specified by the Connect-RsReportingServer function.
         
-        .PARAMETER APIVersion
+        .PARAMETER ApiVersion
             The version of the API to use, 2010 by default. Sepcifiy '2005' or '2006' if you need
             to query a Sql Server Reporting Service Instance running a version prior to
             SQL Server 2008 R2 to access those respective APIs.
@@ -60,7 +60,7 @@ function New-RsWebServiceProxy
 
         [ValidateSet('2005','2006','2010')]
         [string]
-        $APIVersion = '2010'
+        $ApiVersion = '2010'
     )
     
     #region If we did not specify a connection parameter, use a default connection
@@ -93,7 +93,7 @@ function New-RsWebServiceProxy
         $ReportServerUri = $ReportServerUri + '/'
     }
     $reportServerUriObject = New-Object System.Uri($ReportServerUri)
-    $soapEndpointUriObject = New-Object System.Uri($reportServerUriObject, "ReportService$APIVersion.asmx")
+    $soapEndpointUriObject = New-Object System.Uri($reportServerUriObject, "ReportService$ApiVersion.asmx")
     $ReportServerUri = $soapEndPointUriObject.ToString()
     
     # creating proxy either using specified credentials or default credentials

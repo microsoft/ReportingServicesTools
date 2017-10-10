@@ -123,36 +123,19 @@ function Set-RsSubscription
                     Write-Warning "Can't find the report $Path. Skipping."
                     Continue
                 }
-                
-                Write-Verbose "Validating if subscription object is valid..."
-                
-                if (-not $sub.DeliverySettings.Extension)
-                {
-                    Write-Warning "DeliverySettings.Extension property is missing or empty. Skipping."
-                    Write-Verbose $sub
-                    Continue
-                }
-                
-                if (($sub).DeliverySettings.pstypenames[0] -match '^Deserialized\.')
-                {
-                    $ParameterValues = @()
-            
-                    $Sub.DeliverySettings.ParameterValues | ForEach-Object {
-                        $ParameterValues = $ParameterValues + (New-Object "$Namespace.ParameterValue" -Property @{ Name = $_.Name; Value = $_.Value })
-                    }
-                    
-                    $DeliverySettings = @{ 
-                        Extension = $Sub.DeliverySettings.Extension
-                        ParameterValues = $ParameterValues 
-                    }
 
-                    $Sub.DeliverySettings = (New-Object "$Namespace.ExtensionSettings" -Property $DeliverySettings)   
-                }
-                                
                 if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) 
                 {
                     Write-Verbose "Creating Subscription..."
-                    $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                    
+                    if ($subscription.IsDataDriven)
+                    {
+                        $subscriptionId = $Proxy.CreateDataDrivenSubscription($Path, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                    }
+                    else
+                    {  
+                        $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                    }
                 }
 
                 [pscustomobject]@{
