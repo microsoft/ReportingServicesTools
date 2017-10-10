@@ -70,6 +70,7 @@ Function Get-NewSubscription
         EventType             = "TimedSubscription"
         IsDataDriven          = $false
 	    MatchData             = $matchData.OuterXml
+        Values                = $null
     }
     
     return $subscription
@@ -138,6 +139,7 @@ Function Get-NewFileShareSubscription
         EventType             = "TimedSubscription"
         IsDataDriven          = $false
 	    MatchData             = $matchData.OuterXml
+        Values                = $null
     }
     
     return $subscription
@@ -401,9 +403,9 @@ Describe "Set-RsSubscription from pipeline" {
                 $TestPath = 'TestDrive:\Subscription.xml'
 
                 $subscription = Get-NewFileShareSubscription
-                $subscription | Export-Clixml $TestPath
+                $subscription | Export-RsSubscriptionXml $TestPath
 
-                $subscriptionFromDisk = Import-Clixml $TestPath
+                $subscriptionFromDisk = Import-RsSubscriptionXml $TestPath
 
                 #Set first subscription
                 Set-RsSubscription -ReportServerUri $reportServerUri -Proxy $proxy -Subscription $subscriptionFromDisk -Path $newReport.Path

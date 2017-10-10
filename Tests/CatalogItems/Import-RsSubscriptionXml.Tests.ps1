@@ -70,6 +70,7 @@ Function Get-NewSubscription
         EventType             = "TimedSubscription"
         IsDataDriven          = $false
 	    MatchData             = $matchData.OuterXml
+        Values                = $null
     }
     
     return $subscription
@@ -138,6 +139,7 @@ Function Get-NewFileShareSubscription
         EventType             = "TimedSubscription"
         IsDataDriven          = $false
 	    MatchData             = $matchData.OuterXml
+        Values                = $null
     }
     
     return $subscription
