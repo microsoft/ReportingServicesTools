@@ -1,7 +1,7 @@
 ﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-Function Import-RsSubscriptionXml {
+function Import-RsSubscriptionXml {
     <#
         .SYNOPSIS
             This script imports a subscription that has been exported e.g via Get-RsSubscription | Export-RsSubscriptionXml .\somepath.xml
@@ -46,7 +46,7 @@ Function Import-RsSubscriptionXml {
     #>
         
     [cmdletbinding()]
-    Param(
+    param(
         [Parameter(Mandatory=$True,Position=0)]
         [string]
         $Path,
@@ -59,6 +59,7 @@ Function Import-RsSubscriptionXml {
         
         $Proxy
     )
+
     Begin { 
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         $Namespace = $Proxy.GetType().NameSpace
@@ -67,8 +68,8 @@ Function Import-RsSubscriptionXml {
         Write-Verbose "Importing Subscription from $Path..."
         $Subscription = Import-Clixml $Path
 
-        ForEach ($Sub in $Subscription) {
-
+        foreach ($Sub in $Subscription) 
+        {
             #Recreate .DeliverySettings properties as valid SRSS object type
             $ParameterValues = @()
     

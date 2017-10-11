@@ -1,7 +1,7 @@
 ﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-Function Export-RsSubscriptionXml {
+function Export-RsSubscriptionXml {
     <#
         .SYNOPSIS
             This script exports one or more subscriptions that have been retrieved via Get-RsSubscription.
@@ -36,11 +36,11 @@ Function Export-RsSubscriptionXml {
         [object]
         $Subscription
     )
+
     Begin {
         $Subscriptions = @()
     }
     Process {
-        Write-Verbose 'Collating subscription..'
         $Subscriptions = $Subscriptions + $Subscription
     }
     End {

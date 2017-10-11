@@ -1,7 +1,7 @@
 ﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-Function New-RsSubscription {
+function New-RsSubscription {
     <#
         .SYNOPSIS
             This script creates a new reporting subscription.
@@ -77,7 +77,7 @@ Function New-RsSubscription {
     #>
     
     [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',DefaultParameterSetName='FileShare')]
-    Param(
+    param(
         [string]
         $ReportServerUri,
         
@@ -140,35 +140,42 @@ Function New-RsSubscription {
         [string]
         $RenderFormat = 'PDF'
     )
+
     Begin {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
     }
     Process {
 
-        If ([System.String]::IsNullOrEmpty($Path)) {
-            Throw 'No report Path was specified! You need to specify -Path variable.'
+        if ([System.String]::IsNullOrEmpty($Path))
+        {
+            throw 'No report Path was specified! You need to specify -Path variable.'
         }
 
-        If ($Destination -eq 'DocumentLibrary') { Throw 'DocumentLibrary is not yet supported by this cmdlet. Sorry!' }
+        if ($Destination -eq 'DocumentLibrary') 
+        { 
+            throw 'DocumentLibrary is not yet supported by this cmdlet. Sorry!' 
+        }
         
-        Try {
+        try {
             Write-Verbose "Validating if destination exists..."
                 
-            if (((Get-RsFolderContent -Proxy $Proxy -RsFolder ((Split-Path $Path -Parent).Replace('\','/')) | Where-Object Path -eq $Path).Count) -eq 0){
+            if (((Get-RsFolderContent -Proxy $Proxy -RsFolder ((Split-Path $Path -Parent).Replace('\','/')) | Where-Object Path -eq $Path).Count) -eq 0)
+            {
                 Write-Warning "Can't find the report $Path. Skipping."
                 Continue
             }            
             
             $Namespace = $Proxy.GetType().NameSpace
         
-            $Params = Switch ($Destination) {
+            switch ($Destination)
+            {
                 'DocumentLibrary' { 
-                    @{
+                    $Params = @{
                         # Not yet supported
                     } 
                 }
                 'Email' {
-                    @{
+                    $Params = @{
                         TO = $To
                         CC = $CC
                         BCC = $BCC
@@ -178,7 +185,7 @@ Function New-RsSubscription {
                     }
                 }
                 'FileShare' {
-                    @{
+                    $Params = @{
                         PATH = $DestinationPath
                         FILENAME = $Filename
                         RENDER_FORMAT = $RenderFormat
@@ -199,7 +206,8 @@ Function New-RsSubscription {
 
             Write-Verbose "Creating Subscription..."
 
-            If ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) {
+            if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription"))
+            {
                 $subscriptionId = $Proxy.CreateSubscription($Path,$ExtensionSettings,$Description,$EventType,$MatchData,$Parameters)
 
                 [pscustomobject]@{
@@ -209,8 +217,8 @@ Function New-RsSubscription {
 
             Write-Verbose "Subscription created successfully! Generated subscriptionId: $subscriptionId"
 
-        } Catch {
-            Throw (New-Object System.Exception("Exception occurred while creating subscription! $($_.Exception.Message)", $_.Exception))
+        } catch {
+            throw (New-Object System.Exception("Exception occurred while creating subscription! $($_.Exception.Message)", $_.Exception))
         }
     }
 }
