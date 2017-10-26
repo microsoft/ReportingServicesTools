@@ -20,6 +20,9 @@ function Write-RsFolderContent
         
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
+
+       .PARAMETER Overwrite
+            Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
         
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -54,6 +57,10 @@ function Write-RsFolderContent
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
+
+        [Alias('Override')]
+        [switch]
+        $Overwrite,
         
         [string]
         $ReportServerUri,
@@ -130,7 +137,7 @@ function Write-RsFolderContent
                 
                 try
                 {
-                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder -ErrorAction Stop
+                    Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -ErrorAction Stop
                 }
                 catch
                 {
