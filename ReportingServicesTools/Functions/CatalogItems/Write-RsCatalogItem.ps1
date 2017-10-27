@@ -185,6 +185,13 @@ function Write-RsCatalogItem
                     try
                     {
                         $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null
+                        if ($warnings)
+                        {
+                          foreach ($warn in $warnings)
+                          {
+                            Write-Warning $warn.Message
+                          }
+                        }
                     }
                     catch
                     {
