@@ -10,6 +10,9 @@ All of our scripts were written with the assumption that you will be executing t
 
 ## PowerShell Version
 Please ensure you're running PowerShell version 3.0+
+```powershell
+$PSVersionTable
+```
 
 ## Install
 ```powershell
