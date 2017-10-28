@@ -59,6 +59,12 @@ function New-RsSubscription {
         .PARAMETER RenderFormat
             Specify the output format of the report. Must be one of 'PDF','MHTML','IMAGE','CSV','XML','EXCELOPENXML','ATOM','PPTX','WORDOPENXML'
         
+        .PARAMETER ExcludeLink
+            Use with -Destination 'Email' to exclude a link back to the report from the email.
+        
+        .PARAMTER Priority
+            Use with -Destination 'Email' to set the priority with which the e-mail message is sent. Valid values are LOW, NORMAL, and HIGH. The default value is NORMAL.
+            
         .EXAMPLE
             New-RsSubscription -ReportServerUri 'http://localhost/ReportServer' -Path '/path/to/my/Report' -Description 'Daily to folder' -Destination 'FileShare' -Schedule (New-RsScheduleXML -Daily 1) -DestinationPath '\\Myserver\folder' -FileName 'MyReport' -RenderFormat 'PDF'
 
@@ -138,7 +144,16 @@ function New-RsSubscription {
         [Parameter(Mandatory=$True)]
         [ValidateSet('PDF','MHTML','IMAGE','CSV','XML','EXCELOPENXML','ATOM','PPTX','WORDOPENXML')]
         [string]
-        $RenderFormat = 'PDF'
+        $RenderFormat = 'PDF',
+        
+        [Parameter(ParameterSetName='Email')]
+        [switch]
+        $ExcludeLink,
+
+        [Parameter(ParameterSetName='Email')]
+        [ValidateSet('LOW', 'NORMAL', 'HIGH')]
+        [string]
+        $Priority = 'NORMAL'
     )
 
     Begin {
@@ -180,8 +195,10 @@ function New-RsSubscription {
                         CC = $CC
                         BCC = $BCC
                         IncludeReport = (-not $ExcludeReport)
+                        IncludeLink = (-not $ExcludeLink)
                         Subject = $Subject
                         RenderFormat = $RenderFormat
+                        Priority = $Priority
                     }
                 }
                 'FileShare' {
