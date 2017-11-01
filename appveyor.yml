@@ -34,9 +34,11 @@ before_test:
     $fileFullPath = "$tempDir\SQLServer.exe"
     $fileFullPathBox = "$tempDir\SQLServer.box"
     $fileFullPathPbiRs = "$tempDir\PowerBIReportServer.exe"
-    Write-Host "Downloading..." (Get-Date).DateTime
+    Write-Host "Downloading... SQL Engine exe" (Get-Date).DateTime
     (New-Object Net.WebClient).DownloadFile($url , $fileFullPath)
+    Write-Host "Downloading... SQL Engine box" (Get-Date).DateTime
     (New-Object Net.WebClient).DownloadFile($urlBox , $fileFullPathBox)
+    Write-Host "Downloading... PBIRS" (Get-Date).DateTime
     (New-Object Net.WebClient).DownloadFile($pbiRsUrl , $fileFullPathPbiRs)
     Write-Host "Extracting..." (Get-Date).DateTime
     $extractPath = "$tempDir\SQL2017TEMP"
