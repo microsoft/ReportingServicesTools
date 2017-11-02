@@ -71,6 +71,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsBasicAuth|This command configures the SQL Server Reporting Services email settings to use basic authentication.|
 |Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
+|Set-RsRestItemDataSource|This command updates data sources associated to a report, shared data set and Power BI Report using the REST Endpoint.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
 |Set-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
