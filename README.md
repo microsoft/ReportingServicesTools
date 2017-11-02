@@ -47,6 +47,7 @@ The following is a list of commands which are available for you to use once you 
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
+|New-RsRestFolder|This command creates a new folder in the specified path using the REST Endpoint.|
 |New-RsRestSession|This command creates a session object to be specified for all subsequent calls to the REST Endpoint.|
 |New-RsSubscription|This command adds a new subscription to an existing report.|
 |New-RsScheduleXml|This command creates an XML string definition of a subscription schedule. For use with the -Schedule parameter or New-RsSubscription.|
@@ -75,6 +76,7 @@ The following is a list of commands which are available for you to use once you 
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source using the SOAP Endpoint..|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 |Write-RsRestCatalogItem|This command uploads a report, a dataset or a mobile report using the REST Endpoint.|
+|Write-RsRestFolderContent|This uploads all reports, datasets, data sources, mobile reports and Power BI reports in a folder using the REST Endpoint.|
 
 ## SQL Server Versions
 
