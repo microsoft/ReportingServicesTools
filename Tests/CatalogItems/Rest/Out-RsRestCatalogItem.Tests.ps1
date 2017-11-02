@@ -24,14 +24,14 @@ function VerifyFileWasDownloaded()
 Describe "Out-RsRestCatalogItem" {
     Context "ReportPortalUri parameter" {
         # Upload the catalog items that are going to be downloaded
-        $folderName = 'SutOutRsCatalogItem_ReportPortalUri' + [guid]::NewGuid()
+        $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
         Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $folderPath
 
         # Create a local folder to download the catalog items
-        $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+        $localFolderName = 'SutOutRsRestCatalogItemTest' + [guid]::NewGuid()
         $currentLocalPath = (Get-Item -Path ".\" ).FullName
         $destinationPath = $currentLocalPath + '\' + $localFolderName
         New-Item -Path $destinationPath -type "directory"
@@ -69,14 +69,14 @@ Describe "Out-RsRestCatalogItem" {
 
     Context "WebSession parameter" {
         # Upload the catalog items that are going to be downloaded
-        $folderName = 'SutOutRsCatalogItem_ReportPortalUri' + [guid]::NewGuid()
+        $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
         $folderPath = '/' + $folderName
         $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
         Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $folderPath
 
         # Create a local folder to download the catalog items
-        $localFolderName = 'SutOutRsFolderContentTest' + [guid]::NewGuid()
+        $localFolderName = 'SutOutRsRestCatalogItemTest' + [guid]::NewGuid()
         $currentLocalPath = (Get-Item -Path ".\" ).FullName
         $destinationPath = $currentLocalPath + '\' + $localFolderName
         New-Item -Path $destinationPath -type "directory"

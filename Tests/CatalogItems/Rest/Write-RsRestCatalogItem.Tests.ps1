@@ -29,7 +29,7 @@ function VerifyCatalogItemExists()
 
 Describe "Write-RsRestCatalogItem" {
     Context "ReportPortalUri parameter" {
-        $folderName = 'SutWriteRsRestCatalogItem_ReportPortalUri' + [guid]::NewGuid()
+        $folderName = 'SUT_WriteRsRestCatalogItem_' + [guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName -Verbose
         $folderPath = '/' + $folderName
         $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
@@ -66,7 +66,7 @@ Describe "Write-RsRestCatalogItem" {
     }
 
     Context "WebSession parameter" {
-        $folderName = 'SutWriteRsRestCatalogItem_WebSession' + [guid]::NewGuid()
+        $folderName = 'SUT_WriteRsRestCatalogItem_' + [guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName -Verbose
         $folderPath = '/' + $folderName
         $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
