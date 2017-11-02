@@ -68,7 +68,7 @@ function New-RsRestFolder
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems"
+        $foldersUri = $ReportPortalUri + "api/$RestApiVersion/Folders"
     }
     Process
     {
@@ -93,14 +93,15 @@ function New-RsRestFolder
 
             if ($Credential -ne $null)
             {
-                Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
+                $response = Invoke-WebRequest -Uri $foldersUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential -Verbose:$false
             }
             else
             {
-                Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
+                $response = Invoke-WebRequest -Uri $foldersUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials -Verbose:$false
             }
 
             Write-Verbose "Folder $TargetFolderPath was created successfully!"
+            return ConvertFrom-Json $response.Content
         }
         catch
         {
