@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-$reportPortalUri = 'http://pashah-1013/reports'
+$reportPortalUri = 'http://localhost/reports'
 
 function VerifyFileWasDownloaded()
 {
