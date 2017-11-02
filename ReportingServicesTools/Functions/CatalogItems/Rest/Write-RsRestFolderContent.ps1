@@ -132,7 +132,7 @@ function Write-RsRestFolderContent
                     $parentFolder = $RsFolder + $relativePath
                 }
 
-                New-RsRestFolder -WebSession $WebSession -RestApiVersion $RestApiVersion -FolderName $item.Name -RsFolder $parentFolder -Verbose
+                New-RsRestFolder -WebSession $WebSession -RestApiVersion $RestApiVersion -FolderName $item.Name -RsFolder $parentFolder
             }
 
             if ($item.Extension -ne "")
@@ -150,7 +150,7 @@ function Write-RsRestFolderContent
                     $parentFolder = $RsFolder + $relativePath
                 }
 
-                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder -Verbose
+                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder
             }
         }
     }
