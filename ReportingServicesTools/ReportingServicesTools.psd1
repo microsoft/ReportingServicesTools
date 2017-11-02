@@ -102,6 +102,7 @@
         'Set-RsDataSourcePassword',
         'Set-RsDataSourceReference',
         'Set-RsEmailSettings',
+        'Set-RsRestItemDataSources',
         'Set-RsSubscription',
         'Set-RsUrlReservation',
         'Set-PbiRsUrlReservation',
