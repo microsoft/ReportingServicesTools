@@ -75,6 +75,7 @@
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
+        'New-RsRestFolder',
         'New-RsRestSession',
         'New-RsWebServiceProxy',
         'Out-RsCatalogItem',
@@ -99,7 +100,8 @@
         'Set-PbiRsUrlReservation',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
-        'Write-RsRestCatalogItem'
+        'Write-RsRestCatalogItem',
+        'Write-RsRestFolderContent'
     )
     
     # Cmdlets to export from this module
