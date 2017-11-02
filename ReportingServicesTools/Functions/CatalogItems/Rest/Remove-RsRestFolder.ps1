@@ -5,10 +5,10 @@ function Remove-RsRestFolder
 {
     <#
         .SYNOPSIS
-            This script deletes a new folder in the Report Server
+            This script deletes a folder from the Report Server
 
         .DESCRIPTION
-            This script deletes a new folder in the Report Server
+            This script deletes a folder from the Report Server
 
         .PARAMETER RsFolder
             Specify the location of the folder to be deleted.
@@ -83,7 +83,7 @@ function Remove-RsRestFolder
                 $response = Invoke-WebRequest -Uri $foldersUri -Method Delete -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
             }
 
-            Write-Verbose "Folder $TargetFolderPath was deleted successfully!"
+            Write-Verbose "Folder $RsFolder was deleted successfully!"
         }
         catch
         {
