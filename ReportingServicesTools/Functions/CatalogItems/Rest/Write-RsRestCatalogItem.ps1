@@ -18,17 +18,17 @@ function Write-RsRestCatalogItem
 
         .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
-        
-        .PARAMETER ApiVersion
-            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
-        
+
+        .PARAMETER RestApiVersion
+           Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
+            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
-        
+
         .PARAMETER WebSession
             Specify the session to be used when making calls to REST Endpoint.
         
@@ -37,10 +37,10 @@ function Write-RsRestCatalogItem
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://localhost/reports/.
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint located at http://localhost/reports/.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -ApiVersion 'v1.0'
+            Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -RestApiVersion 'v1.0'
             
             Description
             -----------
@@ -51,21 +51,21 @@ function Write-RsRestCatalogItem
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint.
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint.
 
         .EXAMPLE
             Write-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://myserver/reports.
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint located at http://myserver/reports.
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $Path,
-        
+
         [Alias('DestinationFolder')]
         [Parameter(Mandatory = $True)]
         [string]
@@ -74,31 +74,30 @@ function Write-RsRestCatalogItem
         [Alias('Override')]
         [switch]
         $Overwrite,
-        
-        [ValidateSet("v1.0")]
-        [string]
-        $ApiVersion = "v1.0",
-        
+
         [string]
         $ReportPortalUri,
-        
+
+        [Alias('ApiVersion')]
+        [ValidateSet("v1.0", "v2.0")]
+        [string]
+        $RestApiVersion = "v2.0",
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         [Microsoft.PowerShell.Commands.WebRequestSession]
         $WebSession
     )
-    
     Begin
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemsUri = $ReportPortalUri + "api/$ApiVersion/CatalogItems"
-        $catalogItemsByPathApi = $ReportPortalUri + "api/$ApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
-        $catalogItemsUpdateUri = $ReportPortalUri + "api/$ApiVersion/CatalogItems({0})"
+        $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems"
+        $catalogItemsByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        $catalogItemsUpdateUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})"
     }
-    
     Process
     {
         foreach ($item in $Path)

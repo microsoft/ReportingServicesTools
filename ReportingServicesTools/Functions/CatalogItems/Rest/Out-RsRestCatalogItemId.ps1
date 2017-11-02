@@ -15,14 +15,14 @@ function Out-RsRestCatalogItemId
         
         .PARAMETER Destination
             Folder to download catalog item to.
-        
-        .PARAMETER ApiVersion
-            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
-        
+
+        .PARAMETER RestApiVersion
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
+            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
 
@@ -40,13 +40,17 @@ function Out-RsRestCatalogItemId
         [string]
         $Destination,
 
-        [ValidateSet("v1.0")]
-        [string]
-        $ApiVersion = "v1.0",
-        
+        [switch]
+        $Overwrite,
+
         [string]
         $ReportPortalUri,
-        
+
+        [Alias('ApiVersion')]
+        [ValidateSet("v1.0", "v2.0")]
+        [string]
+        $RestApiVersion = "v2.0",
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
@@ -59,7 +63,7 @@ function Out-RsRestCatalogItemId
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemContentApi = $ReportPortalUri + "api/$ApiVersion/CatalogItems({0})/Content/`$value"
+        $catalogItemContentApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})/Content/`$value"
         $DestinationFullPath = Convert-Path $Destination
 
         # basic validation of RsItemInfo by checking properties that would be defined on a valid RsItemInfo object
@@ -101,6 +105,12 @@ function Out-RsRestCatalogItemId
             }
         }
 
+        $destinationFilePath = Join-Path -Path $DestinationFullPath -ChildPath $fileName
+        if ((Test-Path $destinationFilePath) -And !$Overwrite)
+        {
+            throw "An item with same name already exists at destination!"
+        }
+
         try
         {
             Write-Verbose "Downloading item content from server..."
@@ -120,7 +130,6 @@ function Out-RsRestCatalogItemId
         }
 
         Write-Verbose "Writing content to $destinationFilePath..."
-        $destinationFilePath = Join-Path -Path $DestinationFullPath -ChildPath $fileName
         [System.IO.File]::WriteAllBytes($destinationFilePath, $response.Content)
         Write-Verbose "$($RsItemInfo.Path) was downloaded to $destinationFilePath successfully!"
     }

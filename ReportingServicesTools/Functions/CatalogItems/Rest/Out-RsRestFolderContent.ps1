@@ -15,14 +15,14 @@ function Out-RsRestFolderContent
         
         .PARAMETER Destination
             Folder to download catalog item to.
-        
-        .PARAMETER ApiVersion
-            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
-        
+
+        .PARAMETER RestApiVersion
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
+            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
 
@@ -34,10 +34,10 @@ function Out-RsRestFolderContent
             
             Description
             -----------
-            Downloads all items found under '/folder' folder to 'C:\reports' using v1.0 REST Endpoint located at http://localhost/reports.
+            Downloads all items found under '/folder' folder to 'C:\reports' using v2.0 REST Endpoint located at http://localhost/reports.
 
         .EXAMPLE
-            Out-RsRestFolderContent -RsFolder '/folder' -Destination 'C:\reports' -ApiVersion 'v1.0'
+            Out-RsRestFolderContent -RsFolder '/folder' -Destination 'C:\reports' -RestApiVersion 'v1.0'
             
             Description
             -----------
@@ -48,14 +48,14 @@ function Out-RsRestFolderContent
             
             Description
             -----------
-            Downloads all items found under '/folder' folder to 'C:\reports' using v1.0 REST Endpoint.
+            Downloads all items found under '/folder' folder to 'C:\reports' using v2.0 REST Endpoint.
 
         .EXAMPLE
             Out-RsRestFolderContent -ReportPortalUri 'http://myserver/reports' -RsFolder '/folder' -Destination 'C:\reports'
             
             Description
             -----------
-            Downloads all items found under '/folder' folder to 'C:\reports' using v1.0 REST Endpoint located at http://myserver/reports.
+            Downloads all items found under '/folder' folder to 'C:\reports' using v2.0 REST Endpoint located at http://myserver/reports.
     #>
 
     [CmdletBinding()]
@@ -70,13 +70,14 @@ function Out-RsRestFolderContent
         [string]
         $Destination,
 
-        [ValidateSet("v1.0")]
-        [string]
-        $ApiVersion = "v1.0",
-        
         [string]
         $ReportPortalUri,
-        
+
+        [Alias('ApiVersion')]
+        [ValidateSet("v1.0", "v2.0")]
+        [string]
+        $RestApiVersion = "v2.0",
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
@@ -89,8 +90,8 @@ function Out-RsRestFolderContent
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemByPathApi = $ReportPortalUri + "api/$ApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
-        $folderCatalogItemsApi = $ReportPortalUri + "api/$apiVersion/CatalogItems({0})/Model.Folder/CatalogItems"
+        $catalogItemByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        $folderCatalogItemsApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})/Model.Folder/CatalogItems"
     }
     Process
     {
@@ -136,7 +137,7 @@ function Out-RsRestFolderContent
         foreach ($catalogItem in $catalogItems)
         {
             Write-Verbose "Parsing metadata for $($catalogItem.Name)..."
-            Out-RsRestCatalogItemId -RsItemInfo $catalogItem -Destination $Destination -ApiVersion $ApiVersion -ReportPortalUri $ReportPortalUri -Credential $Credential -WebSession $WebSession
+            Out-RsRestCatalogItemId -RsItemInfo $catalogItem -Destination $Destination -RestApiVersion $RestApiVersion -ReportPortalUri $ReportPortalUri -Credential $Credential -WebSession $WebSession -Overwrite:$Overwrite
         }
     }
 }

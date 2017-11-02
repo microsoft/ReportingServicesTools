@@ -8,7 +8,9 @@
     {
         'Report'     { return '.rdl' }
         'DataSource' { return '.rsds' }
-        'DataSet'    { return '.rsd' } 
-        default      {throw 'Unsupported item type! We only support items which are of type Report, DataSet or DataSource'}
+        'DataSet'    { return '.rsd' }
+        'MobileReport' { return '.rsmobile' }
+        'PowerBIReport' { return '.pbix' }
+        default      { throw 'Unsupported item type! We only support items which are of type Report, DataSet, DataSource, Mobile Report or Power BI Report' }
     }
 }

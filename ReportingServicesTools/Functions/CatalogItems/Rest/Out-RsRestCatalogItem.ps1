@@ -34,10 +34,10 @@ function Out-RsRestCatalogItem
             
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint located at http://localhost/reports.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v2.0 REST Endpoint located at http://localhost/reports.
 
         .EXAMPLE
-            Out-RsRestCatalogItem -RsItem '/Report' -Destination 'C:\reports' -ApiVersion 'v1.0'
+            Out-RsRestCatalogItem -RsItem '/Report' -Destination 'C:\reports' -RestApiVersion 'v1.0'
             
             Description
             -----------
@@ -48,14 +48,14 @@ function Out-RsRestCatalogItem
 
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v2.0 REST Endpoint.
 
         .EXAMPLE
             Out-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports'
             
             Description
             -----------
-            Downloads the catalog item found at '/Report' to folder 'C:\reports' using v1.0 REST Endpoint located at http://myserver/reports.
+            Downloads the catalog item found at '/Report' to folder 'C:\reports' using v2.0 REST Endpoint located at http://myserver/reports.
     #>
 
     [CmdletBinding()]
@@ -64,19 +64,23 @@ function Out-RsRestCatalogItem
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $RsItem,
-        
+
         [ValidateScript({ Test-Path $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
         [string]
         $Destination,
 
-        [ValidateSet("v1.0")]
-        [string]
-        $ApiVersion = "v1.0",
-        
+        [switch]
+        $Overwrite,
+
         [string]
         $ReportPortalUri,
-        
+
+        [Alias('ApiVersion')]
+        [ValidateSet("v1.0", "v2.0")]
+        [string]
+        $RestApiVersion = "v2.0",
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
@@ -89,7 +93,14 @@ function Out-RsRestCatalogItem
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemsByPathApi = $ReportPortalUri + "api/$ApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        if ($RestApiVersion -eq 'v1.0')
+        {
+            $catalogItemsByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        }
+        else
+        {
+            $catalogItemsByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItems(Path='{0}')?`$expand=properties"
+        }
     }
     Process
     {
@@ -116,7 +127,7 @@ function Out-RsRestCatalogItem
             Write-Verbose "Parsing metadata for $item..."
             $itemInfo = ConvertFrom-Json $response.Content
 
-            Out-RsRestCatalogItemId -RsItemInfo $itemInfo -Destination $Destination -ApiVersion $ApiVersion -ReportPortalUri $ReportPortalUri -Credential $Credential -WebSession $WebSession 
+            Out-RsRestCatalogItemId -RsItemInfo $itemInfo -Destination $Destination -RestApiVersion $RestApiVersion -ReportPortalUri $ReportPortalUri -Credential $Credential -WebSession $WebSession -Overwrite:$Overwrite
         }
     }
 }
