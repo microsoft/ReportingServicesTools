@@ -1,8 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-$reportPortalUri = 'http://pashah-1013/reports'
-$reportServerUri = 'http://pashah-1013/reportserver'
+$reportPortalUri = 'http://localhost/reports'
+$reportServerUri = 'http://localhost/reportserver'
 
 function VerifyCatalogItemDoesNotExists()
 {
