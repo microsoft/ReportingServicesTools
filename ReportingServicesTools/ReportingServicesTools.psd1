@@ -89,6 +89,7 @@
         'Register-RsPowerBI',
         'Remove-RsCatalogItem',
         'Remove-RsRestFolder',
+        'Remove-RsRestCatalogItem',
         'Remove-RsSubscription',
         'Restore-RsEncryptionKey',
         'Revoke-RsCatalogItemAccess',

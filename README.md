@@ -58,6 +58,7 @@ The following is a list of commands which are available for you to use once you 
 |Out-RsRestCatalogItem|This command downloads a catalog item using the REST Endpoint.|
 |Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services.|
 |Remove-RsCatalogItem|This command removes catalog item located at the specified path.|
+|Remove-RsRestCatalogItem|This command removes catalog item located at the specified path using the REST Endpoint.|
 |Remove-RsRestFolder|This command removes folder located at the specified path using the REST Endpoint.|
 |Restore-RsEncryptionKey|This command restores encryption key on to the SQL Server Reporting Services.|
 |Revoke-AccessOnCatalogItem|This command revokes access on catalog item from users or groups.|
