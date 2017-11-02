@@ -20,8 +20,7 @@ function New-RsRestFolder
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
 
         .PARAMETER RestApiVersion
-            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0". 
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+            Specify the version of REST Endpoint to use. Valid values are: "v2.0".
 
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
@@ -53,7 +52,7 @@ function New-RsRestFolder
         $ReportPortalUri,
 
         [Alias('ApiVersion')]
-        [ValidateSet("v1.0", "v2.0")]
+        [ValidateSet("v2.0")]
         [string]
         $RestApiVersion = "v2.0",
 
