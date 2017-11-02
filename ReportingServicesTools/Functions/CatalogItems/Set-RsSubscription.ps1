@@ -90,6 +90,7 @@ function Set-RsSubscription
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
+        $Namespace = $Proxy.GetType().NameSpace
     }
     
     Process
@@ -99,6 +100,7 @@ function Set-RsSubscription
         {
             throw 'No Folder or report Path was specified! You need to specify -RsFolder or -Path variable.'
         }
+
         #endregion Input Validation
 
         try 
@@ -121,12 +123,19 @@ function Set-RsSubscription
                     Write-Warning "Can't find the report $Path. Skipping."
                     Continue
                 }
-                
-                Write-Verbose "Creating Subscription..."
 
                 if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) 
                 {
-                    $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                    Write-Verbose "Creating Subscription..."
+                    
+                    if ($subscription.IsDataDriven)
+                    {
+                        $subscriptionId = $Proxy.CreateDataDrivenSubscription($Path, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                    }
+                    else
+                    {  
+                        $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                    }
                 }
 
                 [pscustomobject]@{

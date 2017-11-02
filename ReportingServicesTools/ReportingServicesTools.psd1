@@ -7,7 +7,7 @@
     RootModule = 'ReportingServicesTools.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.0.2.7'
+    ModuleVersion = '0.0.2.9'
     
     # ID used to uniquely identify this module
     GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -64,6 +64,7 @@
     FunctionsToExport = @(
         'Backup-RsEncryptionKey',
         'Connect-RsReportServer',
+        'Export-RsSubscriptionXml',
         'Get-RsCatalogItemRole',
         'Get-RsDataSource',
         'Get-RsFolderContent',
@@ -71,12 +72,15 @@
         'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
-        'Initialize-Rs',
+        'Import-RsSubscriptionXml',
+	    'Initialize-Rs',
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
         'New-RsRestFolder',
         'New-RsRestSession',
+        'New-RsSubscription',
+        'New-RsScheduleXML',
         'New-RsWebServiceProxy',
         'Out-RsCatalogItem',
         'Out-RsFolderContent',
