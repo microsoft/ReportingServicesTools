@@ -101,7 +101,7 @@ function Write-RsRestFolderContent
     }
     Process
     {
-        if (-not(Test-Path -Path $Path -PathType Container))
+        if (!(Test-Path -Path $Path -PathType Container))
         {
             throw "No folder found at $Path!"
         }
@@ -150,7 +150,7 @@ function Write-RsRestFolderContent
                     $parentFolder = $RsFolder + $relativePath
                 }
 
-                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $RsFolder -Verbose
+                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder -Verbose
             }
         }
     }
