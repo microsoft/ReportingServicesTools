@@ -30,7 +30,7 @@ function VerifyCatalogItemExists()
 Describe "New-RsRestFolder" {
     Context "ReportPortalUri parameter" {
         It "Should create a folder" {
-            $folderName = "SUTNewRsRestFolder_ReportPortalUri" + [Guid]::NewGuid()
+            $folderName = "SUT_NewRsRestFolder_" + [Guid]::NewGuid()
             New-RsRestFolder -ReportPortalUri $reportPortalUri -FolderName $folderName -RsFolder /
             VerifyCatalogItemExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
@@ -40,7 +40,7 @@ Describe "New-RsRestFolder" {
         $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
 
         It "Should create a folder" {
-            $folderName = "SUTNewRsRestFolder_ReportPortalUri" + [Guid]::NewGuid()
+            $folderName = "SUT_NewRsRestFolder_" + [Guid]::NewGuid()
             New-RsRestFolder -WebSession $webSession -FolderName $folderName -RsFolder /
             VerifyCatalogItemExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
