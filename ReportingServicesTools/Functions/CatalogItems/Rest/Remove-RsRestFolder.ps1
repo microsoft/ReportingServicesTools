@@ -63,13 +63,13 @@ function Remove-RsRestFolder
     }
     Process
     {
+        if ($RsFolder -eq '/')
+        {
+            throw "Root folder cannot be deleted!"
+        }
+
         try
         {
-            if ($RsFolder -eq '/')
-            {
-                throw "Root folder cannot be deleted!"
-            }
-
             Write-Verbose "Deleting folder $RsFolder..."
             $foldersUri = [String]::Format($foldersUri, $RsFolder)
 

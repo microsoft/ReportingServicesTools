@@ -63,13 +63,13 @@ function Remove-RsRestCatalogItem
     }
     Process
     {
+        if ($RsItem -eq '/')
+        {
+            throw "Root folder cannot be deleted!"
+        }
+
         try
         {
-            if ($RsItem -eq '/')
-            {
-                throw "Root folder cannot be deleted!"
-            }
-
             Write-Verbose "Deleting item $RsItem..."
             $catalogItemsUri = [String]::Format($catalogItemsUri, $RsItem)
 
