@@ -23,8 +23,8 @@ function VerifyCatalogItemExists()
         $reportServerUri
     )
 
-    $item = (Get-RsFolderContent -ReportServerUri $reportServerUri -RsFolder $folderPath) | Where-Object TypeName -eq $itemType
-    $item.Name | Should Be $itemName
+    $item = (Get-RsFolderContent -ReportServerUri $reportServerUri -RsFolder $folderPath) | Where-Object { $_.TypeName -eq $itemType -and $_.Name -eq $itemName }
+    $item | Should Not BeNullOrEmpty
 }
 
 Describe "Write-RsRestCatalogItem" {
