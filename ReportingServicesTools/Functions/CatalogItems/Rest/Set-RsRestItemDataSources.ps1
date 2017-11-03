@@ -62,6 +62,13 @@ function Set-RsRestItemDataSources
     }
     Process
     {
+        if ($RsItem.Type -ne "Report" -and
+            $RsItem.Type -ne "PowerBIReport" -and
+            $RsItem.Type -ne "DataSet")
+        {
+            throw 'Invalid item specified! Currently you can update item data sources only for Report, PowerBIReport and Dataset.'
+        }
+
         try
         {
             $dataSourcesUri = [String]::Format($dataSourcesUri, $RsItem.Type + "s", $RsItem.Id)
