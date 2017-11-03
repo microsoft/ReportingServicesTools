@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-$reportPortalUri = 'http://macbookpro/reports_pbi'
+$reportPortalUri = 'http://localhost/reports'
 
 Describe "Get-RsItemDataSources" {
     # Uploading a report
