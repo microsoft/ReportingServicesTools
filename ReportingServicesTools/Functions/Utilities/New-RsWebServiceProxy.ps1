@@ -99,6 +99,7 @@ function New-RsWebServiceProxy
     # creating proxy either using specified credentials or default credentials
     try
     {
+        Write-Verbose "Establishing proxy connection to $ReportServerUri..."
         if ($Credential)
         {
             New-WebServiceProxy -Uri $ReportServerUri -Credential $Credential -ErrorAction Stop
