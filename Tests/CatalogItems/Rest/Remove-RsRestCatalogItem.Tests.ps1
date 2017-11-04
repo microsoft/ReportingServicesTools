@@ -29,7 +29,7 @@ function VerifyCatalogItemDoesNotExists()
 
 Describe "Remove-RsRestCatalogItem" {
     $rsFolderPath = ""
-    $rsFolderPaths = @()
+    $rsFolderPaths = [System.Collections.ArrayList]@()
 
     BeforeEach {
         # creating a new folder
