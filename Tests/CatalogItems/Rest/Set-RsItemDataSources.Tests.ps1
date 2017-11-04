@@ -4,21 +4,27 @@
 $reportPortalUri = 'http://localhost/reports'
 
 Describe "Set-RsItemDataSources" {
-    # Uploading a report
-    $folderName = 'SUT_SetRsRestItemDataSources_' + [guid]::NewGuid()
-    New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
-    $folderPath = '/' + $folderName
-    $sqlPowerBiReportPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\SqlPowerBIReport.pbix'
-    Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $sqlPowerBiReportPath -RsFolder $folderPath
+    $rsFolderPath = ""
+
+    BeforeEach {
+        # creating a folder in RS
+        $folderName = 'SUT_SetRsRestItemDataSources_' + [guid]::NewGuid()
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
+        $rsFolderPath = '/' + $folderName
+
+        # Uploading a report
+        $sqlPowerBiReportPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\SqlPowerBIReport.pbix'
+        Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $sqlPowerBiReportPath -RsFolder $rsFolderPath
+    }
 
     Context "ReportPortalUri parameter" {
         It "Should update data sources" {
-            $report = Get-RsRestItemDataSources -ReportPortalUri $reportPortalUri -RsItem "$folderPath/SqlPowerBIReport"
+            $report = Get-RsRestItemDataSources -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SqlPowerBIReport"
             $report.DataSources[0].DataModelDataSource.Username = "test"
             $report.DataSources[0].DataModelDataSource.Secret = "whatever"
             Set-RsRestItemDataSources -ReportPortalUri $reportPortalUri -RsItem $report -Verbose
 
-            $report = Get-RsRestItemDataSources -ReportPortalUri $reportPortalUri -RsItem "$folderPath/SqlPowerBIReport"
+            $report = Get-RsRestItemDataSources -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SqlPowerBIReport"
             $report.DataSources | Should Not BeNullOrEmpty
             $report.DataSources[0].ConnectionString | Should Be "localhost;ReportServer"
             $report.DataSources[0].DataModelDataSource | Should Not BeNullOrEmpty
@@ -30,7 +36,7 @@ Describe "Set-RsItemDataSources" {
         }
 
         It "Should fail on invalid auth type" {
-            $report = Get-RsRestItemDataSources -ReportPortalUri $reportPortalUri -RsItem "$folderPath/SqlPowerBIReport"
+            $report = Get-RsRestItemDataSources -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SqlPowerBIReport"
             $report.DataSources[0].DataModelDataSource.AuthType = "invalid"
             $report.DataSources[0].DataModelDataSource.Username = "test"
             $report.DataSources[0].DataModelDataSource.Secret = "whatever"
@@ -39,15 +45,19 @@ Describe "Set-RsItemDataSources" {
     }
 
     Context "WebSession parameter" {
-        $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri 
+        $webSession = $null
+
+        BeforeEach {
+            $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+        }
 
         It "Should update data sources" {
-            $report = Get-RsRestItemDataSources -WebSession $webSession -RsItem "$folderPath/SqlPowerBIReport"
+            $report = Get-RsRestItemDataSources -WebSession $webSession -RsItem "$rsFolderPath/SqlPowerBIReport"
             $report.DataSources[0].DataModelDataSource.Username = "test"
             $report.DataSources[0].DataModelDataSource.Secret = "whatever"
             Set-RsRestItemDataSources -WebSession $webSession -RsItem $report -Verbose
 
-            $report = Get-RsRestItemDataSources -WebSession $webSession -RsItem "$folderPath/SqlPowerBIReport"
+            $report = Get-RsRestItemDataSources -WebSession $webSession -RsItem "$rsFolderPath/SqlPowerBIReport"
             $report.DataSources | Should Not BeNullOrEmpty
             $report.DataSources[0].ConnectionString | Should Be "localhost;ReportServer"
             $report.DataSources[0].DataModelDataSource | Should Not BeNullOrEmpty
@@ -59,7 +69,7 @@ Describe "Set-RsItemDataSources" {
         }
 
         It "Should fail on invalid auth type" {
-            $report = Get-RsRestItemDataSources -WebSession $webSession -RsItem "$folderPath/SqlPowerBIReport"
+            $report = Get-RsRestItemDataSources -WebSession $webSession -RsItem "$rsFolderPath/SqlPowerBIReport"
             $report.DataSources[0].DataModelDataSource.AuthType = "invalid"
             $report.DataSources[0].DataModelDataSource.Username = "test"
             $report.DataSources[0].DataModelDataSource.Secret = "whatever"

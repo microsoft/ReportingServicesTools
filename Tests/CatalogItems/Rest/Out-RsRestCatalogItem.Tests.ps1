@@ -2,6 +2,7 @@
 # Licensed under the MIT License (MIT)
 
 $reportPortalUri = 'http://localhost/reports'
+$reportServerUri = 'http://localhost/reportserver'
 
 function VerifyFileWasDownloaded()
 {
@@ -15,102 +16,104 @@ function VerifyFileWasDownloaded()
         $fileName
     )
     # Test if the report was downloaded
-    $localReportDownloaded = Get-ChildItem  $folderPath
-    $localReportDownloaded.Name | Should Be $fileName
+    $localReportDownloaded = Get-ChildItem  $folderPath | Where-Object { $_.Name -eq $fileName }
+    $localReportDownloaded | Should Not BeNullOrEmpty
     $localReportDownloadedPath = $folderPath +'\' + $fileName
-    Remove-Item $localReportDownloadedPath
 }
 
 Describe "Out-RsRestCatalogItem" {
-    Context "ReportPortalUri parameter" {
-        # Upload the catalog items that are going to be downloaded
+    $rsFolderPath = ""
+    $localFolderPath = ""
+
+    BeforeEach {
+        # create new folder in RS
         $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
-        $folderPath = '/' + $folderName
+        $rsFolderPath = '/' + $folderName
+
+        # Upload the catalog items that are going to be downloaded
         $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $folderPath
+        Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $rsFolderPath
 
         # Create a local folder to download the catalog items
         $localFolderName = 'SutOutRsRestCatalogItemTest' + [guid]::NewGuid()
         $currentLocalPath = (Get-Item -Path ".\" ).FullName
-        $destinationPath = $currentLocalPath + '\' + $localFolderName
-        New-Item -Path $destinationPath -type "directory"
+        $localFolderPath = $currentLocalPath + '\' + $localFolderName
+        New-Item -Path $localFolderPath -type "directory"
+    }
 
+    AfterEach {
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath
+        Remove-Item -Path $localFolderPath -Recurse
+    }
+
+    Context "ReportPortalUri parameter" {
         It "Should download a RDL file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath emptyReport
-            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'emptyReport.rdl'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath emptyReport
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'emptyReport.rdl'
         }
 
         It "Should download a RSD file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath UnDataset
-            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'UnDataset.rsd'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath UnDataset
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'UnDataset.rsd'
         }
 
         It "Should download a RSDS file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath SutWriteRsFolderContent_DataSource
-            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'SutWriteRsFolderContent_DataSource.rsds'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SutWriteRsFolderContent_DataSource
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SutWriteRsFolderContent_DataSource.rsds'
         }
 
         It "Should download a RSMOBILE file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath SimpleMobileReport
-            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'SimpleMobileReport.rsmobile'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimpleMobileReport
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimpleMobileReport.rsmobile'
         }
 
         It "Should download a PBIX file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath SimplePowerBIReport
-            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'SimplePowerBIReport.pbix'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimplePowerBIReport
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimplePowerBIReport.pbix'
         }
     }
 
     Context "WebSession parameter" {
-        # Upload the catalog items that are going to be downloaded
-        $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
-        $folderPath = '/' + $folderName
-        $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $folderPath
+        $webSession = $null
 
-        # Create a local folder to download the catalog items
-        $localFolderName = 'SutOutRsRestCatalogItemTest' + [guid]::NewGuid()
-        $currentLocalPath = (Get-Item -Path ".\" ).FullName
-        $destinationPath = $currentLocalPath + '\' + $localFolderName
-        New-Item -Path $destinationPath -type "directory"
-
-        $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+        BeforeEach {
+            $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+        }
 
         It "Should download a RDL file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath emptyReport
-            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'emptyReport.rdl'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath emptyReport
+            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'emptyReport.rdl'
         }
 
         It "Should download a RSD file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath UnDataset
-            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'UnDataset.rsd'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath UnDataset
+            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'UnDataset.rsd'
         }
 
         It "Should download a RSDS file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath SutWriteRsFolderContent_DataSource
-            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'SutWriteRsFolderContent_DataSource.rsds'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SutWriteRsFolderContent_DataSource
+            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SutWriteRsFolderContent_DataSource.rsds'
         }
 
         It "Should download a RSMOBILE file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath SimpleMobileReport
-            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'SimpleMobileReport.rsmobile'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimpleMobileReport
+            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimpleMobileReport.rsmobile'
         }
 
         It "Should download a PBIX file" {
-            $itemPath = Join-Path -Path $folderPath -ChildPath SimplePowerBIReport
-            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $destinationPath -Verbose
-            VerifyFileWasDownloaded -folderPath $destinationPath -fileName 'SimplePowerBIReport.pbix'
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimplePowerBIReport
+            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimplePowerBIReport.pbix'
         }
     }
 }

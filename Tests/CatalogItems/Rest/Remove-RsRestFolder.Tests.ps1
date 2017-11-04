@@ -28,26 +28,35 @@ function VerifyCatalogItemDoesNotExists()
 }
 
 Describe "Remove-RsRestFolder" {
-    Context "ReportPortalUri parameter" {
+    $rsFolderPath = ""
+
+    BeforeEach {
+        # creating a new folder
         $folderName = "SUT_RemoveRsRestFolder_" + [Guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -FolderName $folderName -RsFolder /
-        $folderPath = "/$folderName"
+        $rsFolderPath = "/$folderName"
 
+        # uploading resources to the folder
+        $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+        Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $rsFolderPath
+    }
+
+    Context "ReportPortalUri parameter" {
         It "Should delete a folder" {
-            Remove-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder $folderPath
+            Remove-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder $rsFolderPath
             VerifyCatalogItemDoesNotExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
     }
 
     Context "WebSession parameter" {
-        $folderName = "SUT_RemoveRsRestFolder_" + [Guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -FolderName $folderName -RsFolder /
-        $folderPath = "/$folderName"
+        $webSession = $null
 
-        $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+        BeforeEach {
+            $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+        }
 
         It "Should delete a folder" {
-            Remove-RsRestFolder -WebSession $webSession -RsFolder $folderPath
+            Remove-RsRestFolder -WebSession $webSession -RsFolder $rsFolderPath
             VerifyCatalogItemDoesNotExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
     }

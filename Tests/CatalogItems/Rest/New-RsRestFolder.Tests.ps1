@@ -33,6 +33,7 @@ Describe "New-RsRestFolder" {
             $folderName = "SUT_NewRsRestFolder_" + [Guid]::NewGuid()
             New-RsRestFolder -ReportPortalUri $reportPortalUri -FolderName $folderName -RsFolder /
             VerifyCatalogItemExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
+            Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder "/$folderName"
         }
     }
 
@@ -43,6 +44,7 @@ Describe "New-RsRestFolder" {
             $folderName = "SUT_NewRsRestFolder_" + [Guid]::NewGuid()
             New-RsRestFolder -WebSession $webSession -FolderName $folderName -RsFolder /
             VerifyCatalogItemExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
+            Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder "/$folderName"
         }
     }
 }
