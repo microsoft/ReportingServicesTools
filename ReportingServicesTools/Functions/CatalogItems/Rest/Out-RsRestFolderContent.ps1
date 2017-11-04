@@ -70,6 +70,9 @@ function Out-RsRestFolderContent
         [string]
         $Destination,
 
+        [Switch]
+        $Recurse,
+
         [string]
         $ReportPortalUri,
 
@@ -90,54 +93,93 @@ function Out-RsRestFolderContent
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
-        $folderCatalogItemsApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})/Model.Folder/CatalogItems"
+        $catalogItemsByPathApiV1 = $ReportPortalUri + "api/v1.0/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        $folderCatalogItemsApiV1 = $ReportPortalUri + "api/v1.0/CatalogItems({0})/Model.Folder/CatalogItems"
+        $folderCatalogItemsApiLatest = $ReportPortalUri + "api/$RestApiVersion/Folders(Path='{0}')/CatalogItems"
     }
     Process
     {
-        try
+        if ($RestApiVersion -eq 'v1.0')
         {
-            Write-Verbose "Fetching $RsFolder info from server..."
-            $url = [string]::Format($catalogItemByPathApi, $RsFolder)
-            if ($Credential -ne $null)
+            try
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
+                Write-Verbose "Fetching $RsFolder info from server..."
+                $url = [string]::Format($catalogItemsByPathApiV1, $RsFolder)
+                if ($Credential -ne $null)
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
+                }
+                else
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
+                }
             }
-            else
+            catch
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
+                throw (New-Object System.Exception("Error while trying to fetch $RsFolder info! Exception: $($_.Exception.Message)", $_.Exception))
             }
-        }
-        catch
-        {
-            throw (New-Object System.Exception("Error while trying to fetch $RsFolder info! Exception: $($_.Exception.Message)", $_.Exception))
-        }
 
-        $folder = ConvertFrom-Json $response.Content
+            $folder = ConvertFrom-Json $response.Content
 
-        try
-        {
-            Write-Verbose "Fetching catalog items under $RsFolder from server..."
-            $url = [string]::Format($folderCatalogItemsApi, $folder.Id)
-            if ($Credential -ne $null)
+            try
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
+                Write-Verbose "Fetching catalog items under $RsFolder from server..."
+                $url = [string]::Format($folderCatalogItemsApiV1, $folder.Id)
+                if ($Credential -ne $null)
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
+                }
+                else
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
+                }
             }
-            else
+            catch
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
+                throw (New-Object System.Exception("Error while trying to fetch catalog items under $RsFolder! Exception: $($_.Exception.Message)", $_.Exception))
             }
         }
-        catch
+        else
         {
-            throw (New-Object System.Exception("Error while trying to fetch catalog items under $RsFolder! Exception: $($_.Exception.Message)", $_.Exception))
+            try
+            {
+                Write-Verbose "Fetching catalog items under $RsFolder from server..."
+                $url = [string]::Format($folderCatalogItemsApiLatest, $RsFolder)
+                if ($Credential -ne $null)
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
+                }
+                else
+                {
+                    $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
+                }
+            }
+            catch
+            {
+                throw (New-Object System.Exception("Error while trying to fetch catalog items under $RsFolder! Exception: $($_.Exception.Message)", $_.Exception))
+            }
         }
 
         $catalogItems = (ConvertFrom-Json $response.Content).value
         foreach ($catalogItem in $catalogItems)
         {
-            Write-Verbose "Parsing metadata for $($catalogItem.Name)..."
-            Out-RsRestCatalogItemId -RsItemInfo $catalogItem -Destination $Destination -RestApiVersion $RestApiVersion -ReportPortalUri $ReportPortalUri -Credential $Credential -WebSession $WebSession -Overwrite:$Overwrite
+            if ($catalogItem.Type -eq "Report" -or
+                $catalogItem.Type -eq "DataSet" -or
+                $catalogItem.Type -eq "DataSource" -or
+                $catalogItem.Type -eq "MobileReport" -or
+                $catalogItem.Type -eq "PowerBIReport")
+            {
+                Write-Verbose "Parsing metadata for $($catalogItem.Name)..."
+                Out-RsRestCatalogItemId -RsItemInfo $catalogItem -Destination $Destination -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
+            }
+            elseif ($catalogItem.Type -eq "Folder" -and $Recurse)
+            {
+                $subFolderPath = "$Destination\$($catalogItem.Name)"
+                Write-Verbose "Creating folder $($catalogItem.Name)..."
+                New-Item -Path $subFolderPath -ItemType Directory
+
+                Out-RsRestFolderContent -RsFolder $catalogItem.Path -Destination $subFolderPath -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
+            }
         }
     }
 }

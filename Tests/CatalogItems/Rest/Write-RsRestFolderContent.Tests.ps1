@@ -34,7 +34,7 @@ Describe "Write-RsRestFolderContent" {
         $rsFolderPath = ""
 
         BeforeEach {
-            $folderName = 'SUT_SetRsRestItemDataSources_' + [guid]::NewGuid()
+            $folderName = 'SUT_WriteRsRestFolderContent_' + [guid]::NewGuid()
             New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
             $rsFolderPath = '/' + $folderName
         }
@@ -67,7 +67,7 @@ Describe "Write-RsRestFolderContent" {
         $webSession = $null
 
         BeforeEach {
-            $folderName = 'SUT_SetRsRestItemDataSources_' + [guid]::NewGuid()
+            $folderName = 'SUT_WriteRsRestFolderContent_' + [guid]::NewGuid()
             New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
             $rsFolderPath = '/' + $folderName
             $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
