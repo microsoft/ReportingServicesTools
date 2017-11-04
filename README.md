@@ -39,6 +39,7 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
 |Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
 |Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
+|Get-RsRestItemDataSources|This command retrieves catalog item including its data sources using the REST Endpoint.|
 |Get-RsSubscription|This command retrieves information about subscriptions for a report.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
@@ -71,7 +72,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsBasicAuth|This command configures the SQL Server Reporting Services email settings to use basic authentication.|
 |Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
-|Set-RsRestItemDataSource|This command updates data sources associated to a report, shared data set and Power BI Report using the REST Endpoint.|
+|Set-RsRestItemDataSources|This command updates data sources associated to Paginated Report, Power BI Report and Shared DataSet using the REST Endpoint.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
 |Set-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
