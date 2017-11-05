@@ -36,10 +36,9 @@ function New-RsRestFolder
             Creates a new folder called "MyNewFolder" under "/" parent folder.
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $True)]
-        [Alias('ItemPath','Path')]
         [string]
         $RsFolder,
 

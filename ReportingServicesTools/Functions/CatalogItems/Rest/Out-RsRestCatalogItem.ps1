@@ -5,10 +5,10 @@ function Out-RsRestCatalogItem
 {
     <#
         .SYNOPSIS
-            This command downloads catalog items from a report server to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
+            This command downloads catalog items from a report server to disk (using REST endpoint).
         
         .DESCRIPTION
-            This command downloads catalog items from a report server to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
+            This command downloads catalog items from a report server to disk (using REST endpoint).
         
         .PARAMETER RsItem
             Path to catalog item to download.
@@ -17,8 +17,10 @@ function Out-RsRestCatalogItem
             Folder to download catalog item to.
         
         .PARAMETER ApiVersion
-            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
+            NOTE:
+                - v1.0 of REST Endpoint is not supported by Microsoft and is for SSRS 2016.
+                - v2.0 of REST Endpoint is supported by Microsoft and is for SSRS 2017, PBIRS October 2017 and newer releases.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
@@ -60,7 +62,7 @@ function Out-RsRestCatalogItem
 
     [CmdletBinding()]
     param (
-        [Alias('ItemPath', 'Path', 'RsFolder')]
+        [Alias('RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $RsItem,

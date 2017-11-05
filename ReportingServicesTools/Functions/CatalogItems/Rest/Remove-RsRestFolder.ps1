@@ -33,10 +33,9 @@ function Remove-RsRestFolder
             Deletes "/MyFolder" folder from Report Server.
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory = $True)]
-        [Alias('ItemPath','Path')]
         [string]
         $RsFolder,
 
@@ -68,25 +67,28 @@ function Remove-RsRestFolder
             throw "Root folder cannot be deleted!"
         }
 
-        try
+        if ($PSCmdlet.ShouldProcess($RsFolder, "Delete the folder"))
         {
-            Write-Verbose "Deleting folder $RsFolder..."
-            $foldersUri = [String]::Format($foldersUri, $RsFolder)
-
-            if ($Credential -ne $null)
+            try
             {
-                Invoke-WebRequest -Uri $foldersUri -Method Delete -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
-            }
-            else
-            {
-                $response = Invoke-WebRequest -Uri $foldersUri -Method Delete -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
-            }
+                Write-Verbose "Deleting folder $RsFolder..."
+                $foldersUri = [String]::Format($foldersUri, $RsFolder)
 
-            Write-Verbose "Folder $RsFolder was deleted successfully!"
-        }
-        catch
-        {
-            throw (New-Object System.Exception("Failed to delete folder '$RsFolder': $($_.Exception.Message)", $_.Exception))
+                if ($Credential -ne $null)
+                {
+                    Invoke-WebRequest -Uri $foldersUri -Method Delete -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
+                }
+                else
+                {
+                    Invoke-WebRequest -Uri $foldersUri -Method Delete -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
+                }
+
+                Write-Verbose "Folder $RsFolder was deleted successfully!"
+            }
+            catch
+            {
+                throw (New-Object System.Exception("Failed to delete folder '$RsFolder': $($_.Exception.Message)", $_.Exception))
+            }
         }
     }
 }

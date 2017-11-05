@@ -33,10 +33,9 @@ function Get-RsRestItemDataSources
             Fetches data sources associated to "MyReport" catalog item found in "/" folder.
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $True)]
-        [Alias('ItemPath','Path')]
         [string]
         $RsItem,
 

@@ -33,10 +33,9 @@ function Remove-RsRestCatalogItem
             Deletes "/MyReport" catalog item from Report Server.
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory = $True)]
-        [Alias('ItemPath','Path')]
         [string]
         $RsItem,
 
@@ -68,25 +67,28 @@ function Remove-RsRestCatalogItem
             throw "Root folder cannot be deleted!"
         }
 
-        try
+        if ($PSCmdlet.ShouldProcess($RsItem, "Delete the item"))
         {
-            Write-Verbose "Deleting item $RsItem..."
-            $catalogItemsUri = [String]::Format($catalogItemsUri, $RsItem)
-
-            if ($Credential -ne $null)
+            try
             {
-                Invoke-WebRequest -Uri $catalogItemsUri -Method Delete -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
+                Write-Verbose "Deleting item $RsItem..."
+                $catalogItemsUri = [String]::Format($catalogItemsUri, $RsItem)
+    
+                if ($Credential -ne $null)
+                {
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Delete -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
+                }
+                else
+                {
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Delete -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
+                }
+    
+                Write-Verbose "Catalog item $RsItem was deleted successfully!"
             }
-            else
+            catch
             {
-                $response = Invoke-WebRequest -Uri $catalogItemsUri -Method Delete -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
+                throw (New-Object System.Exception("Failed to delete catalog item '$RsItem': $($_.Exception.Message)", $_.Exception))
             }
-
-            Write-Verbose "Catalog item $RsItem was deleted successfully!"
-        }
-        catch
-        {
-            throw (New-Object System.Exception("Failed to delete catalog item '$RsItem': $($_.Exception.Message)", $_.Exception))
         }
     }
 }

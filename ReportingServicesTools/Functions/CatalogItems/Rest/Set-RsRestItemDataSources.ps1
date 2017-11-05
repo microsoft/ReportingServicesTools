@@ -33,7 +33,7 @@ function Set-RsRestItemDataSources
             Updates data sources using the specified $myReport OData Payload.
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $True)]
         [object]

@@ -5,10 +5,10 @@ function Out-RsRestCatalogItemId
 {
     <#
         .SYNOPSIS
-            This is a helper function that helps download and write catalog item to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
+            This is a helper function that helps download and write catalog item to disk (using REST endpoint).
         
         .DESCRIPTION
-            This is a helper function that helps download and write catalog item to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
+            This is a helper function that helps download and write catalog item to disk (using REST endpoint).
         
         .PARAMETER RsItemInfo
             OData Catalog Item object returned from REST endpoint
@@ -21,7 +21,9 @@ function Out-RsRestCatalogItemId
 
         .PARAMETER RestApiVersion
             Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+            NOTE:
+                - v1.0 of REST Endpoint is not supported by Microsoft and is for SSRS 2016.
+                - v2.0 of REST Endpoint is supported by Microsoft and is for SSRS 2017, PBIRS October 2017 and newer releases.
 
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
@@ -34,7 +36,7 @@ function Out-RsRestCatalogItemId
     param (
         [Parameter(Mandatory = $True)]
         $RsItemInfo,
-        
+
         [ValidateScript({ Test-Path $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
         [string]
