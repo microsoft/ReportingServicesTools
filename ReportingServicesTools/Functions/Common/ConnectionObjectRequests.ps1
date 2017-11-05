@@ -82,15 +82,15 @@ function New-RsRestSessionHelper
         [object]
         $BoundParameters
     )
-    
+
     if ($BoundParameters["WebSession"])
     {
         return $BoundParameters["WebSession"]
     }
-    
-    $goodKeys = @("ReportPortalUri", "Credential")
+
+    $goodKeys = @("ReportPortalUri", "RestApiVersion", "Credential")
     $NewRsRestSessionParams = @{ }
-    
+
     foreach ($key in $BoundParameters.Keys)
     {
         if ($goodKeys -contains $key)
@@ -98,7 +98,7 @@ function New-RsRestSessionHelper
             $NewRsRestSessionParams[$key] = $BoundParameters[$key]
         }
     }
-    
+
     New-RsRestSession @NewRsRestSessionParams
 }
 

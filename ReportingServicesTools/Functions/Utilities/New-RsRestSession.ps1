@@ -13,6 +13,10 @@ function New-RsRestSession
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
 
+        .PARAMETER RestApiVersion
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
+            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+
         .PARAMETER Credential
             Specify the Credential to use when connecting to your SQL Server Reporting Services Instance.
 
@@ -40,7 +44,11 @@ function New-RsRestSession
     (
         [string]
         $ReportPortalUri = ([Microsoft.ReportingServicesTools.ConnectionHost]::ReportPortalUri),
-        
+
+        [ValidateSet("v1.0", "v2.0")]
+        [string]
+        $RestApiVersion = "v2.0",
+
         [Alias('Credentials')]
         [AllowNull()]
         [System.Management.Automation.PSCredential]
@@ -58,7 +66,7 @@ function New-RsRestSession
         {
             $ReportPortalUri = $ReportPortalUri + '/'
         }
-        $meUri = $ReportPortalUri + "api/v1.0/me"
+        $meUri = $ReportPortalUri + "api/$RestApiVersion/me"
 
         Write-Verbose "Making call to $meUri to create a session..."
         if ($Credential)

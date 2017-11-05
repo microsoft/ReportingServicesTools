@@ -77,6 +77,7 @@
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
+        'New-RsRestFolder',
         'New-RsRestSession',
         'New-RsSubscription',
         'New-RsScheduleXML',
@@ -84,8 +85,11 @@
         'Out-RsCatalogItem',
         'Out-RsFolderContent',
         'Out-RsRestCatalogItem',
+        'Out-RsRestFolderContent',
         'Register-RsPowerBI',
         'Remove-RsCatalogItem',
+        'Remove-RsRestFolder',
+        'Remove-RsRestCatalogItem',
         'Remove-RsSubscription',
         'Restore-RsEncryptionKey',
         'Revoke-RsCatalogItemAccess',
@@ -102,7 +106,8 @@
         'Set-PbiRsUrlReservation',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
-        'Write-RsRestCatalogItem'
+        'Write-RsRestCatalogItem',
+        'Write-RsRestFolderContent'
     )
     
     # Cmdlets to export from this module

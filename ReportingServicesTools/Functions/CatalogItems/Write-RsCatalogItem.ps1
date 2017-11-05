@@ -86,6 +86,13 @@ function Write-RsCatalogItem
             $itemType = Get-ItemType $item.Extension
             $itemName = $item.BaseName
 
+            if ($itemType -ne "Report" -and
+                $itemType -ne "DataSource" -and
+                $itemType -ne "DataSet")
+            {
+                throw "Invalid item specified! You can only upload Report, DataSource and DataSet using this command!"
+            }
+
             if ($RsFolder -eq "/")
             {
                 Write-Verbose "Uploading $EntirePath to /$($itemName)"
