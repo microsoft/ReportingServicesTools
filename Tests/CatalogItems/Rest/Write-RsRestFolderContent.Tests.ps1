@@ -28,20 +28,26 @@ function VerifyCatalogItemExists()
 }
 
 Describe "Write-RsRestFolderContent" {
+    $rsFolderPath = ""
     $localFolderPath = (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
 
+    BeforeEach {
+        $folderName = 'SUT_WriteRsRestFolderContent_' + [guid]::NewGuid()
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName
+        $rsFolderPath = '/' + $folderName
+    }
+
+    AfterEach {
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath
+    }
+
     Context "ReportPortalUri parameter" {
-        $rsFolderPath = ""
-
-        BeforeEach {
-            $folderName = 'SUT_WriteRsRestFolderContent_' + [guid]::NewGuid()
-            New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
-            $rsFolderPath = '/' + $folderName
-        }
-
         It "Uploads all the resources in a folder" {
             Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName "emptyReport" -itemType "Report" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "emptyFile.txt" -itemType "Resource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "NewExcelWorkbook.xlsx" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "OldExcelWorkbook.xls" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SimpleMobileReport" -itemType "MobileReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SimplePowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SqlPowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
@@ -58,24 +64,23 @@ Describe "Write-RsRestFolderContent" {
         It "Throws exception if resource already exists" {
             Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath
 
-            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath } | Should Throw
+            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Verbose } | Should Throw
         }
     }
 
     Context "WebSession parameter" {
-        $rsFolderPath = ""
         $webSession = $null
 
         BeforeEach {
-            $folderName = 'SUT_WriteRsRestFolderContent_' + [guid]::NewGuid()
-            New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
-            $rsFolderPath = '/' + $folderName
             $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
         }
 
         It "Uploads all the resources in a folder" {
             Write-RsRestFolderContent -WebSession $webSession -Path $localFolderPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName "emptyReport" -itemType "Report" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "emptyFile.txt" -itemType "Resource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "NewExcelWorkbook.xlsx" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "OldExcelWorkbook.xls" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SimpleMobileReport" -itemType "MobileReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SimplePowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SqlPowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
@@ -92,7 +97,7 @@ Describe "Write-RsRestFolderContent" {
         It "Throws exception if resource already exists" {
             Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath
 
-            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath } | Should Throw
+            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Verbose } | Should Throw
         }
     }
 }
