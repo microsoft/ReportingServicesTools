@@ -5,14 +5,14 @@ function Write-RsRestCatalogItem
 {
     <#
         .SYNOPSIS
-            This command uploads an item from disk to a report server. It is for SQL Server Reporting Service 2016 and later.
-        
+            This command uploads an item from disk to a report server (using the REST Endpoint).
+
         .DESCRIPTION
-            This command uploads an item from disk to a report server. It is for SQL Server Reporting Service 2016 and later. Currently, we only support uploading Reports, DataSources, DataSets and Mobile Reports.
-        
+            This command uploads an item from disk to a report server (using the REST Endpoint).
+
         .PARAMETER Path
             Path to item to upload on disk.
-        
+
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
 
@@ -24,14 +24,16 @@ function Write-RsRestCatalogItem
 
         .PARAMETER RestApiVersion
            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+            NOTE:
+                - v1.0 of REST Endpoint is not supported by Microsoft and is for SSRS 2016.
+                - v2.0 of REST Endpoint is supported by Microsoft and is for SSRS 2017, PBIRS October 2017 and newer releases.
 
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
 
         .PARAMETER WebSession
             Specify the session to be used when making calls to REST Endpoint.
-        
+
         .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
@@ -60,7 +62,7 @@ function Write-RsRestCatalogItem
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint located at http://myserver/reports.
     #>
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
@@ -110,7 +112,16 @@ function Write-RsRestCatalogItem
             $EntirePath = Convert-Path $item
             $item = Get-Item $EntirePath
             $itemType = Get-ItemType $item.Extension
-            $itemName = $item.BaseName
+
+            if ($itemType -eq "Resource" -or $itemType -eq "ExcelWorkbook")
+            {
+                # preserve the extension for resources and excel workbooks
+                $itemName = $item.Name
+            }
+            else
+            {
+                $itemName = $item.BaseName
+            }
 
             $itemPath = ""
             if ($RsFolder -eq "/")

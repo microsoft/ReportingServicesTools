@@ -5,14 +5,14 @@ function Out-RsRestFolderContent
 {
     <#
         .SYNOPSIS
-            This command downloads catalog items from a folder in report server to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
-        
+            This command downloads catalog items from a folder in report server to disk (using REST endpoint).
+
         .DESCRIPTION
-            This command downloads catalog items from a folder in report server to disk (using REST endpoint). It is for SQL Server Reporting Service 2016 and later.
-        
+            This command downloads catalog items from a folder in report server to disk (using REST endpoint).
+
         .PARAMETER RsFolder
             Path to folder on report server to download catalog items from.
-        
+
         .PARAMETER Destination
             Folder to download catalog item to.
 
@@ -20,8 +20,10 @@ function Out-RsRestFolderContent
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
 
         .PARAMETER RestApiVersion
-            Specify the version of REST Endpoint to use. Valid values are: "v1.0". 
-            NOTE: v1.0 of REST Endpoint is not supported by Microsoft.
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
+            NOTE:
+                - v1.0 of REST Endpoint is not supported by Microsoft and is for SSRS 2016.
+                - v2.0 of REST Endpoint is supported by Microsoft and is for SSRS 2017, PBIRS October 2017 and newer releases.
 
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
@@ -60,11 +62,10 @@ function Out-RsRestFolderContent
 
     [CmdletBinding()]
     param (
-        [Alias('ItemPath', 'Path')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string]
         $RsFolder,
-        
+
         [ValidateScript({ Test-Path $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
         [string]
@@ -95,7 +96,7 @@ function Out-RsRestFolderContent
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemsByPathApiV1 = $ReportPortalUri + "api/v1.0/CatalogItemByPath(path=@path)?@path=%27{0}%27"
         $folderCatalogItemsApiV1 = $ReportPortalUri + "api/v1.0/CatalogItems({0})/Model.Folder/CatalogItems"
-        $folderCatalogItemsApiLatest = $ReportPortalUri + "api/$RestApiVersion/Folders(Path='{0}')/CatalogItems"
+        $folderCatalogItemsApiLatest = $ReportPortalUri + "api/$RestApiVersion/Folders(Path='{0}')/CatalogItems?`$expand=Properties"
     }
     Process
     {
@@ -163,22 +164,18 @@ function Out-RsRestFolderContent
         $catalogItems = (ConvertFrom-Json $response.Content).value
         foreach ($catalogItem in $catalogItems)
         {
-            if ($catalogItem.Type -eq "Report" -or
-                $catalogItem.Type -eq "DataSet" -or
-                $catalogItem.Type -eq "DataSource" -or
-                $catalogItem.Type -eq "MobileReport" -or
-                $catalogItem.Type -eq "PowerBIReport")
-            {
-                Write-Verbose "Parsing metadata for $($catalogItem.Name)..."
-                Out-RsRestCatalogItemId -RsItemInfo $catalogItem -Destination $Destination -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
-            }
-            elseif ($catalogItem.Type -eq "Folder" -and $Recurse)
+            if ($catalogItem.Type -eq "Folder" -and $Recurse)
             {
                 $subFolderPath = "$Destination\$($catalogItem.Name)"
                 Write-Verbose "Creating folder $($catalogItem.Name)..."
-                New-Item -Path $subFolderPath -ItemType Directory
+                New-Item -Path $subFolderPath -ItemType Directory | Out-Null
 
                 Out-RsRestFolderContent -RsFolder $catalogItem.Path -Destination $subFolderPath -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
+            }
+            else
+            {
+                Write-Verbose "Parsing metadata for $($catalogItem.Name)..."
+                Out-RsRestCatalogItemId -RsItemInfo $catalogItem -Destination $Destination -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
             }
         }
     }
