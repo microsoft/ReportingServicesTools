@@ -30,8 +30,8 @@ Describe "Out-RsRestFolderContent" {
         # Create a folder on Report Server to upload some files to
         $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
         $rsFolderPath = "/$folderName"
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path "/" -FolderName $folderName
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path $rsFolderPath -FolderName "Folder"
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder "/" -FolderName $folderName
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder $rsFolderPath -FolderName "Folder"
 
         # Upload the catalog items that are going to be downloaded
         $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'

@@ -164,13 +164,18 @@ function Out-RsRestFolderContent
         $catalogItems = (ConvertFrom-Json $response.Content).value
         foreach ($catalogItem in $catalogItems)
         {
-            if ($catalogItem.Type -eq "Folder" -and $Recurse)
+            if ($catalogItem.Type -eq "Folder")
             {
-                $subFolderPath = "$Destination\$($catalogItem.Name)"
-                Write-Verbose "Creating folder $($catalogItem.Name)..."
-                New-Item -Path $subFolderPath -ItemType Directory | Out-Null
+                if ($Recurse)
+                {
+                    # create sub folder
+                    $subFolderPath = "$Destination\$($catalogItem.Name)"
+                    Write-Verbose "Creating folder $($catalogItem.Name)..."
+                    New-Item -Path $subFolderPath -ItemType Directory | Out-Null
 
-                Out-RsRestFolderContent -RsFolder $catalogItem.Path -Destination $subFolderPath -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
+                    # download contents of the subfolder
+                    Out-RsRestFolderContent -RsFolder $catalogItem.Path -Destination $subFolderPath -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
+                }
             }
             else
             {
