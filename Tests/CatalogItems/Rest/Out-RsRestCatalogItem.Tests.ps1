@@ -28,7 +28,7 @@ Describe "Out-RsRestCatalogItem" {
     BeforeEach {
         # create new folder in RS
         $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
 
         # Upload the catalog items that are going to be downloaded

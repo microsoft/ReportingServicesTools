@@ -10,7 +10,7 @@ Describe "Get-RsRestItemDataSources" {
     BeforeEach {
         # Creating a new folder in RS
         $folderName = 'SUT_GetRsRestItemDataSources_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
 
         # Uploading a report

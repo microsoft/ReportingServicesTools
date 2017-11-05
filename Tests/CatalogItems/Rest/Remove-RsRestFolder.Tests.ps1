@@ -43,7 +43,7 @@ Describe "Remove-RsRestFolder" {
 
     Context "ReportPortalUri parameter" {
         It "Should delete a folder" {
-            Remove-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder $rsFolderPath
+            Remove-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder $rsFolderPath -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
     }
@@ -56,7 +56,7 @@ Describe "Remove-RsRestFolder" {
         }
 
         It "Should delete a folder" {
-            Remove-RsRestFolder -WebSession $webSession -RsFolder $rsFolderPath
+            Remove-RsRestFolder -WebSession $webSession -RsFolder $rsFolderPath -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType "Folder" -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
     }

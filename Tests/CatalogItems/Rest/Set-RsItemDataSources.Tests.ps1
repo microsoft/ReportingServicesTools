@@ -2,6 +2,7 @@
 # Licensed under the MIT License (MIT)
 
 $reportPortalUri = 'http://localhost/reports'
+$reportServerUri = 'http://localhost/reportserver'
 
 Describe "Set-RsItemDataSources" {
     $rsFolderPath = ""
@@ -9,12 +10,16 @@ Describe "Set-RsItemDataSources" {
     BeforeEach {
         # creating a folder in RS
         $folderName = 'SUT_SetRsRestItemDataSources_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
 
         # Uploading a report
         $sqlPowerBiReportPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\SqlPowerBIReport.pbix'
         Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $sqlPowerBiReportPath -RsFolder $rsFolderPath
+    }
+
+    AfterEach {
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath
     }
 
     Context "ReportPortalUri parameter" {

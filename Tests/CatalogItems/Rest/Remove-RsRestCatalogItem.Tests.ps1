@@ -34,7 +34,7 @@ Describe "Remove-RsRestCatalogItem" {
     BeforeEach {
         # creating a new folder
         $folderName = 'SUT_RemoveRsCatalogItem_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -Path / -FolderName $folderName
+        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
         $rsFolderPaths.Add($rsFolderPath)
 
@@ -52,32 +52,32 @@ Describe "Remove-RsRestCatalogItem" {
 
     Context "ReportPortalUri parameter" {
         It "Should delete a RDL item" {
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/emptyReport" -Verbose
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/emptyReport" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType "Report" -itemName "emptyReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a RSDS item" {
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SutWriteRsFolderContent_DataSource" -Verbose
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SutWriteRsFolderContent_DataSource" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType "DataSource" -itemName "SutWriteRsFolderContent_DataSource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a RSD item" {
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/UnDataset" -Verbose
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/UnDataset" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'DataSet' -itemName 'UnDataset' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a RSMOBILE item" {
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SimpleMobileReport" -Verbose
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SimpleMobileReport" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'MobileReport' -itemName 'SimpleMobileReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a PBIX item" {
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SimplePowerBIReport" -Verbose
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/SimplePowerBIReport" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'PowerBIReport' -itemName 'SimplePowerBIReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a folder" {
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rsFolderPath -Verbose
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rsFolderPath -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'Folder' -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
     }
@@ -90,32 +90,32 @@ Describe "Remove-RsRestCatalogItem" {
         }
 
         It "Should delete a RDL item" {
-            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/emptyReport" -Verbose
+            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/emptyReport" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType "Report" -itemName "emptyReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a RSDS item" {
-            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/SutWriteRsFolderContent_DataSource" -Verbose
+            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/SutWriteRsFolderContent_DataSource" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType "DataSource" -itemName "SutWriteRsFolderContent_DataSource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a RSD item" {
-            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/UnDataset" -Verbose
+            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/UnDataset" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'DataSet' -itemName 'UnDataset' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a RSMOBILE item" {
-            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/SimpleMobileReport" -Verbose
+            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/SimpleMobileReport" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'MobileReport' -itemName 'SimpleMobileReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a PBIX item" {
-            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/SimplePowerBIReport" -Verbose
+            Remove-RsRestCatalogItem -WebSession $webSession -RsItem "$rsFolderPath/SimplePowerBIReport" -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'PowerBIReport' -itemName 'SimplePowerBIReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should delete a folder" {
-            Remove-RsRestCatalogItem -WebSession $webSession -RsItem $rsFolderPath -Verbose
+            Remove-RsRestCatalogItem -WebSession $webSession -RsItem $rsFolderPath -Verbose -Confirm:$false
             VerifyCatalogItemDoesNotExists -itemType 'Folder' -itemName $folderName -folderPath "/" -reportServerUri $reportServerUri
         }
     }
