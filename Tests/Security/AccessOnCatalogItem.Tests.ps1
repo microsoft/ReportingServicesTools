@@ -77,7 +77,7 @@ Describe "Grant and Revoke Access On RS Catalog Items" {
         }
 
         AfterAll {
-            Revoke-AccessOnCatalogItem -UserOrGroupName $user -Path $script:$catalogItemPath -Confirm:$false -Verbose
+            Revoke-AccessOnCatalogItem -UserOrGroupName $user -Path $script:catalogItemPath -Confirm:$false -Verbose
         }
     }
 
