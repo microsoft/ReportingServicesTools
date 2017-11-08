@@ -62,7 +62,7 @@ function New-RsSubscription {
         .PARAMETER ExcludeLink
             Use with -Destination 'Email' to exclude a link back to the report from the email.
         
-        .PARAMTER Priority
+        .PARAMETER Priority
             Use with -Destination 'Email' to set the priority with which the e-mail message is sent. Valid values are LOW, NORMAL, and HIGH. The default value is NORMAL.
             
         .EXAMPLE
@@ -70,7 +70,7 @@ function New-RsSubscription {
 
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials and create a subscription for report '/path/to/my/Report'
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer using current user's credentials and create a subscription for report '/path/to/my/Report'
             that outputs the report in PDF format to the specified file share path and name on a daily basis at the current time.
 
         .EXAMPLE
@@ -78,8 +78,16 @@ function New-RsSubscription {
 
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials and create a subscription for report '/path/to/my/Report'
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer using current user's credentials and create a subscription for report '/path/to/my/Report'
             that outputs the report in Word format by email to the specified recipient every other Saturday at the current time.
+        
+        .EXAMPLE
+            New-RsSubscription -ReportServerUri 'http://localhost/ReportServer' -Path '/path/to/my/Report' -Description "One minute from now" -Destination 'Email' -Schedule (New-RsScheduleXML -Once -StartDate [datetime]::Now.AddMinutes(1)) -Subject 'One minute from now' -To 'Christopher.Wren@example.com' -RenderFormat 'MHTML' -Priority 'HIGH' -ExcludeLink
+            
+            Description
+            -----------
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer using current user's credentials and create a subscription for report '/path/to/my/Report'
+            that outputs the report in MHTML format by email to the specified recipient one minute from now, with HIGH priority and without a link back to the report
     #>
     
     [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',DefaultParameterSetName='FileShare')]
