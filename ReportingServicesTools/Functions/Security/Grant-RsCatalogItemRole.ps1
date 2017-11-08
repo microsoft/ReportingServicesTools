@@ -7,55 +7,55 @@ function Grant-RsCatalogItemRole
     <#
         .SYNOPSIS
             This script grants access to catalog items to users/groups.
-        
+
         .DESCRIPTION
             This script grants the specified role access to the specified user/group on the specified catalog item using either current user's credentials or specified credentials.
-        
+
         .PARAMETER Identity
             Specify the user or group name to grant access to.
-        
+
         .PARAMETER RoleName
             Specify the name of the role you want to grant on the catalog item.
-        
+
         .PARAMETER Path
             Specify the path to catalog item on the server.
-    
+
         .PARAMETER Strict
             Setting this parameter causes the function to replace all soft terminations with exceptions.
             When trying to grant permissions already assigned, this will cause a terminating error.
-    
+
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Proxy
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
-        
+
         .EXAMPLE
             Grant-RsCatalogItemRole -Identity 'johnd' -RoleName 'Browser' -Path '/My Folder/SalesReport'
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and then grant Browser access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
-        
+
         .EXAMPLE
             Grant-RsCatalogItemRole -ReportServerUri 'http://localhost/reportserver_sql2012' -Identity 'johnd' -RoleName 'Browser' -Path '/My Folder/SalesReport'
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then grant Browser access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
-        
+
         .EXAMPLE
             Grant-RsCatalogItemRole -Credential 'CaptainAwesome' -Identity 'johnd' -RoleName 'Browser' -Path '/My Folder/SalesReport'
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then grant Browser access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
     #>
-    
+
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param
     (
@@ -63,35 +63,35 @@ function Grant-RsCatalogItemRole
         [Parameter(Mandatory = $True)]
         [string]
         $Identity,
-        
+
         [Parameter(Mandatory = $True)]
         [string]
         $RoleName,
-        
+
         [Alias('ItemPath')]
         [Parameter(Mandatory = $True)]
         [string]
         $Path,
-        
+
         [switch]
         $Strict,
-        
+
         [string]
         $ReportServerUri,
-        
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         $Proxy
     )
-    
+
     if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetweb -BoundParameters $PSBoundParameters), "Grant $RoleName on $Path to $Identity"))
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
-        
+
         #region Retrieving and checking roles and policies
-        # retrieving roles from the proxy 
+        # retrieving roles from the proxy
         Write-Verbose "Retrieving valid roles for Catalog items..."
         try
         {
@@ -101,28 +101,28 @@ function Grant-RsCatalogItemRole
         {
             throw (New-Object System.Exception("Error retrieving roles for catalog items! $($_.Exception.Message)", $_.Exception))
         }
-        
+
         # validating the role name provided by user
         if ($roles.Name -notcontains $RoleName)
         {
             throw "Role name is not valid. Valid options are: $($roles.Name -join ", ")"
         }
-        
+
         # retrieving existing policies for the current item
         try
         {
             Write-Verbose "Retrieving policies for $Path..."
             $inheritsParentPolicy = $false
-            $originalPolicies = $proxy.GetPolicies($Path, [ref]$inheritsParentPolicy)
+            $policies = $proxy.GetPolicies($Path, [ref]$inheritsParentPolicy)
         }
         catch
         {
             throw (New-Object System.Exception("Error retrieving existing policies for $Path! $($_.Exception.Message)", $_.Exception))
         }
-        Write-Verbose "Policies retrieved: $($originalPolicies.Length)!"
-        
+        Write-Verbose "Policies retrieved: $($Policies.Length)!"
+
         # checking if the specified role already exists on the specified user/group name for specified catalog item
-        if (($originalPolicies | Where-Object { $_.GroupUserName -eq $Identity }).Roles.Name -contains $RoleName)
+        if (($policies | Where-Object { $_.GroupUserName -eq $Identity }).Roles.Name -contains $RoleName)
         {
             if ($Strict)
             {
@@ -135,38 +135,36 @@ function Grant-RsCatalogItemRole
             }
         }
         #endregion Retrieving and checking roles and policies
-        
+
         #region Assign Permissions
-        # determining namespace of the proxy and the names of needed data types 
+        # determining namespace of the proxy and the names of needed data types
         $namespace = $proxy.GetType().Namespace
         $policyDataType = $namespace + '.Policy'
         $roleDataType = $namespace + '.Role'
-        
-        # copying all the original policies so that we don't lose them
-        $numPolicies = $originalPolicies.Length + 1
-        $policies = New-Object -TypeName "$policyDataType[]" -ArgumentList $numPolicies
-        $index = 0
-        foreach ($originalPolicy in $originalPolicies)
-        {
-            $policies[$index++] = $originalPolicy
-        }
-        
+
+        #Return all policies that contain the user/group we want to add
+        $policy = $policies | Where-Object { $_.GroupUserName -eq $Identity } | Select-Object -First 1
+
         # creating new policy
-        $policy = New-Object -TypeName $policyDataType
-        $policy.GroupUserName = $Identity
-        
+        if (-not $policy)
+        {
+            $policy = New-Object -TypeName $policyDataType
+            $policy.GroupUserName = $Identity
+            $policy.Roles = @()
+            #Add new policy to the folder's policies
+            $policies += $policy
+        }
+
         # creating new role
-        $role = New-Object -TypeName $roleDataType
-        $role.Name = $RoleName
-        
-        # associating role to the policy
-        $numRoles = 1
-        $policy.Roles = New-Object -TypeName "$roleDataType[]" -ArgumentList $numRoles
-        $policy.Roles[0] = $role
-        
-        # adding new policy to the policies array
-        $policies[$originalPolicies.Length] = $policy
-        
+        $role = $policy.Roles | Where-Object { $_.Name -eq $RoleName } | Select-Object -First 1
+        if (-not $role)
+        {
+            $role = New-Object -TypeName $roleDataType
+            $role.Name = $RoleName
+            #Add the role to the new Policy
+            $policy.Roles += $role
+        }
+
         # updating policies on the item
         try
         {
