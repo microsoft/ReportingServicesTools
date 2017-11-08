@@ -76,9 +76,7 @@ Describe "Grant and Revoke Access On RS Catalog Items" {
             $role | Should Not BeNullOrEmpty
         }
 
-        AfterAll {
-            Revoke-AccessOnCatalogItem -UserOrGroupName $user -Path $script:catalogItemPath -Confirm:$false -Verbose
-        }
+        Revoke-AccessOnCatalogItem -UserOrGroupName $user -Path $catalogItemPath -Confirm:$false -Verbose
     }
 
     Context "Revoking access from test user" {
