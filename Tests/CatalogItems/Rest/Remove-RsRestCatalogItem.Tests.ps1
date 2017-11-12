@@ -1,8 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-$reportPortalUri = 'http://localhost/reports'
-$reportServerUri = 'http://localhost/reportserver'
+$reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
+$reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
 function VerifyCatalogItemDoesNotExists()
 {

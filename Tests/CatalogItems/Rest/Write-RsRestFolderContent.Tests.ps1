@@ -1,8 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-$reportPortalUri = 'http://localhost/reports'
-$reportServerUri = 'http://localhost/reportserver'
+$reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
+$reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
 function VerifyCatalogItemExists()
 {
@@ -53,6 +53,7 @@ Describe "Write-RsRestFolderContent" {
             VerifyCatalogItemExists -itemName "SqlPowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SutWriteRsFolderContent_DataSource" -itemType "DataSource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "UnDataset" -itemType "DataSet" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "NewKPI" -itemType "Kpi" -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Creates subfolders and deploys resources correctly" {
@@ -86,6 +87,7 @@ Describe "Write-RsRestFolderContent" {
             VerifyCatalogItemExists -itemName "SqlPowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SutWriteRsFolderContent_DataSource" -itemType "DataSource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "UnDataset" -itemType "DataSet" -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            VerifyCatalogItemExists -itemName "NewKPI" -itemType "Kpi" -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Creates subfolders and deploys resources correctly" {

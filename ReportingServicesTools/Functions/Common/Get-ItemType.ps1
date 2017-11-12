@@ -14,6 +14,7 @@
         '.pbix' { return 'PowerBIReport' }
         '.xls' { return 'ExcelWorkbook' }
         '.xlsx' { return 'ExcelWorkbook' }
+        '.kpi' { return 'Kpi' }
         default { return 'Resource' }
     }
 }

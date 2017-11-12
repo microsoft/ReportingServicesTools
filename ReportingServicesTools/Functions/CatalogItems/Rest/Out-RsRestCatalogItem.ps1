@@ -6,16 +6,16 @@ function Out-RsRestCatalogItem
     <#
         .SYNOPSIS
             This command downloads catalog items from a report server to disk (using REST endpoint).
-        
+
         .DESCRIPTION
             This command downloads catalog items from a report server to disk (using REST endpoint).
-        
+
         .PARAMETER RsItem
             Path to catalog item to download.
-        
+
         .PARAMETER Destination
             Folder to download catalog item to.
-        
+
         .PARAMETER ApiVersion
             Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
             NOTE:
@@ -24,7 +24,7 @@ function Out-RsRestCatalogItem
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
-        
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
 
