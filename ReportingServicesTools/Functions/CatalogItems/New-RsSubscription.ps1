@@ -59,12 +59,18 @@ function New-RsSubscription {
         .PARAMETER RenderFormat
             Specify the output format of the report. Must be one of 'PDF','MHTML','IMAGE','CSV','XML','EXCELOPENXML','ATOM','PPTX','WORDOPENXML'
         
+        .PARAMETER ExcludeLink
+            Use with -Destination 'Email' to exclude a link back to the report from the email.
+        
+        .PARAMETER Priority
+            Use with -Destination 'Email' to set the priority with which the e-mail message is sent. Valid values are LOW, NORMAL, and HIGH. The default value is NORMAL.
+            
         .EXAMPLE
             New-RsSubscription -ReportServerUri 'http://localhost/ReportServer' -Path '/path/to/my/Report' -Description 'Daily to folder' -Destination 'FileShare' -Schedule (New-RsScheduleXML -Daily 1) -DestinationPath '\\Myserver\folder' -FileName 'MyReport' -RenderFormat 'PDF'
 
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials and create a subscription for report '/path/to/my/Report'
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer using current user's credentials and create a subscription for report '/path/to/my/Report'
             that outputs the report in PDF format to the specified file share path and name on a daily basis at the current time.
 
         .EXAMPLE
@@ -72,8 +78,16 @@ function New-RsSubscription {
 
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials and create a subscription for report '/path/to/my/Report'
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer using current user's credentials and create a subscription for report '/path/to/my/Report'
             that outputs the report in Word format by email to the specified recipient every other Saturday at the current time.
+        
+        .EXAMPLE
+            New-RsSubscription -ReportServerUri 'http://localhost/ReportServer' -Path '/path/to/my/Report' -Description "One minute from now" -Destination 'Email' -Schedule (New-RsScheduleXML -Once -StartDate [datetime]::Now.AddMinutes(1)) -Subject 'One minute from now' -To 'Christopher.Wren@example.com' -RenderFormat 'MHTML' -Priority 'HIGH' -ExcludeLink
+            
+            Description
+            -----------
+            This command will establish a connection to the Report Server located at http://localhost/ReportServer using current user's credentials and create a subscription for report '/path/to/my/Report'
+            that outputs the report in MHTML format by email to the specified recipient one minute from now, with HIGH priority and without a link back to the report
     #>
     
     [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',DefaultParameterSetName='FileShare')]
@@ -138,7 +152,16 @@ function New-RsSubscription {
         [Parameter(Mandatory=$True)]
         [ValidateSet('PDF','MHTML','IMAGE','CSV','XML','EXCELOPENXML','ATOM','PPTX','WORDOPENXML')]
         [string]
-        $RenderFormat = 'PDF'
+        $RenderFormat = 'PDF',
+        
+        [Parameter(ParameterSetName='Email')]
+        [switch]
+        $ExcludeLink,
+
+        [Parameter(ParameterSetName='Email')]
+        [ValidateSet('LOW', 'NORMAL', 'HIGH')]
+        [string]
+        $Priority = 'NORMAL'
     )
 
     Begin {
@@ -180,8 +203,10 @@ function New-RsSubscription {
                         CC = $CC
                         BCC = $BCC
                         IncludeReport = (-not $ExcludeReport)
+                        IncludeLink = (-not $ExcludeLink)
                         Subject = $Subject
                         RenderFormat = $RenderFormat
+                        Priority = $Priority
                     }
                 }
                 'FileShare' {
