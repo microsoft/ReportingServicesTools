@@ -1,8 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-$reportPortalUri = 'http://localhost/reports'
-$reportServerUri = 'http://localhost/reportserver'
+$reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
+$reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
 function VerifyFileWasDownloaded()
 {
@@ -77,6 +77,30 @@ Describe "Out-RsRestCatalogItem" {
             Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
             VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimplePowerBIReport.pbix'
         }
+
+        It "Should download a XLS file" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath 'OldExcelWorkbook.xls'
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'OldExcelWorkbook.xls'
+        }
+
+        It "Should download a XLSX file" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath 'NewExcelWorkbook.xlsx'
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'NewExcelWorkbook.xlsx'
+        }
+
+        It "Should download a Resource file" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath emptyFile.txt
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'emptyFile.txt'
+        }
+
+        It "Should download a KPI" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath NewKPI
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'NewKPI.kpi'
+        }
     }
 
     Context "WebSession parameter" {
@@ -114,6 +138,30 @@ Describe "Out-RsRestCatalogItem" {
             $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimplePowerBIReport
             Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
             VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimplePowerBIReport.pbix'
+        }
+
+        It "Should download a XLS file" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath 'OldExcelWorkbook.xls'
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'OldExcelWorkbook.xls'
+        }
+
+        It "Should download a XLSX file" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath 'NewExcelWorkbook.xlsx'
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'NewExcelWorkbook.xlsx'
+        }
+
+        It "Should download a Resource file" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath emptyFile.txt
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'emptyFile.txt'
+        }
+
+        It "Should download a KPI" {
+            $itemPath = Join-Path -Path $rsFolderPath -ChildPath NewKPI
+            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
+            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'NewKPI.kpi'
         }
     }
 }

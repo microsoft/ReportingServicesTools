@@ -134,18 +134,7 @@ function Write-RsRestCatalogItem
             }
 
             Write-Verbose "Reading file content..."
-            if ($itemType -ne 'DataSource')
-            {
-                $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
-                $payload = @{
-                    "@odata.type" = "#Model.$itemType";
-                    "Content" = [System.Convert]::ToBase64String($bytes);
-                    "ContentType"="";
-                    "Name" = $itemName;
-                    "Path" = $itemPath;
-                }
-            }
-            else
+            if ($itemType -eq 'DataSource')
             {
                 [xml] $dataSourceXml = Get-Content -Path $EntirePath
                 if ($item.Extension -eq '.rsds')
@@ -214,6 +203,23 @@ function Write-RsRestCatalogItem
                         "DisplayText" = $prompt;
                         "UseAsWindowsCredentials" = $true;
                     }
+                }
+            }
+            elseif ($itemType -eq "Kpi")
+            {
+                $content = [System.IO.File]::ReadAllText($EntirePath)
+                $payload = ConvertFrom-Json $content
+                $payload.Path = $itemPath
+            }
+            else
+            {
+                $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
+                $payload = @{
+                    "@odata.type" = "#Model.$itemType";
+                    "Content" = [System.Convert]::ToBase64String($bytes);
+                    "ContentType"="";
+                    "Name" = $itemName;
+                    "Path" = $itemPath;
                 }
             }
 

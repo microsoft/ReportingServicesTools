@@ -6,13 +6,13 @@ function Out-RsRestCatalogItemId
     <#
         .SYNOPSIS
             This is a helper function that helps download and write catalog item to disk (using REST endpoint).
-        
+
         .DESCRIPTION
             This is a helper function that helps download and write catalog item to disk (using REST endpoint).
-        
+
         .PARAMETER RsItemInfo
             OData Catalog Item object returned from REST endpoint
-        
+
         .PARAMETER Destination
             Folder to download catalog item to.
 
@@ -111,6 +111,15 @@ function Out-RsRestCatalogItemId
         if ((Test-Path $destinationFilePath) -And !$Overwrite)
         {
             throw "An item with same name already exists at destination!"
+        }
+
+        if ($RsItemInfo.Type -eq 'Kpi')
+        {
+            $itemContent = $RsItemInfo | Select-Object -Property Data, Description, DrillthroughTarget, Hidden, IsFavorite, Name, "@odata.Type", Path, Type, ValueFormat, Values, Visualization
+            Write-Verbose "Writing content to $destinationFilePath..."
+            [System.IO.File]::WriteAllText($destinationFilePath, (ConvertTo-Json $itemContent))
+            Write-Verbose "$($RsItemInfo.Path) was downloaded to $destinationFilePath successfully!"
+            return
         }
 
         try

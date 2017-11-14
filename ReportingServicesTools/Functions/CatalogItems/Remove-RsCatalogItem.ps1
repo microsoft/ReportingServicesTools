@@ -10,7 +10,7 @@ function Remove-RsCatalogItem
         .DESCRIPTION
             This function removes an item from the Report Server Catalog.
         
-        .PARAMETER RsFolder
+        .PARAMETER RsItem
             Specify the path of the catalog item to remove.
     
         .PARAMETER ReportServerUri
@@ -27,7 +27,7 @@ function Remove-RsCatalogItem
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer -RsFolder /monthlyreports
+            Remove-RsCatalogItem -ReportServerUri http://localhost/ReportServer -RsItem /monthlyreports
    
             Description
             -----------
@@ -45,18 +45,18 @@ function Remove-RsCatalogItem
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
-        [Alias('ItemPath', 'Path')]
+        [Alias('ItemPath', 'Path', 'RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [ System.Object[] ]
-        $RsFolder,
-        
+        $RsItem,
+
         [string]
         $ReportServerUri,
-        
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         $Proxy
     )
     
@@ -67,7 +67,7 @@ function Remove-RsCatalogItem
     
     Process
     {
-        foreach ($item in $RsFolder)
+        foreach ($item in $RsItem)
         {
             if ($PSCmdlet.ShouldProcess($item, "Delete the catalog item"))
             {

@@ -1,8 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-$reportPortalUri = 'http://localhost/reports'
-$reportServerUri = 'http://localhost/reportserver'
+$reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
+$reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
 function VerifyCatalogItemExists()
 {
@@ -89,6 +89,12 @@ Describe "Write-RsRestCatalogItem" {
             Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath
             VerifyCatalogItemExists -itemName 'emptyFile.txt' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
+
+        It "Should upload a local KPI file" {
+            $itemPath = $localPath + '\NewKPI.kpi'
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath
+            VerifyCatalogItemExists -itemName 'NewKPI' -itemType 'Kpi' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
     }
 
     Context "WebSession parameter" {
@@ -140,6 +146,12 @@ Describe "Write-RsRestCatalogItem" {
             $itemPath = $localPath + '\emptyFile.txt'
             Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath
             VerifyCatalogItemExists -itemName 'emptyFile.txt' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
+
+        It "Should upload a local KPI file" {
+            $itemPath = $localPath + '\NewKPI.kpi'
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath
+            VerifyCatalogItemExists -itemName 'NewKPI' -itemType 'Kpi' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
     }
 }
