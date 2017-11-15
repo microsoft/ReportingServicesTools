@@ -34,7 +34,7 @@ if ($path.length -eq 0)
     $path = $localpath
 }
 
-if ((Get-Command -Module ReportingServicesTools).count -eq 0)
+if ((Get-Command -Module ReportingServicesTools).count -ne 0)
 {
     Write-Output "Removing existing ReportingServiceTools Module..."
     Remove-Module ReportingServicesTools -ErrorAction Stop
