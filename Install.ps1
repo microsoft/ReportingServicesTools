@@ -9,7 +9,6 @@ try
 {
     if ($Path.length -eq 0)
     {
-        
         if ($PSCommandPath.Length -gt 0)
         {
             $path = Split-Path $PSCommandPath
