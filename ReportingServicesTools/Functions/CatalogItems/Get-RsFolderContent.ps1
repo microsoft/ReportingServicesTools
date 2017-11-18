@@ -6,43 +6,53 @@ function Get-RsFolderContent
     <#
         .SYNOPSIS
             List all catalog items under a given path.
-        
+
         .DESCRIPTION
             List all catalog items under a given path.
-        
+
         .PARAMETER RsFolder
             Path to folder on SSRS instance.
-        
+
         .PARAMETER Recurse
             Recursively list subfolders with content.
-    
+
+        .PARAMETER Unformatted
+            Specify this switch when you want the results to be unformatted.
+
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
-    
+
         .PARAMETER Proxy
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
-        
+
         .EXAMPLE
             Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -RsFolder /
             
             Description
             -----------
             List all items under the root folder
-    
+
+        .EXAMPLE
+            Get-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -RsFolder / -Unformatted | Format-Table -Property Name, TypeName, Size, CreationDate, ModifiedDate
+            
+            Description
+            -----------
+            List all items under the root folder without any formatting, which is then used in Format-Table to show only Name, TypeName, Size, CreationDate and ModifiedData properties.
+
         .EXAMPLE
             Get-RsFolderContent -ReportServerUri http://localhost/ReportServer -RsFolder / -Recurse
 
             Description
             -----------
             Lists all items directly under the root of the SSRS instance and recursively under all sub-folders.
-    
+
         .EXAMPLE
             Get-RsFolderContent -RsFolder '/SQL Server Performance Dashboard' | WHERE Name -Like Wait* | Out-RsCatalogItem -Destination c:\SQLReports
        
@@ -57,17 +67,20 @@ function Get-RsFolderContent
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
         $RsFolder,
-        
+
         [switch]
         $Recurse,
-        
+
+        [switch]
+        $Unformatted,
+
         [string]
         $ReportServerUri,
-        
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         $Proxy
     )
     
@@ -82,7 +95,15 @@ function Get-RsFolderContent
         {
             try
             {
-                $Proxy.ListChildren($Item, $Recurse)
+                $children = $Proxy.ListChildren($Item, $Recurse)
+                if ($Unformatted)
+                {
+                    $children
+                }
+                else
+                {
+                    $children | Format-Table -Property Path, Name, TypeName, Size, CreationDate, ModifiedDate -AutoSize
+                }
             }
             catch
             {
