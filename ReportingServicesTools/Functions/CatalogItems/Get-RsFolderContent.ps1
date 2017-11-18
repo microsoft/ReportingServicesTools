@@ -93,4 +93,5 @@ function Get-RsFolderContent
 }
 New-Alias -Name "Get-RsCatalogItems" -Value Get-RsFolderContent -Scope Global
 New-Alias -Name "Get-RsChildItem" -Value Get-RsFolderContent -Scope Global
+New-Alias -Name "Get-RsItems" -Value Get-RsFolderContent -Scope Global
 New-Alias -Name "rsdir" -Value Get-RsFolderContent -Scope Global

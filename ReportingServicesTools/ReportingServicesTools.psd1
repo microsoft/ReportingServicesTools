@@ -122,6 +122,7 @@
         'Get-RsCatalogItems',
         'Get-RsChildItem',
         'Get-RsItemReferences',
+        'Get-RsItems',
         'Grant-AccessOnCatalogItem',
         'Grant-AccessToRS',
         'Register-PowerBI',
