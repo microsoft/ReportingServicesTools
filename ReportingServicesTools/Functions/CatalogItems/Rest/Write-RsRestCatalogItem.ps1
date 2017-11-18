@@ -97,7 +97,14 @@ function Write-RsRestCatalogItem
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems"
-        $catalogItemsByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        if ($RestApiVersion -eq "v1.0")
+        {
+            $catalogItemsByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItemByPath(path=@path)?@path=%27{0}%27"
+        }
+        else
+        {
+            $catalogItemsByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItems(Path='{0}')"
+        }
         $catalogItemsUpdateUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})"
     }
     Process
