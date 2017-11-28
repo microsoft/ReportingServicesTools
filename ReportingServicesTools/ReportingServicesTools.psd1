@@ -7,7 +7,7 @@
     RootModule = 'ReportingServicesTools.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.0.2.6'
+    ModuleVersion = '0.0.3.3'
     
     # ID used to uniquely identify this module
     GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -64,21 +64,33 @@
     FunctionsToExport = @(
         'Backup-RsEncryptionKey',
         'Connect-RsReportServer',
+        'Export-RsSubscriptionXml',
+        'Get-RsCatalogItemRole',
         'Get-RsDataSource',
         'Get-RsFolderContent',
         'Get-RsItemReference',
-        'Get-RsCatalogItemRole',
+        'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
-        'Initialize-Rs',
+        'Import-RsSubscriptionXml',
+	    'Initialize-Rs',
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
+        'New-RsRestFolder',
+        'New-RsRestSession',
+        'New-RsSubscription',
+        'New-RsScheduleXML',
         'New-RsWebServiceProxy',
         'Out-RsCatalogItem',
         'Out-RsFolderContent',
+        'Out-RsRestCatalogItem',
+        'Out-RsRestFolderContent',
         'Register-RsPowerBI',
         'Remove-RsCatalogItem',
+        'Remove-RsRestFolder',
+        'Remove-RsRestCatalogItem',
+        'Remove-RsSubscription',
         'Restore-RsEncryptionKey',
         'Revoke-RsCatalogItemAccess',
         'Revoke-RsSystemAccess',
@@ -89,12 +101,13 @@
         'Set-RsDataSourcePassword',
         'Set-RsDataSourceReference',
         'Set-RsEmailSettings',
-        'Set-RsUrlReservation'
+        'Set-RsSubscription',
+        'Set-RsUrlReservation',
+        'Set-PbiRsUrlReservation',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
-        'Get-RsSubscription',
-        'Set-RsSubscription',
-        'Remove-RsSubscription',
+        'Write-RsRestCatalogItem',
+        'Write-RsRestFolderContent',
         'Update-RsSubscription'
     )
     
