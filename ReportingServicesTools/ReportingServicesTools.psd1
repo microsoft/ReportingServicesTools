@@ -104,6 +104,7 @@
         'Set-RsSubscription',
         'Set-RsUrlReservation',
         'Set-PbiRsUrlReservation',
+        'Update-RsSubscription',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
         'Write-RsRestCatalogItem',
