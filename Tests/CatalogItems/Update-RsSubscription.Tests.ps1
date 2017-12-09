@@ -238,7 +238,7 @@ Describe "Update-RsSubscription" {
                    $reportSubscriptions.Report | Should Be "emptyReport"
                    $reportSubscriptions.EventType | Should Be "TimedSubscription"
                    $reportSubscriptions.IsDataDriven | Should Be $false
-                   $XMLMatch.ScheduleDefinition.StartDateTime.InnerText | Should be "1999-01-01T06:00:00.000-05:00"
+                   $XMLMatch.ScheduleDefinition.StartDateTime.InnerText | Should be "1999-01-01T06:00:00.000+00:00"
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
         }
@@ -297,7 +297,7 @@ Describe "Update-RsSubscription" {
                    $reportSubscriptions.Report | Should Be "emptyReport"
                    $reportSubscriptions.EventType | Should Be "TimedSubscription"
                    $reportSubscriptions.IsDataDriven | Should Be $false
-                   $XMLMatch.ScheduleDefinition.StartDateTime.InnerText | Should be "2000-01-01T14:00:00.000-05:00"
+                   $XMLMatch.ScheduleDefinition.StartDateTime.InnerText | Should be "2000-01-01T14:00:00.000+00:00"
                    $XMLMatch.ScheduleDefinition.EndDate.InnerText | Should Be "2999-02-01"
                 }
                 Remove-RsCatalogItem -RsFolder $folderPath
