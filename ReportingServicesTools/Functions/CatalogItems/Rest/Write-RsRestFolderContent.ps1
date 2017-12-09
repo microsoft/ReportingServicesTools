@@ -32,32 +32,32 @@ function Write-RsRestFolderContent
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
+            Write-RsRestFolderContent -Path 'c:\reports' -RsFolder '/'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://localhost/reports/.
+            Uploads all the items found under 'C:\reports' to folder '/' using v2.0 REST Endpoint of Report Server located at http://localhost/reports.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -RestApiVersion 'v1.0'
+            Write-RsRestFolderContent -Path 'c:\reports' -RsFolder '/' -RestApiVersion 'v1.0'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://localhost/reports/.
+            Uploads all the items found under 'C:\reports' to folder '/' using v1.0 REST Endpoint of Report Server located at http://localhost/reports.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
+            Write-RsRestFolderContent -WebSession $mySession -Path 'c:\reports' -RsFolder '/'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint.
+            Uploads all the items found under 'C:\reports' to folder '/' using v2.0 REST Endpoint of the Report Server identified by the WebSession object.
 
         .EXAMPLE
-            Write-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
+            Write-RsRestFolderContent -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports' -RsFolder '/'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://myserver/reports.
+            Uploads all the items found under 'C:\reports' to folder '/' using v2.0 REST Endpoint of the Report Server located at http://myserver/reports.
     #>
     [CmdletBinding()]
     param(

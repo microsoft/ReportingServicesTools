@@ -36,28 +36,28 @@ function Out-RsRestCatalogItem
             
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' using v2.0 REST Endpoint located at http://localhost/reports.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v2.0 REST Endpoint from the Report Server located at http://localhost/reports.
 
         .EXAMPLE
             Out-RsRestCatalogItem -RsItem '/Report' -Destination 'C:\reports' -RestApiVersion 'v1.0'
             
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint located at http://localhost/reports.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint from the Report Server located at http://localhost/reports.
 
         .EXAMPLE
             Out-RsRestCatalogItem -WebSession $mySession -RsItem '/Report' -Destination 'C:\reports'
 
             Description
             -----------
-            Downloads the catalog item 'Report' to folder 'C:\reports' using v2.0 REST Endpoint.
+            Downloads the catalog item 'Report' to folder 'C:\reports' using v2.0 REST Endpoint from the Report Server located at the specified WebSession object.
 
         .EXAMPLE
             Out-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports'
             
             Description
             -----------
-            Downloads the catalog item found at '/Report' to folder 'C:\reports' using v2.0 REST Endpoint located at http://myserver/reports.
+            Downloads the catalog item found at '/Report' to folder 'C:\reports' using v2.0 REST Endpoint from the Report Server located at http://myserver/reports.
     #>
 
     [CmdletBinding()]

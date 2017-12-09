@@ -39,28 +39,28 @@ function Write-RsRestCatalogItem
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint located at http://localhost/reports/.
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' using v2.0 REST Endpoint to Report Server located at http://localhost/reports/.
 
         .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -RestApiVersion 'v1.0'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint located at http://localhost/reports/.
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint to Report Server located at http://localhost/reports/.
 
         .EXAMPLE
             Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint.
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint to Report Server located at the specified WebSession object.
 
         .EXAMPLE
             Write-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
             
             Description
             -----------
-            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint located at http://myserver/reports.
+            Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' using v2.0 REST Endpoint to Report Server located at http://myserver/reports.
     #>
     [CmdletBinding()]
     param(
