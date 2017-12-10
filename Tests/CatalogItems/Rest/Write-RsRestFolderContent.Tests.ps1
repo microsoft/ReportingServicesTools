@@ -67,6 +67,12 @@ Describe "Write-RsRestFolderContent" {
 
             { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Verbose } | Should Throw
         }
+
+        It "Overwrites exisiting resource if -Overwrite option is specified" {
+            Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath
+
+            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath  -Overwrite -Verbose } | Should Not Throw
+        }
     }
 
     Context "WebSession parameter" {
@@ -100,6 +106,12 @@ Describe "Write-RsRestFolderContent" {
             Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath
 
             { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Verbose } | Should Throw
+        }
+
+        It "Overwrites exisiting resource, if -Overwrite option is specified" {
+            Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath
+
+            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Overwrite -Verbose } | Should Not Throw
         }
     }
 }

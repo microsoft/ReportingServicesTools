@@ -16,6 +16,9 @@ function Write-RsRestFolderContent
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
 
+        .PARAMETER Overwrite
+            Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
+
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
 
@@ -71,6 +74,10 @@ function Write-RsRestFolderContent
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
+
+        [Alias('Override')]
+        [switch]
+        $Overwrite,
 
         [string]
         $ReportPortalUri,
@@ -144,7 +151,7 @@ function Write-RsRestFolderContent
                     $parentFolder = $RsFolder + $relativePath
                 }
 
-                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder
+                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -Credential $Credential
             }
         }
     }
