@@ -59,7 +59,7 @@ function Set-RsDataSource
         [Alias('DataSourcePath','ItemPath', 'Path')]
         [Parameter(Mandatory = $True)]
         [string]
-        $Path,
+        $RsItem,
         
         [Parameter(Mandatory = $True)]
         $DataSourceDefinition,
