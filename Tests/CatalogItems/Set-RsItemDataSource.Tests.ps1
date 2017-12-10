@@ -13,7 +13,7 @@ Describe "Set-RsItemDataSource" {
         New-RsFolder -ReportServerUri $reportServerUri -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
 
-        $localResourcesPath = (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+        $localResourcesPath = (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\datasources'
         
         # upload datasourcesReport to new folder in RS
         Write-RsCatalogItem -ReportServerUri $reportServerUri -Path "$localResourcesPath\datasourcesReport.rdl" -RsFolder $rsFolderPath
