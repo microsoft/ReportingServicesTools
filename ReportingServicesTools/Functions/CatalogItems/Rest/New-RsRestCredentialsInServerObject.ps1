@@ -23,21 +23,21 @@ function New-RsRestCredentialsInServerObject
             Specify whether Report Server should try impersonating as current user when fetching data.
 
         .EXAMPLE
-            New-RsRestCredentialsInServerObject -Username "domain\\user" -Password "password"
+            New-RsRestCredentialsInServerObject -Credential (Get-Credential)
 
             Description
             -----------
             Creates a CredentialsInServer object with specified username and password.
 
         .EXAMPLE
-            New-RsRestCredentialsInServerObject -Username "domain\\user" -Password "password" -WindowsCredentials 
+            New-RsRestCredentialsInServerObject -Credential (Get-Credential) -WindowsCredentials 
 
             Description
             -----------
             Creates a CredentialsInServer object with UseAsWindowsCredentials set to true and specified username and password.
 
         .EXAMPLE
-            New-RsRestCredentialsInServerObject -Username "domain\\user" -Password "password" -ImpersonateUser
+            New-RsRestCredentialsInServerObject -Credential (Get-Credential) -ImpersonateUser
 
             Description
             -----------
@@ -46,12 +46,8 @@ function New-RsRestCredentialsInServerObject
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $True)]
-        [string]
-        $Username,
-
-        [Parameter(Mandatory = $True)]
-        [string]
-        $Password,
+        [System.Management.Automation.PSCredential]
+        $Credential,
 
         [Alias('UseAsWindowsCredentials')]
         [switch]
@@ -64,8 +60,8 @@ function New-RsRestCredentialsInServerObject
     Process
     {
         return @{
-            "UserName" = $Username;
-            "Password" = $Password;
+            "UserName" = $Credential.Username;
+            "Password" = $Credential.GetNetworkCredential().Password;
             "UseAsWindowsCredentials" = $WindowsCredentials;
             "ImpersonateAuthenticatedUser" = $ImpersonateUser;
         }
