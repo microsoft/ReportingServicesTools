@@ -70,7 +70,7 @@ function Set-RsRestItemDataSource
 
             Description
             -----------
-            Updates data sources to the specified $dataSources object. This example is applicable to Paginated Reports and Shared Datasets.
+            Updates data sources to the specified $dataSources object. This example is only applicable to Paginated Reports.
 
         .EXAMPLE
             $dataSources = Get-RsRestItemDataSource -RsItem '/MyPaginatedReport'
@@ -80,7 +80,7 @@ function Set-RsRestItemDataSource
 
             Description
             -----------
-            Updates data sources to the specified $dataSources object. This example is applicable to Paginated Reports and Shared Datasets.
+            Updates data sources to the specified $dataSources object. This example is only applicable to Paginated Reports.
 
         .EXAMPLE
             $dataSources = Get-RsRestItemDataSource -RsItem '/MyPaginatedReport'
@@ -90,7 +90,7 @@ function Set-RsRestItemDataSource
 
             Description
             -----------
-            Updates data sources to the specified $dataSources object. This example is applicable to Paginated Reports and Shared Datasets.
+            Updates data sources to the specified $dataSources object. This example is only applicable to Paginated Reports.
 
         .EXAMPLE
             $dataSources = Get-RsRestItemDataSource -RsItem '/MyPaginatedReport'
@@ -99,7 +99,7 @@ function Set-RsRestItemDataSource
 
             Description
             -----------
-            Updates data sources to the specified $dataSources object. This example is applicable to Paginated Reports and Shared Datasets.
+            Updates data sources to the specified $dataSources object. This example is only applicable to Paginated Reports.
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
@@ -110,7 +110,7 @@ function Set-RsRestItemDataSource
         $RsItem,
 
         [Parameter(Mandatory = $True)]
-        [ValidateSet("Dataset", "PowerBIReport", "Report")]
+        [ValidateSet("PowerBIReport", "Report")]
         [string]
         $RsItemType,
 
