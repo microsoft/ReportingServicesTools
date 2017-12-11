@@ -230,16 +230,19 @@ function Set-RsRestItemDataSource
                 throw "Invalid item type!"
             }
 
-            Write-Verbose "Updating data sources for $($RsItem)..."
-            if ($Credential -ne $null)
+            if ($PSCmdlet.ShouldProcess($RsItem, "Update data sources"))
             {
-                Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body $payloadJson -ContentType "application/json" -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
+                Write-Verbose "Updating data sources for $($RsItem)..."
+                if ($Credential -ne $null)
+                {
+                    Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body $payloadJson -ContentType "application/json" -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
+                }
+                else
+                {
+                    Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body $payloadJson -ContentType "application/json" -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
+                }
+                Write-Verbose "Data sources were updated successfully!"
             }
-            else
-            {
-                Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body $payloadJson -ContentType "application/json" -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
-            }
-            Write-Verbose "Data sources were updated successfully!"
         }
         catch
         {

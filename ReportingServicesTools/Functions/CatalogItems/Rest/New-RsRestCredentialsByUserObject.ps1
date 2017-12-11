@@ -51,7 +51,7 @@ function New-RsRestCredentialsByUserObject
     {
         return @{
             "DisplayText" = $PromptMessage;
-            "UseAsWindowsCredentials" = $WindowsCredentials;
+            "UseAsWindowsCredentials" = $WindowsCredentials -eq $true;
         }
     }
 }

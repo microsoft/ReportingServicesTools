@@ -62,8 +62,8 @@ function New-RsRestCredentialsInServerObject
         return @{
             "UserName" = $Credential.Username;
             "Password" = $Credential.GetNetworkCredential().Password;
-            "UseAsWindowsCredentials" = $WindowsCredentials;
-            "ImpersonateAuthenticatedUser" = $ImpersonateUser;
+            "UseAsWindowsCredentials" = $WindowsCredentials -eq $true;
+            "ImpersonateAuthenticatedUser" = $ImpersonateUser -eq $true;
         }
     }
 }
