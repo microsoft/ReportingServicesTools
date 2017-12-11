@@ -75,6 +75,7 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
 |Set-PbiRsUrlReservation|This command configures the Power BI Report Server URLs.|
+|Update-RsSubscription|This command updates existing subscriptions piped from Get-RsSubscription|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source using the SOAP Endpoint..|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 |Write-RsRestCatalogItem|This command uploads a report, a dataset or a mobile report using the REST Endpoint.|
