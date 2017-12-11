@@ -37,8 +37,10 @@ The following is a list of commands which are available for you to use once you 
 |Export-RsSubscriptionXml|This command exports a collection of subscriptions to an XML file on disk.|
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
-|Get-RsItemReferences|This commands sets the item references of a report or a dataset.|
+|Get-RsItemReferences|This command sets the item references of a report or a dataset.|
+|Get-RsItemDataSource|This command fetches embedded data sources associated to a report.|
 |Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
+|Get-RsRestItemDataSource|This command fetches embedded data sources associated to a Paginated report or a Power BI report using the REST Endpoint.|
 |Get-RsSubscription|This command retrieves information about subscriptions for a report.|
 |Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
 |Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
@@ -47,6 +49,8 @@ The following is a list of commands which are available for you to use once you 
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
+|New-RsRestCredentialsByUserObject|This command creates a CredentialsByUser object to be used by Set-RsRestItemDataSource command.|
+|New-RsRestCredentialsInServerObject|This command creates a CredentialsInServer object to be used by Set-RsRestItemDataSource command.|
 |New-RsRestFolder|This command creates a new folder in the specified path using the REST Endpoint.|
 |New-RsRestSession|This command creates a session object to be specified for all subsequent calls to the REST Endpoint.|
 |New-RsSubscription|This command adds a new subscription to an existing report.|
@@ -71,6 +75,8 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsEmailSettingsAsBasicAuth|This command configures the SQL Server Reporting Services email settings to use basic authentication.|
 |Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
 |Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
+|Set-RsItemDataSource|This command updates embedded data source associated to a report.|
+|Set-RsRestItemDataSource|This command updates embedded data sources associated to a Paginated report or a Power BI Report using the REST endpoint.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
 |Set-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
