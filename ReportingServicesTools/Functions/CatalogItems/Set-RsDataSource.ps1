@@ -11,7 +11,7 @@ function Set-RsDataSource
         .DESCRIPTION
             This script updates information about a data source on Report Server that was retrieved using Get-RsDataSource.
         
-        .PARAMETER Path
+        .PARAMETER RsItem
             Specify the path to the data source.
 
         .PARAMETER Description
@@ -34,25 +34,32 @@ function Set-RsDataSource
             Useful when repeatedly having to connect to multiple different Report Server.
         
         .EXAMPLE
-            Set-RsDataSource -Path '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition
+            Set-RsDataSource -RsItem '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
         
         .EXAMPLE
-            Set-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -Path '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition
+            Set-RsDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsItem '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition
             Description
             -----------
             This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
+
+        .EXAMPLE
+            $rsProxy = New-RsWebServiceProxy (...)
+            Set-RsDataSource -Proxy $rsProxy -RsItem '/path/to/my/datasource' -DataSourceDefinition $dataSourceDefinition
+            Description
+            -----------
+            This command will establish a connection to the Report Server located at $rsProxy using current user's credentials and update the details of data source found at '/path/to/my/datasource'.
     #>
     
     [cmdletbinding()]
     param
     (
-        [Alias('DataSourcePath','ItemPath')]
+        [Alias('DataSourcePath','ItemPath', 'Path')]
         [Parameter(Mandatory = $True)]
         [string]
-        $Path,
+        $RsItem,
         
         [Parameter(Mandatory = $True)]
         $DataSourceDefinition,
@@ -70,7 +77,7 @@ function Set-RsDataSource
         $Proxy
     )
     
-    if ($PSCmdlet.ShouldProcess($Path, "Applying new definition"))
+    if ($PSCmdlet.ShouldProcess($RsItem, "Applying new definition"))
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
         
@@ -122,7 +129,7 @@ function Set-RsDataSource
             if ($Description)
             {
                 Write-Verbose "Retrieving existing data source description..."
-                $properties = $Proxy.GetProperties($Path, $null)
+                $properties = $Proxy.GetProperties($RsItem, $null)
                 $descriptionProperty = $properties | Where { $_.Name -eq 'Description' }
                 if (!$descriptionProperty)
                 {
@@ -139,11 +146,11 @@ function Set-RsDataSource
                 }
 
                 Write-Verbose "Updating data source description..."
-                $Proxy.SetProperties($Path, $descriptionProperty)
+                $Proxy.SetProperties($RsItem, $descriptionProperty)
             }
             
             Write-Verbose "Updating data source contents..."
-            $Proxy.SetDataSourceContents($Path, $DataSourceDefinition)
+            $Proxy.SetDataSourceContents($RsItem, $DataSourceDefinition)
             Write-Verbose "Data source updated successfully!"
         }
         catch
