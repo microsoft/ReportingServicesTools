@@ -133,7 +133,7 @@ function Get-RsCatalogItemRole
 
                 foreach($childPolicy in $childPolicies)
                 {
-                    $catalogItemRoles +=  New-RsCatalogItemRoleObject -Policy $childPolicy -Path $item.Path -TypeName $item.TypeName
+                    $catalogItemRoles +=  New-RsCatalogItemRoleObject -Policy $childPolicy -Path $item.Path -TypeName $item.TypeName -ParentSecurity $inheritParent
                 }
 
                 
