@@ -39,7 +39,7 @@ function Get-RsCatalogItemRole
             This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and then retrieves all access for user 'jmcgee'.
         
         .EXAMPLE
-            Get-RsCatalogItemRole -ReportServerUri 'http://localhost/reportserver_sql2012' -Identity 'jmcgee'
+            Get-RsCatalogItemRole -ReportServerUri 'http://localhost/reportserver_sql2012' -Identity 'jeremymcgee'
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver_2012 using current user's credentials and then retrieves all access for user 'jmcgee'.
@@ -101,7 +101,7 @@ function Get-RsCatalogItemRole
 
         $parentType = $Proxy.GetItemType($Path)
 
-        $catalogItemRoles = New-RsCatalogItemRoleObject -Policy $parentPolicy -Path $Path -TypeName $parentType -ParentSecurity $false
+        $catalogItemRoles = New-RsCatalogItemRoleObject -Policy $parentPolicy -Path $Path -TypeName $parentType
 
             
         if($Recurse -and $parentType -eq "Folder") {
