@@ -101,7 +101,7 @@ function Get-RsCatalogItemRole
 
         $parentType = $Proxy.GetItemType($Path)
 
-        $catalogItemRoles = New-RsCatalogItemRoleObject -Policy $parentPolicy -Path $Path -TypeName $parentType
+        $catalogItemRoles = New-RsCatalogItemRoleObject -Policy $parentPolicy -Path $Path -TypeName $parentType -ParentSecurity $false
 
             
         if($Recurse -and $parentType -eq "Folder") {
