@@ -101,7 +101,7 @@ function Get-RsCatalogItemRole
 
         $parentType = $Proxy.GetItemType($Path)
 
-        $catalogItemRoles = New-RsCatalogItemRoleObject -Policy $parentPolicy -Path $Path -TypeName $parentType
+        $catalogItemRoles = New-RsCatalogItemRoleObject -Policy $parentPolicy -Path $Path -TypeName $parentType -ParentSecurity $false
 
             
         if($Recurse -and $parentType -eq "Folder") {
@@ -133,7 +133,7 @@ function Get-RsCatalogItemRole
 
                 foreach($childPolicy in $childPolicies)
                 {
-                    $catalogItemRoles +=  New-RsCatalogItemRoleObject -Policy $childPolicy -Path $item.Path -TypeName $item.TypeName
+                    $catalogItemRoles +=  New-RsCatalogItemRoleObject -Policy $childPolicy -Path $item.Path -TypeName $item.TypeName -ParentSecurity $inheritParent
                 }
 
                 
