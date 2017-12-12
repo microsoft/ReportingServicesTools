@@ -39,7 +39,7 @@ function Get-RsDataSource
             This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and retrieve details of data source found at '/path/to/my/datasource'.
         
         .EXAMPLE
-            $rsProxy = New-RsWebServiceProxy (...)
+            $rsProxy = New-RsWebServiceProxy -ReportServerUri 'http://remote-machine:8080/reportserver_sql16'
             Get-RsDataSource -Proxy $rsProxy -Path '/path/to/my/datasource'
             Description
             -----------

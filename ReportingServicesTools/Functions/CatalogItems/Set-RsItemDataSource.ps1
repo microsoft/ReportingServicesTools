@@ -31,7 +31,7 @@ function Set-RsItemDataSource
 
         .EXAMPLE
             $dataSources = Get-RsItemDataSource -RsItem '/report'
-            Set-RsItemDataSource -RsItem '/report -DataSource $datasources
+            Set-RsItemDataSource -RsItem '/report' -DataSource $datasources
 
             Description
             -----------
@@ -46,7 +46,7 @@ function Set-RsItemDataSource
             This command will update data sources associated to '/report' catalog item at the Report Server located at http://remote-machine:8080/reportserver_sql16.
 
         .EXAMPLE
-            $rsProxy = New-RsWebServiceProxy
+            $rsProxy = New-RsWebServiceProxy -ReportServerUri 'http://remote-machine:8080/reportserver_sql16'
             $dataSources = Get-RsItemDataSource -RsProxy $rsProxy -RsItem '/report'
             Set-RsItemDataSource -RsProxy $rsProxy -RsItem '/report -DataSource $datasources
 
