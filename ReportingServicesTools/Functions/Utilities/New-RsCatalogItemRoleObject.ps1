@@ -19,8 +19,8 @@ function New-RscatalogItemRoleObject
         .PARAMETER TypeName
             Specity the type of the Catalog Item
         
-        .PARAMETER Roles
-            Specify the Roles assigned to the Catalog Item
+        .PARAMETER ParentSecurity
+            Specifies if the Security is set to the parent of the Catalog Item.
 
         .EXAMPLE
             $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
@@ -44,7 +44,10 @@ function New-RscatalogItemRoleObject
         [String]$Path,
 
         [Parameter(Mandatory=$True)]
-        [String]$TypeName
+        [String]$TypeName,
+
+        [Parameter(Mandatory=$True)]
+        [Boolean]$ParentSecurity
     )
     $catalogItemRoles = @()
 
@@ -55,6 +58,7 @@ function New-RscatalogItemRoleObject
         $catalogItemRole | Add-Member -MemberType NoteProperty -Name Path -Value $Path
         $catalogItemRole | Add-Member -MemberType NoteProperty -Name TypeName -Value $TypeName
         $catalogItemRole | Add-Member -MemberType NoteProperty -Name Roles -Value $_.Roles
+        $catalogItemRole | Add-Member -MemberType NoteProperty -Name ParentSecurity -Value $ParentSecurity
 
         $catalogItemRoles += $catalogItemRole
     }
