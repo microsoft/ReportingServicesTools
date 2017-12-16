@@ -4,7 +4,7 @@
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
 #Not in use right now - need email configuration on the report server
-Function Get-NewSubscription
+Function New-InMemoryEmailSubscription
 {
 
     [xml]$matchData = '<?xml version="1.0" encoding="utf-16" standalone="yes"?><ScheduleDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><StartDateTime xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/03/01/ReportServer">2017-07-14T08:00:00.000+01:00</StartDateTime><WeeklyRecurrence xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/03/01/ReportServer"><WeeksInterval>1</WeeksInterval><DaysOfWeek><Monday>true</Monday><Tuesday>true</Tuesday><Wednesday>true</Wednesday><Thursday>true</Thursday><Friday>true</Friday></DaysOfWeek></WeeklyRecurrence></ScheduleDefinition>'
@@ -78,7 +78,7 @@ Function Get-NewSubscription
     return $subscription
 }
 
-Function Get-NewFileShareSubscription
+Function New-InMemoryFileShareSubscription
 {
     [xml]$matchData = '<?xml version="1.0" encoding="utf-16" standalone="yes"?><ScheduleDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><StartDateTime xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/03/01/ReportServer">2017-07-14T08:00:00.000+01:00</StartDateTime><WeeklyRecurrence xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/03/01/ReportServer"><WeeksInterval>1</WeeksInterval><DaysOfWeek><Monday>true</Monday><Tuesday>true</Tuesday><Wednesday>true</Wednesday><Thursday>true</Thursday><Friday>true</Friday></DaysOfWeek></WeeklyRecurrence></ScheduleDefinition>'
 
@@ -202,7 +202,7 @@ Describe "Copy-RsSubscription" {
         $newReport = Set-FolderReportDataSource($folderPath)
 
         # create a test subscription
-        $subscription = Get-NewFileShareSubscription
+        $subscription = New-InMemoryFileShareSubscription
     }
 
     AfterEach {
@@ -262,7 +262,7 @@ Describe "Copy-RsSubscription from pipeline" {
         $newReport = Set-FolderReportDataSource($folderPath)
 
         # create a test subscription
-        $subscription = Get-NewFileShareSubscription
+        $subscription = New-InMemoryFileShareSubscription
     }
 
     AfterEach {
