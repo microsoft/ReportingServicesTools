@@ -64,6 +64,7 @@
     FunctionsToExport = @(
         'Backup-RsEncryptionKey',
         'Connect-RsReportServer',
+        'Copy-RsSubscription',
         'Export-RsSubscriptionXml',
         'Get-RsCatalogItemRole',
         'Get-RsDataSource',
@@ -107,7 +108,6 @@
         'Set-RsEmailSettings',
         'Set-RsItemDataSource',
         'Set-RsRestItemDataSource',
-        'Set-RsSubscription',
         'Set-RsUrlReservation',
         'Set-PbiRsUrlReservation',
         'Update-RsSubscription',

@@ -1,67 +1,65 @@
 ﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Set-RsSubscription
+function Copy-RsSubscription
 {
     <#
         .SYNOPSIS
-            This script set a new reporting subscription.
+            This script creates a new reporting subscription using an existing subscription.
         
         .DESCRIPTION
-            This script set a new reporting subscription based on the info of an existing subscription (retrieved using Get-RsSubscription).
+            This script creates a new reporting subscription based on the info of an existing subscription (retrieved using Get-RsSubscription).
             You can choose a specific report or pass a folder. When using a folder, the report must have the same name.
             NOTE: A new subscriptionId will be generated.
-                    
-        .PARAMETER Path
+
+        .PARAMETER RsItem
             Specify the path to the destination report. Can't be used with -RsFolder parameter.
-        
+
         .PARAMETER RsFolder
-            Specify the folder where the destination reports exists. Can't be used with -Path parameter.
+            Specify the folder where the destination reports exists. Can't be used with -RsItem parameter.
 
         .PARAMETER Subscription
             A object with all subscritpion configurations. The default output of Get-RsSubscription. You must piping it to this command.
-        
+
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Proxy
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
-        
+
         .EXAMPLE
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/oldReport' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -Path '/path/to/newReport'
-            
+            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -RsItem '/path/to/my/oldReport' | Copy-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsItem '/path/to/newReport'
+
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/oldReport'
-            and pipe the results to Set-RsSubscription which will create a new subscription on report '/path/to/newReport' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
+            and pipe the results to Copy-RsSubscription which will create a new subscription on report '/path/to/newReport' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
 
-        
         .EXAMPLE
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/oldReport' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
-            
+            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -RsItem '/path/to/my/oldReport' | Copy-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
+
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/oldReport'
-            and pipe the results to Set-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
-
+            and pipe the results to Copy-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
 
         .EXAMPLE
             $paths = Get-RsCatalogItems -ReportServerUri 'http://localhost/ReportServer_sql14' -RsFolder /Origin | Where-Object TypeName -eq "Report" | Select-Object -ExpandProperty Path
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path $paths | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
+            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' RsItem $paths | Copy-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
 
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all the paths from all reports at '/Origin' folder.
-            Then it uses the $paths variable to get all existing subscriptions and pipe the results to Set-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
+            Then it uses the $paths variable to get all existing subscriptions and pipe the results to Copy-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
     #>
-    
+
     [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param
     (
@@ -70,13 +68,13 @@ function Set-RsSubscription
 
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         $Proxy,
 
-        [Alias('ReportPath','ItemPath')]
+        [Alias('ReportPath','ItemPath','Path')]
         [Parameter(ParameterSetName='Report', Mandatory=$True)]
         [string]
-        $Path,
+        $RsItem,
 
         [Alias('Folder')]
         [Parameter(ParameterSetName='Folder', Mandatory=$True)]
@@ -90,60 +88,61 @@ function Set-RsSubscription
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
-        $Namespace = $Proxy.GetType().NameSpace
     }
-    
     Process
     {
         #region Input Validation
-        if ([System.String]::IsNullOrEmpty($Path) -and [System.String]::IsNullOrEmpty($RsFolder)) 
+        $itemNullOrEmpty = [System.String]::IsNullOrEmpty($RsItem)
+        $folderNullOrEmpty = [System.String]::IsNullOrEmpty($RsFolder)
+        if ($itemNullOrEmpty -and $folderNullOrEmpty)
         {
-            throw 'No Folder or report Path was specified! You need to specify -RsFolder or -Path variable.'
+            throw 'No folder or report path was specified! You need to specify -RsFolder or -RsItem.'
         }
-
+        elseif (!$itemNullOrEmpty -and !$folderNullOrEmpty)
+        {
+            throw 'Both folder and report path were specified! Please specify either -RsFolder or -RsItem.'
+        }
         #endregion Input Validation
 
-        try 
+        try
         {
-            foreach ($sub in $Subscription) 
+            foreach ($sub in $Subscription)
             {
                 if ($RsFolder)
                 {
-                    $Path = "$RsFolder/$($sub.Report)"
+                    $RsItem = "$RsFolder/$($sub.Report)"
                 }
                 else 
                 {
-                    $RsFolder = (Split-Path $Path -Parent).Replace("\", "/")
+                    $RsFolder = (Split-Path $RsItem -Parent).Replace("\", "/")
                 }
-                
-                Write-Verbose "Validating if destination exists..."
-                
-                if (((Get-RsFolderContent -Proxy $Proxy -RsFolder $RsFolder | Where-Object Path -eq $Path).Count) -eq 0)
+
+                Write-Verbose "Validating if target report exists..."
+                if (((Get-RsFolderContent -Proxy $Proxy -RsFolder $RsFolder | Where-Object Path -eq $RsItem).Count) -eq 0)
                 {
-                    Write-Warning "Can't find the report $Path. Skipping."
+                    Write-Warning "Can't find the report $RsItem. Skipping."
                     Continue
                 }
 
-                if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) 
+                if ($PSCmdlet.ShouldProcess($RsItem, "Creating new subscription"))
                 {
                     Write-Verbose "Creating Subscription..."
-                    
                     if ($subscription.IsDataDriven)
                     {
-                        $subscriptionId = $Proxy.CreateDataDrivenSubscription($Path, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                        $subscriptionId = $Proxy.CreateDataDrivenSubscription($RsItem, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                     }
                     else
-                    {  
-                        $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                    {
+                        $subscriptionId = $Proxy.CreateSubscription($RsItem, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                     }
-                }
 
-                [pscustomobject]@{
-                    NewSubscriptionId = $subscriptionId
-                    DestinationReport = $Path
-                    OriginalReport    = $sub.Path
+                    [pscustomobject]@{
+                        NewSubscriptionId = $subscriptionId
+                        DestinationReport = $RsItem
+                        OriginalReport    = $sub.Path
+                    }
+                    Write-Verbose "Subscription created successfully! Generated subscriptionId: $subscriptionId"
                 }
-                Write-Verbose "Subscription created successfully! Generated subscriptionId: $subscriptionId"
             }
         }
         catch
