@@ -6,13 +6,13 @@ function Get-RsSubscription
     <#
         .SYNOPSIS
             This script retrieves information about subscriptions for a report.
-        
+
         .DESCRIPTION
             This script retrieves information about subscriptions for a report.
-        
-        .PARAMETER Path
+
+        .PARAMETER RsItem
             Specify the path to the report.
-        
+
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
@@ -21,24 +21,31 @@ function Get-RsSubscription
             The version of the API to use, 2010 by default. Sepcifiy '2005' if you need
             to query a Sql Server Reporting Service Instance running a version prior to
             SQL Server 2008 R2.
-        
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Proxy
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
-        
+
         .EXAMPLE
-            Get-RsSubscription -Path '/path/to/my/report'
+            Get-RsSubscription -RsItem '/path/to/my/report'
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using current user's credentials and retrieve details of subscriptions found at '/path/to/my/report'.
-        
+
         .EXAMPLE
-            Get-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -Path '/path/to/my/report'
+            Get-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsItem '/path/to/my/report'
+            Description
+            -----------
+            This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and retrieve details of subscriptions found at '/path/to/my/report'.
+
+        .EXAMPLE
+            $rsProxy = New-RsWebServiceProxy -ReportServerUri 'http://remote-machine:8080/reportserver_sql16'
+            Get-RsSubscription -Proxy $rsProxy -RsItem '/path/to/my/report'
             Description
             -----------
             This command will establish a connection to the Report Server located at http://remote-machine:8080/reportserver_sql16 using current user's credentials and retrieve details of subscriptions found at '/path/to/my/report'.
@@ -47,41 +54,41 @@ function Get-RsSubscription
     [cmdletbinding()]
     param
     (
+        [Alias('Path')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]
         [string[]]
-        $Path,
-        
+        $RsItem,
+
         [string]
         $ReportServerUri,
 
         [ValidateSet('2005','2006','2010')]
         [string]
         $ApiVersion = '2010',
-                
+
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         $Proxy
     )
-    
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
     }
     Process
     {
-        foreach ($item in $Path)
+        foreach ($item in $RsItem)
         {
             try
             {
                 Write-Verbose "Retrieving subscriptions contents..."
-                
-                if ($Proxy.Url -match 'ReportService2005.asmx') 
+
+                if ($Proxy.Url -match 'ReportService2005.asmx')
                 {
                     if ($item -eq '/') { $item = $null }
                     $subscriptions = $Proxy.ListSubscriptions($Item,$null)
-                } 
-                else 
+                }
+                else
                 {
                     $subscriptions = $Proxy.ListSubscriptions($Item)
                 }
@@ -92,8 +99,8 @@ function Get-RsSubscription
                 $DataRetrievalPlanDataType = "$namespace.DataRetrievalPlan"
                 $ExtensionSettingsDataType = "$namespace.ExtensionSettings"
                 $ActiveStateDataType = "$namespace.ActiveState"
-                
-                foreach ($subscription in $subscriptions) 
+
+                foreach ($subscription in $subscriptions)
                 {
                     $extSettings = $null
                     $DataRetrievalPlan = $null
@@ -107,7 +114,7 @@ function Get-RsSubscription
 
                     try
                     {
-                        Write-Verbose "Retrieving subscription properties for $($subscription.SubscriptionID)"
+                        Write-Verbose "Retrieving subscription properties for $($subscription.SubscriptionID)..."
 
                         if ($subscription.IsDataDriven)
                         {
@@ -117,7 +124,9 @@ function Get-RsSubscription
                         {
                             $null = $Proxy.GetSubscriptionProperties($subscription.SubscriptionID, [ref]$extSettings, [ref]$desc, [ref]$active, [ref]$status, [ref]$eventType, [ref]$matchData, [ref]$values)
                         }
-                        
+
+                        Write-Verbose "Subscription properties for $($subscription.SubscriptionID) retrieved successfully!"
+
                         #Set ExtensionSetting/s
                         $ExtensionSettings = New-Object $ExtensionSettingsDataType
                         $ExtensionSettings.Extension = $subscription.DeliverySettings.Extension
@@ -135,7 +144,7 @@ function Get-RsSubscription
                         $ActiveState.InvalidParameterValueSpecified    = $subscription.Active.InvalidParameterValueSpecified
                         $ActiveState.UnknownReportParameter            = $subscription.Active.UnknownReportParameter
                         $ActiveState.UnknownReportParameterSpecified   = $subscription.Active.UnknownReportParameterSpecified
-                    
+
                         $Result = @{
                             SubscriptionID        = $subscription.SubscriptionID
                             Owner                 = $subscription.Owner
@@ -155,9 +164,10 @@ function Get-RsSubscription
                             MatchData             = $matchData
                             Values                = $values
                         }
-                        if ($subscription.IsDataDriven) 
-                        { 
-                            $Result.Add('DataRetrievalPlan',$DataRetrievalPlan) 
+
+                        if ($subscription.IsDataDriven)
+                        {
+                            $Result.Add('DataRetrievalPlan',$DataRetrievalPlan)
                         }
 
                         [pscustomobject]$Result
