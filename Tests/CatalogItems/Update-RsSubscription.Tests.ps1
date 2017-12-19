@@ -212,7 +212,7 @@ Describe "Update-RsSubscription" {
                    $reportSubscriptions.IsDataDriven | Should Be $false
                    $reportSubscriptions.Owner | Should be "\LOCAL"
                 }
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
                 Revoke-RsSystemAccess -Identity 'local'
         }
 
@@ -240,7 +240,7 @@ Describe "Update-RsSubscription" {
                    $reportSubscriptions.IsDataDriven | Should Be $false
                    $XMLMatch.ScheduleDefinition.StartDateTime.InnerText | Should be "1999-01-01T06:00:00.000+00:00"
                 }
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
         }
         
         Context "Update-RsSubscription piped from get-subscription with EndDate parameter with poxy"{
@@ -270,7 +270,7 @@ Describe "Update-RsSubscription" {
                    $reportSubscriptions.IsDataDriven | Should Be $false
                    $XMLMatch.ScheduleDefinition.EndDate.InnerText | Should Be "2999-01-01"
                 }
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
         }
 
         Context "Update-RsSubscription piped from get-subscription with StartDateTime and EndDate Paramter with ReportServerURI"{
@@ -300,7 +300,7 @@ Describe "Update-RsSubscription" {
                    $XMLMatch.ScheduleDefinition.StartDateTime.InnerText | Should be "2000-01-01T14:00:00.000+00:00"
                    $XMLMatch.ScheduleDefinition.EndDate.InnerText | Should Be "2999-02-01"
                 }
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
         }
 
         

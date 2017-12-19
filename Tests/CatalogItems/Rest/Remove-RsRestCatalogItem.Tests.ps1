@@ -46,7 +46,7 @@ Describe "Remove-RsRestCatalogItem" {
     AfterAll {
         foreach ($path in $rsFolderPaths)
         {
-            Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $path
+            Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $path -Confirm:$false
         }
     }
 

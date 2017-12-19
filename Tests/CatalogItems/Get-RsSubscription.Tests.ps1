@@ -50,7 +50,6 @@ Function Set-FolderReportDataSource
 Describe "Get-RsSubscription" {
     $folderPath = ''
     $newReport = $null
-    $subscription = $null
 
     BeforeEach {
         $folderName = 'SutGetRsItemReference_MinParameters' + [guid]::NewGuid()
@@ -71,6 +70,8 @@ Describe "Get-RsSubscription" {
 
             @($reportSubscriptions).Count | Should Be 1
             $reportSubscriptions.Report | Should Be "emptyReport"
+            $reportSubscriptions.EventType | Should Be "TimedSubscription"
+            $reportSubscriptions.IsDataDriven | Should Be $false
             $reportSubscriptions.DeliverySettings.Extension | Should Be "Report Server FileShare"
             ($reportSubscriptions.DeliverySettings.ParameterValues | Where-Object { $_.Name -eq 'Path' }).Value | Should Be "\\unc\path"
             ($reportSubscriptions.DeliverySettings.ParameterValues | Where-Object { $_.Name -eq 'FileName' }).Value | Should Be "Report"
@@ -85,6 +86,8 @@ Describe "Get-RsSubscription" {
 
             @($reportSubscriptions).Count | Should Be 1
             $reportSubscriptions.Report | Should Be "emptyReport"
+            $reportSubscriptions.EventType | Should Be "TimedSubscription"
+            $reportSubscriptions.IsDataDriven | Should Be $false
             $reportSubscriptions.DeliverySettings.Extension | Should Be "Report Server FileShare"
             ($reportSubscriptions.DeliverySettings.ParameterValues | Where-Object { $_.Name -eq 'Path' }).Value | Should Be "\\unc\path"
             ($reportSubscriptions.DeliverySettings.ParameterValues | Where-Object { $_.Name -eq 'FileName' }).Value | Should Be "Report"
@@ -100,6 +103,8 @@ Describe "Get-RsSubscription" {
 
             @($reportSubscriptions).Count | Should Be 1
             $reportSubscriptions.Report | Should Be "emptyReport"
+            $reportSubscriptions.EventType | Should Be "TimedSubscription"
+            $reportSubscriptions.IsDataDriven | Should Be $false
             $reportSubscriptions.DeliverySettings.Extension | Should Be "Report Server FileShare"
             ($reportSubscriptions.DeliverySettings.ParameterValues | Where-Object { $_.Name -eq 'Path' }).Value | Should Be "\\unc\path"
             ($reportSubscriptions.DeliverySettings.ParameterValues | Where-Object { $_.Name -eq 'FileName' }).Value | Should Be "Report"

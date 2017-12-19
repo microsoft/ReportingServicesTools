@@ -47,7 +47,7 @@ Describe "Out-RsCatalogItem" {
                         $localDataSourceDownloadedPath = $currentLocalPath + '\' + $localFolderName +'\' +  'SutWriteRsFolderContent_DataSource.rsds'
                   }
                 Remove-Item $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
         }
 
         Context "Download a report with ReportServerUri Parameter"{
@@ -76,7 +76,7 @@ Describe "Out-RsCatalogItem" {
                         Remove-Item $localReportDownloadedPath
                 }
                 Remove-Item $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
         }
 
         Context "Download a report with Proxy and ReportServerUr Parameter"{
@@ -106,7 +106,7 @@ Describe "Out-RsCatalogItem" {
                         Remove-Item $localReportDownloadedPath
                 }
                 Remove-Item $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
         }
 
         Context "Download a report with Proxy Parameter"{
@@ -135,7 +135,7 @@ Describe "Out-RsCatalogItem" {
                         Remove-Item $localReportDownloadedPath
                 }
                 Remove-Item $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $folderPath
+                Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
         } 
 }
 

@@ -32,7 +32,7 @@ Describe "Out-RsFolderContent" {
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $rsFolderPath
+                Remove-RsCatalogItem -RsFolder $rsFolderPath -Confirm:$false
         }
 
         Context "Out-RsFolderContent with ReportServerUri Parameter"{
@@ -55,7 +55,7 @@ Describe "Out-RsFolderContent" {
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $rsFolderPath
+                Remove-RsCatalogItem -RsFolder $rsFolderPath -Confirm:$false
         }
 
         Context "Out-RsFolderContent with Proxy Parameter"{
@@ -78,7 +78,7 @@ Describe "Out-RsFolderContent" {
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $rsFolderPath
+                Remove-RsCatalogItem -RsFolder $rsFolderPath -Confirm:$false
         }
 
         Context "Out-RsFolderContent with Proxy and ReportServer Parameter"{
@@ -102,7 +102,7 @@ Describe "Out-RsFolderContent" {
                 }
                 # Removing local folder content downloaded from report server used for testing
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
-                Remove-RsCatalogItem -RsFolder $rsFolderPath
+                Remove-RsCatalogItem -RsFolder $rsFolderPath -Confirm:$false
         }
 
         Context "Out-RsFolderContent with recurse parameters"{
@@ -143,7 +143,7 @@ Describe "Out-RsFolderContent" {
                        $localReport.Name | Should Be 'testResources2'
                 }
                 # Removing local folder content downloaded from report server used for testing
-                Remove-RsCatalogItem -RsFolder $rsFolderPath
+                Remove-RsCatalogItem -RsFolder $rsFolderPath -Confirm:$false
                 Remove-Item  $destinationPath -Confirm:$false -Recurse
         }
 }

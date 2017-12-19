@@ -23,7 +23,7 @@ Describe "Set-RsDataSource" {
         }
 
         AfterEach {
-                Remove-RsCatalogItem -RsFolder $dataSourcePath
+                Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
         }
 
         It "Should set a RsDataSource with min parameters" {

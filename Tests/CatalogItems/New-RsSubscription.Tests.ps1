@@ -63,7 +63,7 @@ Describe 'New-RsSubscription' {
     }
 
     AfterEach {
-        Remove-RsCatalogItem -RsFolder $folderPath -ReportServerUri $reportServerUri -ErrorAction Continue
+        Remove-RsCatalogItem -RsFolder $folderPath -ReportServerUri $reportServerUri -Confirm:$false -ErrorAction Continue
     }
 
     Context 'New-RsSubscription FileShare Subscription with Proxy parameter' {

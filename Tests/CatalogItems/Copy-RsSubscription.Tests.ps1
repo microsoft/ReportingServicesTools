@@ -206,7 +206,7 @@ Describe "Copy-RsSubscription" {
     }
 
     AfterEach {
-        Remove-RsCatalogItem -RsFolder $folderPath -ReportServerUri $reportServerUri -ErrorAction Continue
+        Remove-RsCatalogItem -RsFolder $folderPath -ReportServerUri $reportServerUri -Confirm:$false -ErrorAction Continue
     }
 
     Context "Copy-RsSubscription with Proxy parameter"{
@@ -266,7 +266,7 @@ Describe "Copy-RsSubscription from pipeline" {
     }
 
     AfterEach {
-        Remove-RsCatalogItem -RsFolder $folderPath -ReportServerUri $reportServerUri -ErrorAction Continue
+        Remove-RsCatalogItem -RsFolder $folderPath -ReportServerUri $reportServerUri -Confirm:$false -ErrorAction Continue
     }
 
     Context "Copy-RsSubscription from pipeline with Proxy parameter"{

@@ -22,7 +22,7 @@ Describe "Get-RsDataSource" {
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Get RsDataSource with Proxy parameter"{
@@ -38,7 +38,7 @@ Describe "Get-RsDataSource" {
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Get RsDataSource with Proxy y ReportServerUri parameters"{
@@ -56,6 +56,6 @@ Describe "Get-RsDataSource" {
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 }

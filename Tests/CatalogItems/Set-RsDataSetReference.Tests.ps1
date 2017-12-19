@@ -21,7 +21,7 @@ Describe "Set-RsDatsSetReference" {
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
         }
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
      Context "Set-RsDatsSetReference with Proxy Parameter"{
@@ -43,7 +43,7 @@ Describe "Set-RsDatsSetReference" {
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
         }
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
      Context "Set-RsDatsSetReference with Report Server Parameter"{
@@ -65,7 +65,7 @@ Describe "Set-RsDatsSetReference" {
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
         }
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
      Context "Set-RsDatsSetReference with ReportServerUri and Proxy parameters"{
@@ -88,7 +88,7 @@ Describe "Set-RsDatsSetReference" {
             $reportDataSetReferencePath | Should Not Be $newReportDataSetReferencePath 
             $newReportDataSetReferencePath | Should Be $dataSet.Path 
         }
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
 }

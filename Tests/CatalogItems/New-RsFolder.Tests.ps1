@@ -12,7 +12,7 @@ Describe "New-RsFolder" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Create a subfolder"{
@@ -37,7 +37,7 @@ Describe "New-RsFolder" {
             $subFolderCount | Should be 1    
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
 
      Context "Create a folder with proxy"{
@@ -54,7 +54,7 @@ Describe "New-RsFolder" {
             $folderCount | Should be 1    
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Create a folder with ReportServerUri"{
@@ -71,7 +71,7 @@ Describe "New-RsFolder" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
     
     Context "Create a folder with all the parameters except credentials"{
@@ -89,6 +89,6 @@ Describe "New-RsFolder" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     } 
 }

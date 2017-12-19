@@ -43,7 +43,7 @@ Describe "Out-RsRestCatalogItem" {
     }
 
     AfterEach {
-        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath -Confirm:$false
         Remove-Item -Path $localFolderPath -Recurse
     }
 

@@ -21,8 +21,8 @@ Describe "Set-RsItemDataSource" {
     }
 
     AfterEach {
-        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $datasourcesReportPath
-        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $rsFolderPath
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $datasourcesReportPath -Confirm:$false
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $rsFolderPath -Confirm:$false
     }
 
     Context "Updates data sources with Proxy parameter" {

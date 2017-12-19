@@ -38,7 +38,7 @@ Describe "Write-RsRestCatalogItem" {
     }
 
     AfterEach {
-        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath -Confirm:$false
     }
 
     Context "ReportPortalUri parameter" {
