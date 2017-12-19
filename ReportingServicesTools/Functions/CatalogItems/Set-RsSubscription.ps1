@@ -2,7 +2,7 @@
 # Licensed under the MIT License (MIT)
 
 
-function Update-RsSubscription
+function Set-RsSubscription
 {
   <#
         .SYNOPSIS
@@ -36,21 +36,21 @@ function Update-RsSubscription
             
           
         .EXAMPLE
-            Get-RsSubscription -path '/Finance/ImportantReports' | Update-RsSubscription -EndDate 9/9/2099
+            Get-RsSubscription -path '/Finance/ImportantReports' | Set-RsSubscription -EndDate 9/9/2099
 
             Description
             -----------
             Update all subscriptions on localhost associated with '/finance/ImportantReports' to have an EndDate of 9/9/2099
 
         .EXAMPLE
-            Get-RsSubscription -path '/Finance/ImportantReports' | Update-RsSubscription -StartDateTime "1/9/2017 9am"
+            Get-RsSubscription -path '/Finance/ImportantReports' | Set-RsSubscription -StartDateTime "1/9/2017 9am"
 
             Description
             -----------
             Update all subscriptions on localhost associated with '/finance/ImportantReports' to have a startdate of 1/9/2017 and time of 9am
         
         .EXAMPLE
-            Get-RsSubscription -path '/Finance/ImportantReports' | Update-RsSubscription -Owner "Warren"
+            Get-RsSubscription -path '/Finance/ImportantReports' | Set-RsSubscription -Owner "Warren"
 
             Description
             -----------
