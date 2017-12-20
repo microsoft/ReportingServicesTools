@@ -15,7 +15,7 @@ Describe "Remove-RsCatalogItem" {
             $rsDataSourcesList.Count | Should Be 1
             # Remove a DataSource
             $rsDataSourcePath = $folderPath + '/SutWriteRsFolderContent_DataSource' 
-            Remove-RsCatalogItem -RsFolder $rsDataSourcePath
+            Remove-RsCatalogItem -RsFolder $rsDataSourcePath -Confirm:$false
             $rsDataSourcesList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSource'
             $rsDataSourcesList.Count | Should Be 0
         }
@@ -25,7 +25,7 @@ Describe "Remove-RsCatalogItem" {
             $rsReportsList.Count | Should Be 1
             # Remove a report
             $rsReportPath = $folderPath + '/emptyReport' 
-            Remove-RsCatalogItem -RsFolder $rsReportPath
+            Remove-RsCatalogItem -RsFolder $rsReportPath -Confirm:$false
             $rsReportsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
             $rsReportsList.Count | Should Be 0
         }
@@ -35,7 +35,7 @@ Describe "Remove-RsCatalogItem" {
             $rsDataSetsList.Count | Should Be 1
             # Remove a report
             $rsDataSetPath = $folderPath + '/UnDataset' 
-            Remove-RsCatalogItem -RsFolder $rsDataSetPath
+            Remove-RsCatalogItem -RsFolder $rsDataSetPath -Confirm:$false
             $rsDataSetsList = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
             $rsDataSetsList.Count | Should Be 0
         }
@@ -46,7 +46,7 @@ Describe "Remove-RsCatalogItem" {
             $folderPath = '/' + $folderName
             $folder.count | Should Be 1
             # Remove a RsFolder
-            Remove-RsCatalogItem -RsFolder $folderPath
+            Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
             $folderList = Get-RsFolderContent -RsFolder '/'
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0
@@ -63,7 +63,7 @@ Describe "Remove-RsCatalogItem" {
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 1
             # Remove a RsFolder
-            Remove-RsCatalogItem -Path $folderPath -Proxy $proxy
+            Remove-RsCatalogItem -Path $folderPath -Proxy $proxy -Confirm:$false
             $folderList = Get-RsFolderContent -RsFolder '/'
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0 
@@ -81,7 +81,7 @@ Describe "Remove-RsCatalogItem" {
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 1
             # Remove a RsFolder
-            Remove-RsCatalogItem -Path $folderPath -Proxy $proxy -ReportServerUri $reporServerUri
+            Remove-RsCatalogItem -Path $folderPath -Proxy $proxy -ReportServerUri $reporServerUri -Confirm:$false
             $folderList = Get-RsFolderContent -RsFolder '/'
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0 
@@ -98,7 +98,7 @@ Describe "Remove-RsCatalogItem" {
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 1
             # Remove a RsFolder
-            Remove-RsCatalogItem -ReportServerUri $reportServerUri -Path $folderPath
+            Remove-RsCatalogItem -ReportServerUri $reportServerUri -Path $folderPath -Confirm:$false
             $folderList = Get-RsFolderContent -RsFolder '/'
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0 
@@ -114,7 +114,7 @@ Describe "Remove-RsCatalogItem" {
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 1
             # Remove a RsFolder
-            $folder | Remove-RsCatalogItem
+            $folder | Remove-RsCatalogItem -Confirm:$false
             $folderList = Get-RsFolderContent -RsFolder '/'
             $folder = $folderList | Where-Object name -eq $folderName
             $folder.count | Should Be 0 

@@ -26,9 +26,9 @@ Describe "Get-RsItemDataSource" {
     }
 
     AfterEach {
-        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $datasourcesReportPath
-        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $noDatasourcesReportPath
-        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $rsFolderPath
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $datasourcesReportPath -Confirm:$false
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $noDatasourcesReportPath -Confirm:$false
+        Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsItem $rsFolderPath -Confirm:$false
     }
 
     Context "Fetches data sources with explicit ReportServerUri parameter"{

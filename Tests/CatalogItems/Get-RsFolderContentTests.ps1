@@ -16,7 +16,7 @@ Describe "Get-RsFolderContent" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Get folder with proxy parameter"{
@@ -33,7 +33,7 @@ Describe "Get-RsFolderContent" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath   
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Get folder with Proxy and ReportServerUri parameter"{
@@ -51,7 +51,7 @@ Describe "Get-RsFolderContent" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath   
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false 
     }
 
     Context "Get folder inside 4 folders"{
@@ -80,6 +80,6 @@ Describe "Get-RsFolderContent" {
             $folderList.Count | Should be 4
         }
          # Removing folders used for testing
-        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $rootFolderPath
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $rootFolderPath -Confirm:$false
     }
 }

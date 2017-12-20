@@ -36,7 +36,7 @@ Describe "New-RsDataSource" {
 
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Create RsDataSource with ReportServerUri parameter"{
@@ -51,7 +51,7 @@ Describe "New-RsDataSource" {
             {Get-RsDataSource -Path $dataSourcePath } | Should not throw
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Create RsDataSource with Proxy parameter"{
@@ -66,7 +66,7 @@ Describe "New-RsDataSource" {
             {Get-RsDataSource -Path $dataSourcePath } | Should not throw
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Create RsDataSource with connection string parameter"{
@@ -85,7 +85,7 @@ Describe "New-RsDataSource" {
             $dataSource.ConnectString | Should Be $connectionString
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Create RsDataSource with Proxy and ReportServerUri parameters"{
@@ -101,7 +101,7 @@ Describe "New-RsDataSource" {
             {Get-RsDataSource -Path $dataSourcePath } | Should not throw
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
      Context "Create RsDataSource with unsupported RsDataSource Extension validation"{
@@ -143,7 +143,7 @@ Describe "New-RsDataSource" {
             {Get-RsDataSource -Path $dataSourcePath } | Should not throw
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     # Impersonate parameter doesn´t change
@@ -164,7 +164,7 @@ Describe "New-RsDataSource" {
     #          $dataSource.ImpersonateUser | Should Be $true
     #      }
     #      # Removing folders used for testing
-    #      Remove-RsCatalogItem -RsFolder $dataSourcePath
+    #      Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     #  }
 
     Context "Create RsDataSource with Windows Credentials Parameter"{
@@ -185,7 +185,7 @@ Describe "New-RsDataSource" {
             $dataSource.WindowsCredentials | Should Be $true
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Create RsDataSource with Prompt Credentials Retrieval"{
@@ -200,7 +200,7 @@ Describe "New-RsDataSource" {
             {Get-RsDataSource -Path $dataSourcePath } | Should not throw
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Create RsDataSource and Overwrite it"{
@@ -219,7 +219,7 @@ Describe "New-RsDataSource" {
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
     Context "Create RsDataSource with description"{
@@ -243,6 +243,6 @@ Describe "New-RsDataSource" {
             
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $dataSourcePath
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 }

@@ -1,154 +1,142 @@
-﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
+
 
 function Set-RsSubscription
 {
-    <#
+  <#
         .SYNOPSIS
-            This script set a new reporting subscription.
-        
-        .DESCRIPTION
-            This script set a new reporting subscription based on the info of an existing subscription (retrieved using Get-RsSubscription).
-            You can choose a specific report or pass a folder. When using a folder, the report must have the same name.
-            NOTE: A new subscriptionId will be generated.
-                    
-        .PARAMETER Path
-            Specify the path to the destination report. Can't be used with -RsFolder parameter.
-        
-        .PARAMETER RsFolder
-            Specify the folder where the destination reports exists. Can't be used with -Path parameter.
+            This script will update subscriptions piped from Get-RsSubscriptions
 
-        .PARAMETER Subscription
-            A object with all subscritpion configurations. The default output of Get-RsSubscription. You must piping it to this command.
-        
+        .DESCRIPTION
+            This script will take the custom object producted by get-RSSubscription and use the data to update the 
+            matchdata xml to either a new startdatetime, enddate, or owner.
+
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Credential
             Specify the credentials to use when connecting to the Report Server.
             Use the "Connect-RsReportServer" function to set/update a default value.
-        
+
         .PARAMETER Proxy
             Report server proxy to use.
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
+
+        .PARAMETER StartDateTime
+            StartDateTime to change Start Date and Time of subscription.
+        
+        .PARAMETER EndDate
+            Used to change the EndDate of subscription. 
+
+        .PARAMETER Owner
+            Used to change the owner of a subscription. 
+            
+          
+        .EXAMPLE
+            Get-RsSubscription -path '/Finance/ImportantReports' | Set-RsSubscription -EndDate 9/9/2099
+
+            Description
+            -----------
+            Update all subscriptions on localhost associated with '/finance/ImportantReports' to have an EndDate of 9/9/2099
+
+        .EXAMPLE
+            Get-RsSubscription -path '/Finance/ImportantReports' | Set-RsSubscription -StartDateTime "1/9/2017 9am"
+
+            Description
+            -----------
+            Update all subscriptions on localhost associated with '/finance/ImportantReports' to have a startdate of 1/9/2017 and time of 9am
         
         .EXAMPLE
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/oldReport' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -Path '/path/to/newReport'
-            
+            Get-RsSubscription -path '/Finance/ImportantReports' | Set-RsSubscription -Owner "Warren"
+
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/oldReport'
-            and pipe the results to Set-RsSubscription which will create a new subscription on report '/path/to/newReport' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
-
+            Update all subscriptions on localhost associated with '/finance/ImportantReports' to have an owner of "Warren".
+            The user being updated needs to have the correct permissions in order to successfully update the owner.
         
-        .EXAMPLE
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path '/path/to/my/oldReport' | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
-            
-            Description
-            -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all subscriptions from report '/path/to/my/oldReport'
-            and pipe the results to Set-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
-
-
-        .EXAMPLE
-            $paths = Get-RsCatalogItems -ReportServerUri 'http://localhost/ReportServer_sql14' -RsFolder /Origin | Where-Object TypeName -eq "Report" | Select-Object -ExpandProperty Path
-            Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -Path $paths | Set-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsFolder '/New Folder'
-
-            Description
-            -----------
-            This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all the paths from all reports at '/Origin' folder.
-            Then it uses the $paths variable to get all existing subscriptions and pipe the results to Set-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
     #>
     
-    [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
-    param
-    (
-        [string]
-        $ReportServerUri,
+  [CmdletBinding()]
+  param (
+    [string]
+    $ReportServerUri,
+    
+    [System.Management.Automation.PSCredential]
+    $Credential,
 
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    $Proxy,
+
+    [parameter(Mandatory = $false)]
+    [DateTime]$StartDateTime,
+
+    [parameter(Mandatory = $false)]
+    [DateTime]$EndDate,
+
+    [parameter(Mandatory = $False)]
+    [string]$Owner,
+
+    [Parameter(Mandatory=$true,ValueFromPipeLine)]
+    [PSCustomObject[]]$SubProperties
         
-        $Proxy,
+  )
+    
+  Begin
+  {
+    $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
+    
+  }
+  Process
+  {
+    Write-Verbose "Updating Subscriptions..."
+try
+ {
+   [xml]$XMLMatch = $SubProperties.MatchData
 
-        [Alias('ReportPath','ItemPath')]
-        [Parameter(ParameterSetName='Report', Mandatory=$True)]
-        [string]
-        $Path,
+    if ($owner){
+    $proxy.ChangeSubscriptionOwner($SubProperties.subscriptionID,$owner)
+    }
 
-        [Alias('Folder')]
-        [Parameter(ParameterSetName='Folder', Mandatory=$True)]
-        [string]
-        $RsFolder,
-
-        [Parameter(Mandatory = $True, ValueFromPipeline=$true)]
-        [object[]]
-        $Subscription
-    )
-    Begin
+            
+    if ($StartDateTime)
     {
-        $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
-        $Namespace = $Proxy.GetType().NameSpace
+        $XMLMatch.ScheduleDefinition.StartDateTime.InnerText = $StartDateTime
     }
     
-    Process
+    if ($EndDate)
     {
-        #region Input Validation
-        if ([System.String]::IsNullOrEmpty($Path) -and [System.String]::IsNullOrEmpty($RsFolder)) 
-        {
-            throw 'No Folder or report Path was specified! You need to specify -RsFolder or -Path variable.'
-        }
-
-        #endregion Input Validation
-
-        try 
-        {
-            foreach ($sub in $Subscription) 
-            {
-                if ($RsFolder)
-                {
-                    $Path = "$RsFolder/$($sub.Report)"
-                }
-                else 
-                {
-                    $RsFolder = (Split-Path $Path -Parent).Replace("\", "/")
-                }
-                
-                Write-Verbose "Validating if destination exists..."
-                
-                if (((Get-RsFolderContent -Proxy $Proxy -RsFolder $RsFolder | Where-Object Path -eq $Path).Count) -eq 0)
-                {
-                    Write-Warning "Can't find the report $Path. Skipping."
-                    Continue
-                }
-
-                if ($PSCmdlet.ShouldProcess($Path, "Creating new subscription")) 
-                {
-                    Write-Verbose "Creating Subscription..."
-                    
-                    if ($subscription.IsDataDriven)
-                    {
-                        $subscriptionId = $Proxy.CreateDataDrivenSubscription($Path, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
-                    }
-                    else
-                    {  
-                        $subscriptionId = $Proxy.CreateSubscription($Path, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
-                    }
-                }
-
-                [pscustomobject]@{
-                    NewSubscriptionId = $subscriptionId
-                    DestinationReport = $Path
-                    OriginalReport    = $sub.Path
-                }
-                Write-Verbose "Subscription created successfully! Generated subscriptionId: $subscriptionId"
-            }
-        }
-        catch
-        {
-            throw (New-Object System.Exception("Exception occurred while creating subscription! $($_.Exception.Message)", $_.Exception))
-        }
+      #check to see if end date exists as a node
+      $EndExists = $XMLMatch.SelectNodes("//*") | Select-Object name | Where-Object name -eq "EndDate"
+      #if no enddate create child node
+      if ($EndExists -eq $null)
+      {
+        $child = $XMLMatch.CreateElement("EndDate")
+        $child.InnerText = $EndDate
+        
+        $XMLMatch.ScheduleDefinition.AppendChild($child)
+        
+      }
+      else
+      {
+          #if enddate node exists update  
+          $XMLMatch.ScheduleDefinition.EndDate.InnerText = $EndDate         
+      } 
+        
     }
+    
+    if ($StartDateTime -ne $null -or $EndDate -ne $null)
+    {
+      $null = $Proxy.SetSubscriptionProperties($SubProperties.subscriptionID, $SubProperties.DeliverySettings, $SubProperties.Description, $SubProperties.EventType, $XMLMatch.OuterXml, $SubProperties.Values) 
+      Write-Verbose "subscription $($SubProperties.subscriptionId) for $($SubProperties.report) report successfully updated!"
+    }
+    }
+    Catch
+    {
+     throw (New-Object System.Exception("Exception while updating subscription(s)! $($_.Exception.Message)", $_.Exception))
+    }
+    
+  }
 }
+

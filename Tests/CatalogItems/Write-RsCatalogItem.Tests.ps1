@@ -30,7 +30,7 @@ Describe "Write-RsCatalogItem" {
             $uploadedDataSet.Name | Should Be 'UnDataset'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Write-RsCatalogItem with Proxy parameter"{
@@ -46,7 +46,7 @@ Describe "Write-RsCatalogItem" {
             $uploadedReport.Name | Should Be 'emptyReport'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Write-RsCatalogItem with Proxy and ReportServerUri parameter"{
@@ -63,7 +63,7 @@ Describe "Write-RsCatalogItem" {
             $uploadedReport.Name | Should Be 'emptyReport'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
      Context "Write-RsCatalogItem with ReportServerUri parameter"{
@@ -79,7 +79,7 @@ Describe "Write-RsCatalogItem" {
             $uploadedReport.Name | Should Be 'emptyReport'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Write-RsCatalogItem with Overwrite parameter"{
@@ -97,6 +97,6 @@ Describe "Write-RsCatalogItem" {
             $overwrittenReport.Name | Should Be 'emptyReport'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 }

@@ -43,7 +43,7 @@ function Remove-RsCatalogItem
             Gets a list of items from the SQL Server Performance Dashboard folder in a GridView from an SSRS instance names SQL2016 and allows the user to select items to be removed, after clicking "OK", only the items selected will be removed.
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param (
         [Alias('ItemPath', 'Path', 'RsFolder')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true)]

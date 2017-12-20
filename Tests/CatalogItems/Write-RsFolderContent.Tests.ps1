@@ -25,7 +25,7 @@ Describe "Write-RsFolderContent" {
             $uploadedDataSet.Name | Should Be 'UnDataset'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Write-RsFolderContent with ReportServerUri parameter"{
@@ -40,7 +40,7 @@ Describe "Write-RsFolderContent" {
             $uploadedReport.Name | Should Be 'emptyReport'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Write-RsFolderContent with Proxy Parameter"{
@@ -55,7 +55,7 @@ Describe "Write-RsFolderContent" {
             $uploadedReport.Name | Should Be 'emptyReport'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
     Context "Write-RsFolderContent with Proxy and ReportServerUri"{
@@ -71,7 +71,7 @@ Describe "Write-RsFolderContent" {
             $uploadedReport.Name | Should Be 'emptyReport'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
      Context "Write-RsFolderContent with Recurse Parameter"{
@@ -102,6 +102,6 @@ Describe "Write-RsFolderContent" {
             $uploadedDataSet.Name | Should Be 'UnDataset'
         }
         # Removing folders used for testing
-        Remove-RsCatalogItem -RsFolder $folderPath
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 }
