@@ -35,6 +35,7 @@ The following is a list of commands which are available for you to use once you 
 |-------|-----------|
 |Backup-RsEncryptionKey|This command backs up the encryption key used by SQL Server Reporting Services to protect sensitive content.|
 |Export-RsSubscriptionXml|This command exports a collection of subscriptions to an XML file on disk.|
+|Copy-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
 |Get-RsItemReferences|This command sets the item references of a report or a dataset.|
@@ -78,10 +79,9 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsItemDataSource|This command updates embedded data source associated to a report.|
 |Set-RsRestItemDataSource|This command updates embedded data sources associated to a Paginated report or a Power BI Report using the REST endpoint.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
-|Set-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
 |Set-PbiRsUrlReservation|This command configures the Power BI Report Server URLs.|
-|Update-RsSubscription|This command updates existing subscriptions piped from Get-RsSubscription|
+|Set-RsSubscription|This command updates existing subscriptions piped from Get-RsSubscription|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source using the SOAP Endpoint..|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 |Write-RsRestCatalogItem|This command uploads a report, a dataset or a mobile report using the REST Endpoint.|
