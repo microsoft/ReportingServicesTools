@@ -174,7 +174,7 @@ function Out-RsRestFolderContent
                     New-Item -Path $subFolderPath -ItemType Directory | Out-Null
 
                     # download contents of the subfolder
-                    Out-RsRestFolderContent -RsFolder $catalogItem.Path -Destination $subFolderPath -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession
+                    Out-RsRestFolderContent -RsFolder $catalogItem.Path -Destination $subFolderPath -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession -Recurse
                 }
             }
             else
