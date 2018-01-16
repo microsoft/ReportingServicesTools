@@ -34,17 +34,18 @@ The following is a list of commands which are available for you to use once you 
 |Command|Description|
 |-------|-----------|
 |Backup-RsEncryptionKey|This command backs up the encryption key used by SQL Server Reporting Services to protect sensitive content.|
-|Export-RsSubscriptionXml|This command exports a collection of subscriptions to an XML file on disk.|
+|Connect-RsReportServer|Connects to Reporting Services and sets default connection information|
 |Copy-RsSubscription|This command adds a retrieved subscription to an existing report. For use with Get-RsSubscription.|
+|Export-RsSubscriptionXml|This command exports a collection of subscriptions to an XML file on disk.|
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
-|Get-RsItemReferences|This command sets the item references of a report or a dataset.|
+|Get-RsItemReference|This command sets the item references of a report or a dataset.|
 |Get-RsItemDataSource|This command fetches embedded data sources associated to a report.|
 |Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
 |Get-RsRestItemDataSource|This command fetches embedded data sources associated to a Paginated report or a Power BI report using the REST Endpoint.|
 |Get-RsSubscription|This command retrieves information about subscriptions for a report.|
-|Grant-AccessOnCatalogItem|This command grants access on catalog item to users or groups.|
-|Grant-AccessToRs|This command grants access to SQL Server Reporting Services to users or groups.|
+|Grant-RsSystemRole|This command grants access to SQL Server Reporting Services to users or groups. Alias: Grant-AccessToRs|
+|Grant-RsCatalogItemRole|This script grants access to catalog items to users or groups. Alias: Grant-AccessOnCatalogItem|
 |Import-RsSubscriptionXml|This command imports a collection of subscriptions from an XML file on disk, typically created via Export-RsSubscriptionXml.|
 |Initialize-Rs|This command initializes Report Server post installation. The database MUST be configured and URLs MUST be reserved prior to running this command.|
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
@@ -61,21 +62,20 @@ The following is a list of commands which are available for you to use once you 
 |Out-RsFolderContent|This command all catalog items in folder.|
 |Out-RsRestFolderContent|This command downloads all catalog items under a folder using the REST Endpoint.|
 |Out-RsRestCatalogItem|This command downloads a catalog item using the REST Endpoint.|
-|Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services.|
+|Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services. Alias: Register-RSPowerBI|
 |Remove-RsCatalogItem|This command removes catalog item located at the specified path.|
 |Remove-RsRestCatalogItem|This command removes catalog item located at the specified path using the REST Endpoint.|
 |Remove-RsRestFolder|This command removes folder located at the specified path using the REST Endpoint.|
+|Remove-RSSubscription|This command removes a subscription associated with a report.|
 |Restore-RsEncryptionKey|This command restores encryption key on to the SQL Server Reporting Services.|
-|Revoke-AccessOnCatalogItem|This command revokes access on catalog item from users or groups.|
-|Revoke-AccessToRs|This command revokes access on SQL Server Reporting Services from users or groups.|
+|Revoke-RsCatalogItemAccess|This command revokes access on catalog item from users or groups. Alias: Revoke-AccessOnCatalogItem|
+|Revoke-RsSystemAccess|This command revokes access on SQL Server Reporting Services from users or groups. Alias: Revoke-AccessToRs|
 |Set-RsDatabase|This command configures the database used by SQL Server Reporting Services.|
 |Set-RsDatabaseCredentials|This command configures the credentials to use when connecting to the database used by SQL Server Reporting Services.|
-|Set-RsDataSet|This command links a report to  a dataset.|
-|Set-RsDataSource|This command updates information associated to a data source.|
+|Set-RsDataSet|This command links a report to  a dataset. Alias: Set-RsDataSetReference|
+|Set-RsDataSource|This command updates information associated to a data source. Alias: Set-RsDataSourceReference|
 |Set-RsDataSourcePassword|This command sets the password associated with a data source.|
-|Set-RsEmailSettingsAsBasicAuth|This command configures the SQL Server Reporting Services email settings to use basic authentication.|
-|Set-RsEmailSettingsAsNoAuth|This command configures the SQL Server Reporting Services email settings to use no authentication.|
-|Set-RsEmailSettingsAsNTLMAuth|This command configures the SQL Server Reporting Services email settings to use NTLM authentication.|
+|Set-RsEmailSettings|This command configures the SQL Server Reporting Services email settings to use basic authentication. Alias: Set-RsEmailSettingsAsBasicAuth, Set-RsEmailSettingsAsNoAuth, Set-RsEmailSettingsAsNTLMAuth|
 |Set-RsItemDataSource|This command updates embedded data source associated to a report.|
 |Set-RsRestItemDataSource|This command updates embedded data sources associated to a Paginated report or a Power BI Report using the REST endpoint.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
