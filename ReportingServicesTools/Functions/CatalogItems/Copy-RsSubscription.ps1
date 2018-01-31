@@ -88,9 +88,7 @@ function Copy-RsSubscription
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
-    }
-    Process
-    {
+
         #region Input Validation
         $itemNullOrEmpty = [System.String]::IsNullOrEmpty($RsItem)
         $folderNullOrEmpty = [System.String]::IsNullOrEmpty($RsFolder)
@@ -103,7 +101,9 @@ function Copy-RsSubscription
             throw 'Both folder and report path were specified! Please specify either -RsFolder or -RsItem.'
         }
         #endregion Input Validation
-
+    }
+    Process
+    {
         try
         {
             foreach ($sub in $Subscription)
@@ -127,7 +127,7 @@ function Copy-RsSubscription
                 if ($PSCmdlet.ShouldProcess($RsItem, "Creating new subscription"))
                 {
                     Write-Verbose "Creating Subscription..."
-                    if ($subscription.IsDataDriven)
+                    if ($sub.IsDataDriven)
                     {
                         $subscriptionId = $Proxy.CreateDataDrivenSubscription($RsItem, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                     }
