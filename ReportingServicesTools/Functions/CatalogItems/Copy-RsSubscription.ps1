@@ -88,9 +88,7 @@ function Copy-RsSubscription
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
-    }
-    Process
-    {
+
         #region Input Validation
         $itemNullOrEmpty = [System.String]::IsNullOrEmpty($RsItem)
         $folderNullOrEmpty = [System.String]::IsNullOrEmpty($RsFolder)
@@ -103,7 +101,9 @@ function Copy-RsSubscription
             throw 'Both folder and report path were specified! Please specify either -RsFolder or -RsItem.'
         }
         #endregion Input Validation
-
+    }
+    Process
+    {
         try
         {
             foreach ($sub in $Subscription)
