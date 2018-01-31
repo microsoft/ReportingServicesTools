@@ -127,7 +127,7 @@ function Copy-RsSubscription
                 if ($PSCmdlet.ShouldProcess($RsItem, "Creating new subscription"))
                 {
                     Write-Verbose "Creating Subscription..."
-                    if ($subscription.IsDataDriven)
+                    if ($sub.IsDataDriven)
                     {
                         $subscriptionId = $Proxy.CreateDataDrivenSubscription($RsItem, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                     }
