@@ -174,7 +174,7 @@ function Grant-RsCatalogItemRole
         }
         catch
         {
-            throw (New-Object System.Exception("Error occurred while granting $($role.Name) to $($policy.GroupUserName) on $Path! $($_.Exception.Message)", $_.Exception))
+            throw (New-Object System.Exception("Error occurred while granting $($role.Name) to $($policy.GroupUserName) on $Path! Please verify if you have typed the user full name. You can get the current permissions by running the Get-RsCatalogItemRole command. $($_.Exception.Message)", $_.Exception))
         }
         #endregion Assign Permissions
     }
