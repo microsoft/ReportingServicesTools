@@ -47,9 +47,6 @@ function Set-RsDatabase
         .PARAMETER IsExistingDatabase
             Specify this switch if the database to use already exists, and prevent creation of the database.
 
-        .PARAMETER HasDatabaseUserRights
-            Specify this switch if the runtime database user already has access rights to the database, and prevent granting the user rights.
-
         .PARAMETER DatabaseCredentialType
             Indicate what type of runtime credentials to use when connecting to the database: Windows, SQL, or Service Account.
 
@@ -96,9 +93,6 @@ function Set-RsDatabase
 
         [switch]
         $IsExistingDatabase,
-
-        [switch]
-        $HasDatabaseUserRights,
 
         [Parameter(Mandatory = $true)]
         [Alias('Authentication')]
@@ -168,7 +162,7 @@ function Set-RsDatabase
         }
 
         # must have credentials passed
-        if ($AdminDatabaseCredentialType -like 'sql')
+        if ($isSQLAdminAccount)
         {
             if ($AdminDatabaseCredential -eq $null)
             {
@@ -222,43 +216,40 @@ function Set-RsDatabase
         #endregion Create Database if necessary
 
         #region Configuring Database rights
-        if (-not $HasDatabaseUserRights)
+        # Step 3 - Generate database rights script
+        Write-Verbose "Generating database rights script..."
+        $isWindowsAccount = ($DatabaseCredentialType -like "Windows") -or ($DatabaseCredentialType -like "ServiceAccount")
+        $result = $rsWmiObject.GenerateDatabaseRightsScript($username, $Name, $IsRemoteDatabaseServer, $isWindowsAccount)
+        if ($result.HRESULT -ne 0)
         {
-            # Step 3 - Generate database rights script
-            Write-Verbose "Generating database rights script..."
-            $isWindowsAccount = ($DatabaseCredentialType -like "Windows") -or ($DatabaseCredentialType -like "ServiceAccount")
-            $result = $rsWmiObject.GenerateDatabaseRightsScript($username, $Name, $IsRemoteDatabaseServer, $isWindowsAccount)
-            if ($result.HRESULT -ne 0)
+            Write-Verbose "Generating database rights script... Failed!"
+            throw "Failed to generate the database rights script from the report server using WMI. Errorcode: $($result.HRESULT)"
+        }
+        else
+        {
+            $SQLscript = $result.Script
+            Write-Verbose "Generating database rights script... Complete!"
+        }
+
+        # Step 4 - Run Database rights script
+        Write-Verbose "Executing database rights script..."
+        try
+        {
+            if ($isSQLAdminAccount)
             {
-                Write-Verbose "Generating database rights script... Failed!"
-                throw "Failed to generate the database rights script from the report server using WMI. Errorcode: $($result.HRESULT)"
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop -Username $adminUsername -Password $adminPassword
             }
             else
             {
-                $SQLscript = $result.Script
-                Write-Verbose "Generating database rights script... Complete!"
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop
             }
-
-            # Step 4 - Run Database rights script
-            Write-Verbose "Executing database rights script..."
-            try
-            {
-                if ($isSQLAdminAccount)
-                {
-                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop -Username $adminUsername -Password $adminPassword
-                }
-                else
-                {
-                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop
-                }
-            }
-            catch
-            {
-                Write-Verbose "Executing database rights script... Failed!"
-                throw
-            }
-            Write-Verbose "Executing database rights script... Complete!"
         }
+        catch
+        {
+            Write-Verbose "Executing database rights script... Failed!"
+            throw
+        }
+        Write-Verbose "Executing database rights script... Complete!"
         #endregion Configuring Database rights
 
         #region Update Reporting Services database configuration
