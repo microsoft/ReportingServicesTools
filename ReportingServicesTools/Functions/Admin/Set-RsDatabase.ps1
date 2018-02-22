@@ -13,9 +13,8 @@ function Set-RsDatabase
             You must be an admin in RS and SQL Server in order to perform this operation successfully.
             There are three phases to setup:
             1. Create the PBIRS database on the database server
-            2. Create the run-time user
-            3. Grant the run-time user access to the PBIRS database
-            4. Configure the PowerBI Report Server to use the database and run-time credentials
+            2. Grant the run-time user access to the PBIRS database - this user must exist before running this
+            3. Configure the PowerBI Report Server to use the database and run-time credentials
             Your admin role on SQL Server can be one of:
             * The account under which you run this powershell (default)
             * A specific set of credentials for the SQL Server which has admin rights, specified via -AdminDatabaseCredential
@@ -47,9 +46,6 @@ function Set-RsDatabase
 
         .PARAMETER IsExistingDatabase
             Specify this switch if the database to use already exists, and prevent creation of the database.
-
-        .PARAMETER IsExistingDatabaseUser
-            Specify this switch if the runtime database user already exists, and prevent creation of the user. Relevant only if the runtime user is an SQL credential type.
 
         .PARAMETER HasDatabaseUserRights
             Specify this switch if the runtime database user already has access rights to the database, and prevent granting the user rights.
@@ -100,9 +96,6 @@ function Set-RsDatabase
 
         [switch]
         $IsExistingDatabase,
-
-        [switch]
-        $IsExistingDatabaseUser,
 
         [switch]
         $HasDatabaseUserRights,
@@ -228,60 +221,10 @@ function Set-RsDatabase
         }
         #endregion Create Database if necessary
 
-        #region Create Runtime Database User
-        if (-not $IsExistingDatabaseUser)
-        {
-            # nothing to do if it is a windows user
-            $isWindowsAccount = ($DatabaseCredentialType -like "Windows") -or ($DatabaseCredentialType -like "ServiceAccount")
-            if (-not $isWindowsAccount)
-            {
-                # Step 3 - Generate database user script
-                Write-Verbose "Generating database user creation script..."
-                $SQLscript = "
-                -- create the login if it does not exist
-                if not exists(select * from sys.server_principals where name = '$username')
-                        CREATE LOGIN $username WITH PASSWORD = '$password';
-                        GO
-
-                -- Creates a database user for the login created above, if it does not exist
-                if not exists(select * from sys.database_principals where name = '$username')
-                        CREATE USER $username FOR LOGIN $username;
-                        GO
-                "
-
-                Write-Verbose "Generating database user creation script... Complete!"
-
-                # Step 4 - Run Database rights script
-                Write-Verbose "Executing database user creation script..."
-                try
-                {
-                    if ($isSQLAdminAccount)
-                    {
-                        Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop -Username $adminUsername -Password $adminPassword
-                    }
-                    else
-                    {
-                        Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop
-                    }
-                }
-                catch
-                {
-                    Write-Verbose "Executing database user creation script... Failed!"
-                    throw
-                }
-                Write-Verbose "Executing database user creation script... Complete!"
-
-            } else {
-                Write-Verbose "Not generating database user, since using Windows account."
-            }
-        }
-        #endregion Create Runtime Database User
-
-
         #region Configuring Database rights
         if (-not $HasDatabaseUserRights)
         {
-            # Step 5 - Generate database rights script
+            # Step 3 - Generate database rights script
             Write-Verbose "Generating database rights script..."
             $isWindowsAccount = ($DatabaseCredentialType -like "Windows") -or ($DatabaseCredentialType -like "ServiceAccount")
             $result = $rsWmiObject.GenerateDatabaseRightsScript($username, $Name, $IsRemoteDatabaseServer, $isWindowsAccount)
@@ -296,7 +239,7 @@ function Set-RsDatabase
                 Write-Verbose "Generating database rights script... Complete!"
             }
 
-            # Step 6 - Run Database rights script
+            # Step 4 - Run Database rights script
             Write-Verbose "Executing database rights script..."
             try
             {
@@ -319,7 +262,7 @@ function Set-RsDatabase
         #endregion Configuring Database rights
 
         #region Update Reporting Services database configuration
-        # Step 7 - Update Reporting Services to connect to new database now
+        # Step 5 - Update Reporting Services to connect to new database now
         Write-Verbose "Updating Reporting Services to connect to new database..."
         $result = $rsWmiObject.SetDatabaseConnection($DatabaseServerName, $Name, $DatabaseCredentialType.Value__, $username, $password)
         if ($result.HRESULT -ne 0)
