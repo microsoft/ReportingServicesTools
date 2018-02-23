@@ -102,7 +102,6 @@ function Set-RsDatabase
         [System.Management.Automation.PSCredential]
         $DatabaseCredential,
 
-        [Parameter]
         [Microsoft.ReportingServicesTools.SqlServerAuthenticationType]
         $AdminDatabaseCredentialType,
 
