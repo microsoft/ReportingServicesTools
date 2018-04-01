@@ -17,7 +17,7 @@ function Set-RSService
 
         .PARAMETER Password
             Specify the password to use when running Reporting Services Instance.
-            This is an optional string as its not needed when using managed service accounts.
+            This is an optional string as its not needed when using managed service accounts or gMSA.
 
         .PARAMETER ReportServerInstance
             Specify the name of the SQL Server Reporting Services Instance.
