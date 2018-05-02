@@ -71,6 +71,7 @@ else
 }
 
 Write-Output "Downloading archive from ReportingServiceTools GitHub..."
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 try
 {
     Invoke-WebRequest $url -OutFile $zipfile
