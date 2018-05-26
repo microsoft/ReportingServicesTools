@@ -151,7 +151,14 @@ function Write-RsRestFolderContent
                     $parentFolder = $RsFolder + $relativePath
                 }
 
-                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -Credential $Credential
+                try
+                {
+                    Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -Credential $Credential
+                }
+                catch
+                {
+                    throw (New-Object System.Exception("Failed to create catalog item from '$($item.FullName)' in '$parentFolder': $($_.Exception)", $_.Exception))
+                }
             }
         }
     }
