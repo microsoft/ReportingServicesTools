@@ -105,18 +105,26 @@ function Write-RsFolderContent
                 {
                     $parentFolder = $RsFolder + $relativePath
                 }
-                
+
                 Write-Verbose "Creating folder $parentFolder/$($item.Name)"
                 try
                 {
-                    $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null
+                    if ($Proxy.GetItemType("$parentFolder/$($item.Name)") -ne "Folder" )
+                    {
+                        Write-Verbose "Creating folder $parentFolder/$($item.Name)"
+                        $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null
+                    }
+                    else
+                    {
+                        Write-Verbose "Folder already exists $parentFolder/$($item.Name)"
+                    }
                 }
                 catch
                 {
                     throw (New-Object System.Exception("Failed to create folder '$($item.Name)' in '$parentFolder': $($_.Exception.Message)", $_.Exception))
                 }
             }
-            
+
             if ($item.Extension -eq ".rdl" -or
                 $item.Extension -eq ".rsds" -or
                 $item.Extension -eq ".rsd" -or
