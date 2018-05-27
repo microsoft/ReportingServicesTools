@@ -94,10 +94,18 @@ function Write-RsCatalogItem
             $itemType = Get-ItemType $item.Extension
             $itemName = $item.BaseName
 
-            if ($itemType -ne "Report" -and
-                $itemType -ne "DataSource" -and
-                $itemType -ne "DataSet" -and
-                $itemType -ne "Resource")
+            if (
+                (
+                    $itemType -ne "Report" -and
+                    $itemType -ne "DataSource" -and
+                    $itemType -ne "DataSet" -and
+                    $itemType -ne "Resource"
+                ) -or
+                (
+                    $itemType -eq "Resource" -and
+                    $item.Extension -notin ('.png', '.jpg', '.jpeg')
+                )
+            )
             {
                 throw "Invalid item specified! You can only upload Report, DataSource, DataSet and jpg/png files using this command!"
             }
@@ -196,7 +204,7 @@ function Write-RsCatalogItem
                 #region Upload other stuff
                 else
                 {
-                    if ($itemType -eq 'Resource' -and $item.Extension -in ('.png', '.jpg', '.jpeg'))
+                    if ($itemType -eq 'Resource')
                     {
                         $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
 
