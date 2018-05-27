@@ -228,7 +228,7 @@ function Write-RsCatalogItem
                         }
                         catch
                         {
-                            throw (New-Object System.Exception("Failed to create resource item $($item.Name): $($_.Exception.Message)", $_.Exception))
+                            throw (New-Object System.Exception("Failed to create resource item $($item.FullName): $($_.Exception.Message)", $_.Exception))
                         }
                     }
                     else
@@ -256,7 +256,7 @@ function Write-RsCatalogItem
                         }
                         catch
                         {
-                            throw (New-Object System.Exception("Failed to create catalog item $itemName : $($_.Exception.Message)", $_.Exception))
+                            throw (New-Object System.Exception("Failed to create catalog item $($item.FullName) : $($_.Exception.Message)", $_.Exception))
                         }
 
                     }
