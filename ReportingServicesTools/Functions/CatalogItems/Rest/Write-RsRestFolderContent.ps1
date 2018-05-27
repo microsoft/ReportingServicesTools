@@ -171,7 +171,7 @@ function Write-RsRestFolderContent
                 catch
                 {
                     # Folder not found (404)
-                    if ($_.Exception.Response -ne $null -and $_.Exception.Response.StatusCode -eq "NotFound")
+                    if ($_.Exception.Response -ne $null -and $_.Exception.Response.StatusCode -eq 404)
                     {
                         $folderExists = $false
                     }
@@ -208,7 +208,7 @@ function Write-RsRestFolderContent
                 }
                 catch
                 {
-                    throw (New-Object System.Exception("Failed to create catalog item from '$($item.FullName)' in '$parentFolder': $($_.Exception)", $_.Exception))
+                    Write-Error "Failed to create catalog item from '$($item.FullName)' in '$parentFolder': If the catalog item already exists (error: (409) Conflict), you can specify the -Overwrite parameter. $($_.Exception)"
                 }
             }
         }
