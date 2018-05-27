@@ -148,7 +148,6 @@ function Write-RsRestFolderContent
                 }
 
                 $uri = [String]::Format($folderUri, $folderUriPath)
-                Write-Output $uri
 
                 try
                 {
