@@ -19,7 +19,7 @@ function Write-RsCatalogItem
             Folder on reportserver to upload the item to.
 
         .PARAMETER Description
-            Specify the description to be added to the data source.
+            Specify the description to be added to the report.
 
        .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
