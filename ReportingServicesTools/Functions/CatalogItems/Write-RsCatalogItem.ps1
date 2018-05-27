@@ -10,7 +10,7 @@ function Write-RsCatalogItem
 
         .DESCRIPTION
             Uploads an item from disk to a report server.
-            Currently, we are only supporting Report, DataSource and DataSet for uploads
+            Currently, we are only supporting Report, DataSource, DataSet and jpg/png for uploads
 
         .PARAMETER Path
             Path to item to upload on disk.
