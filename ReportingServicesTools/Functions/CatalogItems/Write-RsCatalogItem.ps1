@@ -196,13 +196,13 @@ function Write-RsCatalogItem
                 #region Upload other stuff
                 else
                 {
-                    if ($itemType -eq 'Resource' -and $item.Extension -in ('png', 'jpg', 'jpeg'))
+                    if ($itemType -eq 'Resource' -and $item.Extension -in ('.png', '.jpg', '.jpeg'))
                     {
                         $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
 
                         $descriptionProperty = New-Object $propertyDataType
                         $descriptionProperty.Name = 'MimeType'
-                        if ($item.Extension -eq "png")
+                        if ($item.Extension -eq ".png")
                         {
                             $descriptionProperty.Value = 'image/png'
                         }
