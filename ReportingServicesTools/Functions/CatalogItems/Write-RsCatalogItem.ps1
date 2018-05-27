@@ -99,7 +99,7 @@ function Write-RsCatalogItem
                 $itemType -ne "DataSet" -and
                 $itemType -ne "Resource")
             {
-                throw "Invalid item specified! You can only upload Report, DataSource and DataSet using this command!"
+                throw "Invalid item specified! You can only upload Report, DataSource, DataSet and jpg/png files using this command!"
             }
 
             if ($RsFolder -eq "/")
@@ -196,7 +196,7 @@ function Write-RsCatalogItem
                 #region Upload other stuff
                 else
                 {
-                    if ($itemType -eq 'Resource')
+                    if ($itemType -eq 'Resource' -and $item.Extension -in ('png', 'jpg', 'jpeg'))
                     {
                         $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
 
