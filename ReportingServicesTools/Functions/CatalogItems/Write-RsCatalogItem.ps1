@@ -96,7 +96,8 @@ function Write-RsCatalogItem
 
             if ($itemType -ne "Report" -and
                 $itemType -ne "DataSource" -and
-                $itemType -ne "DataSet")
+                $itemType -ne "DataSet" -and
+                $itemType -ne "Resource")
             {
                 throw "Invalid item specified! You can only upload Report, DataSource and DataSet using this command!"
             }
@@ -195,29 +196,69 @@ function Write-RsCatalogItem
                 #region Upload other stuff
                 else
                 {
-                    $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
-
-                    $descriptionProperty = New-Object $propertyDataType
-                    $descriptionProperty.Name = 'Description'
-                    $descriptionProperty.Value = $Description
-                    $additionalProperties.Add($descriptionProperty)
-
-                    $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
-                    $warnings = $null
-                    try
+                    if ($itemType -eq 'Resource')
                     {
-                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
-                        if ($warnings)
+                        $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
+
+                        $descriptionProperty = New-Object $propertyDataType
+                        $descriptionProperty.Name = 'MimeType'
+                        if ($item.Extension -eq "png")
                         {
-                          foreach ($warn in $warnings)
-                          {
-                            Write-Warning $warn.Message
-                          }
+                            $descriptionProperty.Value = 'image/png'
+                        }
+                        else
+                        {
+                            $descriptionProperty.Value = 'image/jpeg'
+                        }
+
+                        $additionalProperties.Add($descriptionProperty)
+
+                        $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
+                        $warnings = $null
+                        try
+                        {
+                            $Proxy.CreateCatalogItem($itemType, $item.Name, $RsFolder, $Overwrite, $bytes, $descriptionProperty, [ref]$warnings)
+                            if ($warnings)
+                            {
+                                foreach ($warn in $warnings)
+                                {
+                                    Write-Warning $warn.Message
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            throw (New-Object System.Exception("Failed to create resource item $($item.Name): $($_.Exception.Message)", $_.Exception))
                         }
                     }
-                    catch
+                    else
                     {
-                        throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+
+                        $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
+
+                        $descriptionProperty = New-Object $propertyDataType
+                        $descriptionProperty.Name = 'Description'
+                        $descriptionProperty.Value = $Description
+                        $additionalProperties.Add($descriptionProperty)
+
+                        $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
+                        $warnings = $null
+                        try
+                        {
+                            $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
+                            if ($warnings)
+                            {
+                                foreach ($warn in $warnings)
+                                {
+                                    Write-Warning $warn.Message
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            throw (New-Object System.Exception("Failed to create catalog item $itemName : $($_.Exception.Message)", $_.Exception))
+                        }
+
                     }
                 }
                 #endregion Upload other stuff
