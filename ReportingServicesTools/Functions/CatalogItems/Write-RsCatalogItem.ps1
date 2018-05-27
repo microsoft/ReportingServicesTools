@@ -18,6 +18,9 @@ function Write-RsCatalogItem
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
 
+        .PARAMETER Description
+            Specify the description to be added to the data source.
+
        .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
 
@@ -52,6 +55,9 @@ function Write-RsCatalogItem
         [string]
         $RsFolder,
 
+        [string]
+        $Description,
+
         [Alias('Override')]
         [switch]
         $Overwrite,
@@ -69,6 +75,8 @@ function Write-RsCatalogItem
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
+        $namespace = $proxy.GetType().Namespace
+        $propertyDataType = "$namespace.Property"
     }
 
     Process
@@ -187,11 +195,18 @@ function Write-RsCatalogItem
                 #region Upload other stuff
                 else
                 {
+                    $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
+
+                    $descriptionProperty = New-Object $propertyDataType
+                    $descriptionProperty.Name = 'Description'
+                    $descriptionProperty.Value = $Description
+                    $additionalProperties.Add($descriptionProperty)
+
                     $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
                     $warnings = $null
                     try
                     {
-                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null
+                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
                         if ($warnings)
                         {
                           foreach ($warn in $warnings)
