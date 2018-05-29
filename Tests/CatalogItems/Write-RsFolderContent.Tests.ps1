@@ -82,7 +82,7 @@ Describe "Write-RsFolderContent" {
         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -Recurse
        It "Should upload a local subFolder with Recurse Parameter" {
             $uploadedFolders = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Folder' | Sort-Object -Property Name -Descending
-            $uploadedFolders.Count | Should Be 2
+            $uploadedFolders.Count | Should Be 3
             $uploadedFolders[0].Name | Should Be 'testResources2'
             $uploadedFolders[1].Name | Should Be 'datasources'
         }
