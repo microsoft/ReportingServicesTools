@@ -104,4 +104,36 @@ Describe "Write-RsCatalogItem" {
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
+
+
+    Context "Write-RsCatalogItem with images"{
+        $jpgFolderName = 'SutWriteCatalogItem_JPGimages' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $jpgFolderName
+        $jpgFolderPath = '/' + $jpgFolderName
+        $localJPGImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\imagesResources\PowerShellHero.jpg'
+        Write-RsCatalogItem -Path $localJPGImagePath -RsFolder $jpgFolderPath
+
+        It "Should upload a local jpg image in ReportServer with Overwrite Parameter" {
+            $jpgImageResource = (Get-RsFolderContent -RsFolder $jpgFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $jpgImageResource.Name | Should Be 'PowerShellHero.jpg'
+            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $jpgImageResource.ItemMetadata.Value | Should Be 'image/jpeg'
+        }
+
+        $pngFolderName = 'SutWriteCatalogItem_PNGimages' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $pngFolderName
+        $pngFolderPath = '/' + $pngFolderName
+        $localPNGImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\imagesResources\SSRS.png'
+        Write-RsCatalogItem -Path $localPNGImagePath -RsFolder $pngFolderPath
+
+        It "Should upload a local png image in ReportServer with Overwrite Parameter" {
+            $jpgImageResource = (Get-RsFolderContent -RsFolder $pngFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $jpgImageResource.Name | Should Be 'SSRS.png'
+            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $jpgImageResource.ItemMetadata.Value | Should Be 'image/png'
+        }
+
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
+    }
 }
