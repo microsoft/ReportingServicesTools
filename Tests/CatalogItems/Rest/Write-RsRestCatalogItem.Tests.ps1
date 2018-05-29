@@ -108,6 +108,18 @@ Describe "Write-RsRestCatalogItem" {
             Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath
             { Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose } | Should Throw
         }
+
+        It "Should upload a local JPG file" {
+            $itemPath = $localPath + '\imageResources\PowerShellHero.jpg'
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
+            VerifyCatalogItemExists -itemName 'PowerShellHero.jpg' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
+
+        It "Should upload a local PNG file" {
+            $itemPath = $localPath + '\imageResources\SSRS.png'
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
+            VerifyCatalogItemExists -itemName 'SSRS.png' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
     }
 
     Context "WebSession parameter" {
@@ -165,6 +177,18 @@ Describe "Write-RsRestCatalogItem" {
             $itemPath = $localPath + '\NewKPI.kpi'
             Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath  -Verbose
             VerifyCatalogItemExists -itemName 'NewKPI' -itemType 'Kpi' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
+
+        It "Should upload a local JPG file" {
+            $itemPath = $localPath + '\imageResources\PowerShellHero.jpg'
+            Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath -Verbose
+            VerifyCatalogItemExists -itemName 'PowerShellHero.jpg' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
+
+        It "Should upload a local PNG file" {
+            $itemPath = $localPath + '\imageResources\SSRS.png'
+            Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath -Verbose
+            VerifyCatalogItemExists -itemName 'SSRS.png' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should overwrite a file when -Overwrite is specified" {
