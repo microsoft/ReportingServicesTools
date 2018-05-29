@@ -80,14 +80,14 @@ Describe "Write-RsFolderContent" {
         $folderPath = '/' + $folderName
         $localReportPath =   (Get-Item -Path ".\" -Verbose).FullName  + '\Tests\CatalogItems\testResources'
         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -Recurse
-       It "Should upload a local subFolder with Recurse Parameter" {
+        It "Should upload a local subFolder with Recurse Parameter" {
             $uploadedFolders = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Folder' | Sort-Object -Property Name -Descending
             $uploadedFolders.Count | Should Be 2
             $uploadedFolders[0].Name | Should Be 'testResources2'
             $uploadedFolders[1].Name | Should Be 'datasources'
         }
 
-       It "Should upload a report that is in a folder and a second report that is in a subfolder" {
+        It "Should upload a report that is in a folder and a second report that is in a subfolder" {
             $uploadedReports = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
             $uploadedReports.Count | Should Be 4
         }
@@ -101,6 +101,12 @@ Describe "Write-RsFolderContent" {
             $uploadedDataSet = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'DataSet'
             $uploadedDataSet.Name | Should Be 'UnDataset'
         }
+
+        #Re-write folder with recurse.
+        It "Should not fail because folder already exists" {
+            { Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -Recurse -Overwrite } | Should Not Throw
+        }
+
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
