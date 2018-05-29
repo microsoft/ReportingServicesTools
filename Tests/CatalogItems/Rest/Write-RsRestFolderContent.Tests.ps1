@@ -113,5 +113,9 @@ Describe "Write-RsRestFolderContent" {
 
             { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Overwrite -Verbose } | Should Not Throw
         }
+
+        It "Do not halt even when folder already exists" {
+            { Write-RsRestFolderContent -WebSession $webSession -Path $localFolderPath -RsFolder $rsFolderPath -Recurse -Verbose } | Should Not Throw
+        }
     }
 }
