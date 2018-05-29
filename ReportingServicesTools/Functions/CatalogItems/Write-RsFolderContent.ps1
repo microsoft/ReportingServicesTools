@@ -106,7 +106,6 @@ function Write-RsFolderContent
                     $parentFolder = $RsFolder + $relativePath
                 }
 
-                Write-Verbose "Creating folder $parentFolder/$($item.Name)"
                 try
                 {
                     if ($Proxy.GetItemType("$parentFolder/$($item.Name)") -ne "Folder" )
