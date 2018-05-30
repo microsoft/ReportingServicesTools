@@ -103,15 +103,19 @@ Describe "Write-RsRestFolderContent" {
         }
 
         It "Throws exception if resource already exists" {
-            Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath
+            Write-RsRestFolderContent -WebSession $webSession -Path $localFolderPath -RsFolder $rsFolderPath
 
-            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Verbose } | Should Throw
+            { Write-RsRestFolderContent -WebSession $webSession -Path $localFolderPath -RsFolder $rsFolderPath -Verbose } | Should Throw
         }
 
         It "Overwrites exisiting resource, if -Overwrite option is specified" {
-            Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath
+            Write-RsRestFolderContent -WebSession $webSession -Path $localFolderPath -RsFolder $rsFolderPath
 
-            { Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localFolderPath -RsFolder $rsFolderPath -Overwrite -Verbose } | Should Not Throw
+            { Write-RsRestFolderContent -WebSession $webSession -Path $localFolderPath -RsFolder $rsFolderPath -Overwrite -Verbose } | Should Not Throw
+        }
+
+        It "Do not halt even when folder already exists" {
+            { Write-RsRestFolderContent -WebSession $webSession -Path $localFolderPath -RsFolder $rsFolderPath -Recurse -Verbose } | Should Not Throw
         }
     }
 }

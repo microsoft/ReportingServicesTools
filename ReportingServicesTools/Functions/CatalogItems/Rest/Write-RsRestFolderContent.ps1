@@ -99,6 +99,7 @@ function Write-RsRestFolderContent
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems"
+        $folderUri = $ReportPortalUri + "api/$RestApiVersion/Folders(Path='{0}')"
     }
     Process
     {
@@ -124,16 +125,66 @@ function Write-RsRestFolderContent
                 $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
                 $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
                 $relativePath = $relativePath.replace("\", "/")
+
+                $folderUriPath = $null
+                $folderExists = $null
+                $folderInfo = $null
                 if ($RsFolder -eq "/" -and $relativePath -ne "")
                 {
                     $parentFolder = $relativePath
+                    $folderUriPath = "$RsFolder/$($item.name)"
                 }
                 else
                 {
                     $parentFolder = $RsFolder + $relativePath
+                    if ($RsFolder -eq "/")
+                    {
+                        $folderUriPath = $RsFolder + $($item.name)
+                    }
+                    else
+                    {
+                        $folderUriPath = "$RsFolder/$($item.name)"
+                    }
                 }
 
-                New-RsRestFolder -WebSession $WebSession -RestApiVersion $RestApiVersion -FolderName $item.Name -RsFolder $parentFolder | Out-Null
+                $uri = [String]::Format($folderUri, $folderUriPath)
+
+                try
+                {
+                    # Try to get folder info
+                    if ($Credential -ne $null)
+                    {
+                        $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                    }
+                    else
+                    {
+                        $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                    }
+
+                    # parsing response to get folder name
+                    $folderInfo = ConvertFrom-Json $response.Content
+                    if ($folderInfo.Name -eq $item.Name)
+                    {
+                        $folderExists = $true
+                    }
+                }
+                catch
+                {
+                    # Folder not found (404)
+                    if ($_.Exception.Response -ne $null -and $_.Exception.Response.StatusCode -eq 404)
+                    {
+                        $folderExists = $false
+                    }
+                }
+
+                if ($folderExists)
+                {
+                    Write-Verbose "Folder $($item.Name) already exits. Skipping."
+                }
+                else
+                {
+                    New-RsRestFolder -WebSession $WebSession -RestApiVersion $RestApiVersion -FolderName $item.Name -RsFolder $parentFolder | Out-Null
+                }
             }
 
             if ($item.Extension -ne "")
@@ -151,7 +202,14 @@ function Write-RsRestFolderContent
                     $parentFolder = $RsFolder + $relativePath
                 }
 
-                Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -Credential $Credential
+                try
+                {
+                    Write-RsRestCatalogItem -WebSession $WebSession -RestApiVersion $RestApiVersion -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -Credential $Credential
+                }
+                catch
+                {
+                    Write-Error "Failed to create catalog item from '$($item.FullName)' in '$parentFolder': If the catalog item already exists (error: (409) Conflict), you can specify the -Overwrite parameter. $($_.Exception)"
+                }
             }
         }
     }
