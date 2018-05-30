@@ -110,13 +110,13 @@ Describe "Write-RsRestCatalogItem" {
         }
 
         It "Should upload a local JPG file" {
-            $itemPath = $localPath + '\imageResources\PowerShellHero.jpg'
+            $itemPath = $localPath + '\imagesResources\PowerShellHero.jpg'
             Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName 'PowerShellHero.jpg' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should upload a local PNG file" {
-            $itemPath = $localPath + '\imageResources\SSRS.png'
+            $itemPath = $localPath + '\imagesResources\SSRS.png'
             Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName 'SSRS.png' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
@@ -180,13 +180,13 @@ Describe "Write-RsRestCatalogItem" {
         }
 
         It "Should upload a local JPG file" {
-            $itemPath = $localPath + '\imageResources\PowerShellHero.jpg'
+            $itemPath = $localPath + '\imagesResources\PowerShellHero.jpg'
             Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName 'PowerShellHero.jpg' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should upload a local PNG file" {
-            $itemPath = $localPath + '\imageResources\SSRS.png'
+            $itemPath = $localPath + '\imagesResources\SSRS.png'
             Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName 'SSRS.png' -itemType 'Resource' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
