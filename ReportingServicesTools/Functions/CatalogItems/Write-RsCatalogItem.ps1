@@ -209,6 +209,8 @@ function Write-RsCatalogItem
 
                     if ($itemType -eq 'Resource')
                     {
+                        #If it is a resource we need to save the extension so the file can be recognized
+                        $itemName = $item.Name
                         $property.Name = 'MimeType'
                         if ($item.Extension -eq ".png")
                         {
@@ -233,7 +235,7 @@ function Write-RsCatalogItem
                     $warnings = $null
                     try
                     {
-                        $Proxy.CreateCatalogItem($itemType, $item.Name, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
+                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
                         if ($warnings)
                         {
                             foreach ($warn in $warnings)
