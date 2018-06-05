@@ -10,13 +10,16 @@ function Write-RsCatalogItem
 
         .DESCRIPTION
             Uploads an item from disk to a report server.
-            Currently, we are only supporting Report, DataSource and DataSet for uploads
+            Currently, we are only supporting Report, DataSource, DataSet and jpg/png for uploads
 
         .PARAMETER Path
             Path to item to upload on disk.
 
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
+
+        .PARAMETER Description
+            Specify the description to be added to the report.
 
        .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
@@ -52,6 +55,9 @@ function Write-RsCatalogItem
         [string]
         $RsFolder,
 
+        [string]
+        $Description,
+
         [Alias('Override')]
         [switch]
         $Overwrite,
@@ -69,6 +75,8 @@ function Write-RsCatalogItem
     Begin
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
+        $namespace = $proxy.GetType().Namespace
+        $propertyDataType = "$namespace.Property"
     }
 
     Process
@@ -86,11 +94,20 @@ function Write-RsCatalogItem
             $itemType = Get-ItemType $item.Extension
             $itemName = $item.BaseName
 
-            if ($itemType -ne "Report" -and
-                $itemType -ne "DataSource" -and
-                $itemType -ne "DataSet")
+            if (
+                (
+                    $itemType -ne "Report" -and
+                    $itemType -ne "DataSource" -and
+                    $itemType -ne "DataSet" -and
+                    $itemType -ne "Resource"
+                ) -or
+                (
+                    $itemType -eq "Resource" -and
+                    $item.Extension -notin ('.png', '.jpg', '.jpeg')
+                )
+            )
             {
-                throw "Invalid item specified! You can only upload Report, DataSource and DataSet using this command!"
+                throw "Invalid item specified! You can only upload Report, DataSource, DataSet and jpg/png files using this command!"
             }
 
             if ($RsFolder -eq "/")
@@ -187,22 +204,49 @@ function Write-RsCatalogItem
                 #region Upload other stuff
                 else
                 {
+                    $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
+                    $property = New-Object $propertyDataType
+
+                    if ($itemType -eq 'Resource')
+                    {
+                        #If it is a resource we need to save the extension so the file can be recognized
+                        $itemName = $item.Name
+                        $property.Name = 'MimeType'
+                        if ($item.Extension -eq ".png")
+                        {
+                            $property.Value = 'image/png'
+                        }
+                        else
+                        {
+                            $property.Value = 'image/jpeg'
+                        }
+                        $erroMessageItemType = 'resource'
+                    }
+                    else
+                    {
+                        $property.Name = 'Description'
+                        $property.Value = $Description
+                        $erroMessageItemType = 'catalog'
+                    }
+
+                    $additionalProperties.Add($property)
+
                     $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
                     $warnings = $null
                     try
                     {
-                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $null, [ref]$warnings) | Out-Null
+                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
                         if ($warnings)
                         {
-                          foreach ($warn in $warnings)
-                          {
-                            Write-Warning $warn.Message
-                          }
+                            foreach ($warn in $warnings)
+                            {
+                                Write-Warning $warn.Message
+                            }
                         }
                     }
                     catch
                     {
-                        throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                        throw (New-Object System.Exception("Failed to create $erroMessageItemType item $($item.FullName) : $($_.Exception.Message)", $_.Exception))
                     }
                 }
                 #endregion Upload other stuff

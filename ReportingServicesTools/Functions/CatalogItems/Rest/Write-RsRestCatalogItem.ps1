@@ -16,6 +16,9 @@ function Write-RsRestCatalogItem
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
 
+        .PARAMETER Description
+            Specify the description to be added to the report.
+
         .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
 
@@ -72,6 +75,9 @@ function Write-RsRestCatalogItem
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
+
+        [string]
+        $Description,
 
         [Alias('Override')]
         [switch]
@@ -226,6 +232,7 @@ function Write-RsRestCatalogItem
                     "Content" = [System.Convert]::ToBase64String($bytes);
                     "ContentType"="";
                     "Name" = $itemName;
+                    "Description" = $Description
                     "Path" = $itemPath;
                 }
             }
