@@ -233,7 +233,7 @@ function Write-RsCatalogItem
                     $warnings = $null
                     try
                     {
-                        $Proxy.CreateCatalogItem($itemType, $itemName, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
+                        $Proxy.CreateCatalogItem($itemType, $item.Name, $RsFolder, $Overwrite, $bytes, $additionalProperties, [ref]$warnings) | Out-Null
                         if ($warnings)
                         {
                             foreach ($warn in $warnings)
