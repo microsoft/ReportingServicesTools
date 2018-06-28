@@ -39,7 +39,7 @@ The following is a list of commands which are available for you to use once you 
 |Export-RsSubscriptionXml|This command exports a collection of subscriptions to an XML file on disk.|
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
-|Get-RsItemReference|This command sets the item references of a report or a dataset.|
+|Get-RsItemReference|This command gets the item references of a report or a dataset.|
 |Get-RsItemDataSource|This command fetches embedded data sources associated to a report.|
 |Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
 |Get-RsRestItemDataSource|This command fetches embedded data sources associated to a Paginated report or a Power BI report using the REST Endpoint.|
