@@ -39,7 +39,7 @@ function Set-RsItemDataSource
 
         .EXAMPLE
             $dataSources = Get-RsItemDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsItem '/report'
-            Set-RsItemDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsItem '/report -DataSource $datasources
+            Set-RsItemDataSource -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsItem '/report' -DataSource $datasources
 
             Description
             -----------
