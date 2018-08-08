@@ -220,13 +220,13 @@ function Write-RsCatalogItem
                         {
                             $property.Value = 'image/jpeg'
                         }
-                        $erroMessageItemType = 'resource'
+                        $errorMessageItemType = 'resource'
                     }
                     else
                     {
                         $property.Name = 'Description'
                         $property.Value = $Description
-                        $erroMessageItemType = 'catalog'
+                        $errorMessageItemType = 'catalog'
                     }
 
                     $additionalProperties.Add($property)
@@ -246,7 +246,7 @@ function Write-RsCatalogItem
                     }
                     catch
                     {
-                        throw (New-Object System.Exception("Failed to create $erroMessageItemType item $($item.FullName) : $($_.Exception.Message)", $_.Exception))
+                        throw (New-Object System.Exception("Failed to create $errorMessageItemType item $($item.FullName) : $($_.Exception.Message)", $_.Exception))
                     }
                 }
                 #endregion Upload other stuff
