@@ -1,4 +1,4 @@
-﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
+# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
 function New-RsSubscription
@@ -162,6 +162,11 @@ function New-RsSubscription
         [string]
         $Schedule,
 
+        [Parameter(Mandatory=$False)]
+        [AllowNull()]
+        [hashtable]
+        $Parameters,
+
         [Parameter(Mandatory=$True)]
         [ValidateSet('Email','FileShare')] 
         [string]
@@ -254,7 +259,7 @@ function New-RsSubscription
             {
                 'Email'
                 {
-                    $Params = @{
+                    $ExtensionParams = @{
                         TO = $To
                         CC = $CC
                         BCC = $BCC
@@ -269,7 +274,7 @@ function New-RsSubscription
                 }
                 'FileShare'
                 {
-                    $Params = @{
+                    $ExtensionParams = @{
                         PATH = $FileSharePath
                         FILENAME = $Filename
                         RENDER_FORMAT = $RenderFormat
@@ -278,31 +283,84 @@ function New-RsSubscription
 
                     if ($FileShareCredentials -ne $null)
                     {
-                        $Params.USERNAME = $FileShareCredentials.UserName
-                        $Params.PASSWORD = $FileShareCredentials.GetNetworkCredential().Password
-                        $Params.DEFAULTCREDENTIALS = $false
+                        $ExtensionParams.USERNAME = $FileShareCredentials.UserName
+                        $ExtensionParams.PASSWORD = $FileShareCredentials.GetNetworkCredential().Password
+                        $ExtensionParams.DEFAULTCREDENTIALS = $false
                     }
                     else
                     {
-                        $Params.DEFAULTCREDENTIALS = $true
+                        $ExtensionParams.DEFAULTCREDENTIALS = $true
                     }
                 }
             }
 
-            $ParameterValues = @()
-            $Params.GetEnumerator() | ForEach-Object {
-                $ParameterValues = $ParameterValues + (New-Object "$Namespace.ParameterValue" -Property @{ Name = $_.Name; Value = $_.Value })
+            $ExtensionParameterValues = @()
+
+            $ExtensionParams.GetEnumerator() | ForEach-Object {
+                $ExtensionParameterValues = $ExtensionParameterValues + (New-Object "$Namespace.ParameterValue" -Property @{ Name = $_.Name; Value = $_.Value })
             }
 
-            $ExtensionSettings = New-Object "$Namespace.ExtensionSettings" -Property @{ Extension = "Report Server $DeliveryMethod"; ParameterValues = $ParameterValues }
+            $ExtensionSettings = New-Object "$Namespace.ExtensionSettings" -Property @{ Extension = "Report Server $DeliveryMethod"; ParameterValues = $ExtensionParameterValues }
 
             $MatchData = $Schedule
-            $ReportParameters = $Null
+
+            # Transform $Parameters to $ParameterValues
+            if ($Parameters -ne $null)
+            {
+                $parametersCopy = @{};
+                # First, remove null-valued keys - At some point between SQL Server 2005 and 2016 (probably 2012), null-valued keys are no longer stored in the database.
+                # null-valued keys are now represented in the SOAP API by not passing in the null-valued parameter.
+                foreach ($key in $Parameters.Keys)
+                {
+                    if ($Parameters[$key] -ne $null)
+                    {
+                        $parametersCopy.Add($key, $Parameters[$key]);
+                    }
+                }
+
+                $Parameters = $parametersCopy;
+
+                # Similarly, if we pass in an empty collection, the SOAP API will also be unhappy!
+                # Empty collections must be mapped to $null
+                if ($Parameters.Count -ne 0)
+                {
+                    $ParameterValues = New-Object "$Namespace.ParameterValue[]" $Parameters.Count
+
+                    $i = 0;
+                    foreach ($key in $Parameters.Keys)
+                    {
+                        $tmpValue = $Parameters[$key]
+
+                        # If a key's value is $null or whitespace, skip it. SSRS SOAP API does not like it;
+                        # e.g., if a report parameter named 'date' was null,
+                        # it would throw an error message "Default value or value provided for the report parameter 'date' is not a valid value."
+                        if ([string]::IsNullOrWhiteSpace($tmpValue))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            $tmpParameter = New-Object "$Namespace.ParameterValue" -Property @{ Name = $key; Value = $tmpValue }
+
+                            $ParameterValues[$i] = $tmpParameter
+                            $i++;
+                        }
+                    }
+                }
+                else
+                {
+                    $ParameterValues = $null;
+                }
+            }
+            else
+            {
+                $ParameterValues = $null
+            }
 
             if ($PSCmdlet.ShouldProcess($RsItem, "Creating new subscription"))
             {
                 Write-Verbose "Creating Subscription..."
-                $subscriptionId = $Proxy.CreateSubscription($RsItem, $ExtensionSettings, $Description, $EventType, $MatchData, $ReportParameters)
+                $subscriptionId = $Proxy.CreateSubscription($RsItem, $ExtensionSettings, $Description, $EventType, $MatchData, $ParameterValues)
 
                 [pscustomobject]@{
                     NewSubscriptionId = $subscriptionId
@@ -313,7 +371,22 @@ function New-RsSubscription
         }
         catch
         {
-            throw (New-Object System.Exception("Exception occurred while creating subscription! $($_.Exception.Message)", $_.Exception))
+            $ex = $_.Exception;
+            Write-CallStack -ErrorRecord $_ -Skip 0
+            $ErrorMessage = $ex.Message;
+            $StackTrace = $ex.StackTrace;
+            $FailedItem = $ex.ItemName;
+            $ErrorMessage = $ex.Message
+            $tabCount = 1;
+            while ($ex.InnerException) {
+                $ex = $ex.InnerException
+                $tabs = "`t" * $tabCount
+                $ErrorMessage += "`n$tabs" + $ex.Message
+                $StackTrace += "`n$tabs" + $ex.StackTrace;
+            }
+            
+
+            throw (New-Object System.Exception("Exception occurred while creating subscription! ErrorMessage: [$ErrorMessage] StackTrace [$StackTrace] FailedItem [$FailedItem]", $Exception))
         }
     }
 }
