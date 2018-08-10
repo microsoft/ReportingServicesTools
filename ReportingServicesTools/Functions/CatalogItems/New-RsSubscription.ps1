@@ -372,21 +372,8 @@ function New-RsSubscription
         catch
         {
             $ex = $_.Exception;
-            Write-CallStack -ErrorRecord $_ -Skip 0
             $ErrorMessage = $ex.Message;
-            $StackTrace = $ex.StackTrace;
-            $FailedItem = $ex.ItemName;
-            $ErrorMessage = $ex.Message
-            $tabCount = 1;
-            while ($ex.InnerException) {
-                $ex = $ex.InnerException
-                $tabs = "`t" * $tabCount
-                $ErrorMessage += "`n$tabs" + $ex.Message
-                $StackTrace += "`n$tabs" + $ex.StackTrace;
-            }
-            
-
-            throw (New-Object System.Exception("Exception occurred while creating subscription! ErrorMessage: [$ErrorMessage] StackTrace [$StackTrace] FailedItem [$FailedItem]", $Exception))
+            throw (New-Object System.Exception("Exception occurred while creating subscription! ErrorMessage: [$ErrorMessage]", $Exception))
         }
     }
 }
