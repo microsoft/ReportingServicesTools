@@ -61,6 +61,7 @@ function New-RsRestSessionHelper
             
             It accepts all bound parameters of the calling function and processes the following keys:
             - ReportPortalUri
+            - RestApiVersion
             - Credential
             - WebSession
             These parameters are passed on to the New-RsRestSession function, unless WebSession was specified.
