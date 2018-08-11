@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param (
-    [string]$Path
+    [string]$Path,
+    [string]$Version = 'master'
 )
 
 $localpath = $(Join-Path -Path (Split-Path -Path $profile) -ChildPath '\Modules\ReportingServicesTools')
@@ -39,7 +40,7 @@ if ((Get-Command -Module ReportingServicesTools).count -ne 0)
     Remove-Module ReportingServicesTools -ErrorAction Stop
 }
 
-$url = 'https://github.com/Microsoft/ReportingServicesTools/archive/master.zip'
+$url = "https://github.com/Microsoft/ReportingServicesTools/archive/$Version.zip"
 
 $temp = ([System.IO.Path]::GetTempPath()).TrimEnd("\")
 $zipfile = "$temp\ReportingServicesTools.zip"
@@ -70,6 +71,7 @@ else
 }
 
 Write-Output "Downloading archive from ReportingServiceTools GitHub..."
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 try
 {
     Invoke-WebRequest $url -OutFile $zipfile
@@ -91,11 +93,11 @@ $shell = New-Object -COM Shell.Application
 $zipPackage = $shell.NameSpace($zipfile)
 $destinationFolder = $shell.NameSpace($temp)
 $destinationFolder.CopyHere($zipPackage.Items())
-Move-Item -Path "$temp\ReportingServicesTools-master\*" $path
+Move-Item -Path "$temp\ReportingServicesTools-$Version\*" $path
 Write-Output "ReportingServicesTools has been successfully downloaded to $path!"
 
 Write-Output "Cleaning up..."
-Remove-Item -Path "$temp\ReportingServicesTools-master"
+Remove-Item -Path "$temp\ReportingServicesTools-$Version"
 Remove-Item -Path $zipfile
 
 Write-Output "Importing ReportingServicesTools Module..."
