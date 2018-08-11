@@ -67,6 +67,6 @@ function Initialize-Rs
     
     if ($result.HRESULT -ne 0)
     {
-        throw "Failed to Initialize Report Server, Errocode: $($result.HRESULT)"
+        throw "Failed to Initialize Report Server, ErrorCode: $($result.HRESULT)"
     }
 }
