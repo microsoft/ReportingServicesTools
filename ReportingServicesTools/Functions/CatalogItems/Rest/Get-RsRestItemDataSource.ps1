@@ -74,7 +74,7 @@ function Get-RsRestItemDataSource
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems(Path='{0}')"
-        $dataSourcesUri = $ReportPortalUri + "api/$RestApiVersion/{0}(Path='{1}')?`$expand=DataSources"
+        $dataSourcesUri = $ReportPortalUri + "api/$RestApiVersion/{0}(Path='{1}')/CatalogItems/Model.DataSource"
     }
     Process
     {
