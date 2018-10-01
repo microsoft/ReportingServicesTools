@@ -18,7 +18,7 @@ function Connect-RsReportServer
             The name of the SQL Instance to connect via WMI to.
             Only used for WMI access.
         
-        .PARAMETER Version
+        .PARAMETER ReportServerVersion
             The version of the SQL Server whose reporting services you connect to via WMI to.
             Only used for WMI access.
         
