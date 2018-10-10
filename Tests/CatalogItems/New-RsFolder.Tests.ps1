@@ -15,17 +15,31 @@ Describe "New-RsFolder" {
         Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
 
+    Context "Create Folder with Description"{
+        $folderName = 'SutFolderDescription' + [guid]::NewGuid()
+        $folderDescription = "$folderName Test Description"
+        New-RsFolder -Path / -FolderName $folderName -Description $folderDescription
+        $folderList = Get-RsFolderContent -RsFolder /
+        $folderDescriptionValue = ($folderList | Where-Object name -eq $folderName).Description
+        $folderPath = '/' + $folderName
+        It "Should be a new folder with description " {
+            $folderDescriptionValue | Should Be $folderDescription
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
+    }
+
     Context "Create a subfolder"{
         # Create folder to create the path
         $parentFolderName = 'SutParentFolder' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $parentFolderName
         $folderPath = '/'+ $parentFolderName
-        # Search for the folder path existence 
+        # Search for the folder path existence
         $folderList = Get-RsFolderContent -RsFolder /
         $parentfolderCount = ($folderList | Where-Object path -eq $folderPath).Count
         # Section to test the New-RsFolder
         $subFolderName = 'SutSubFolder' + [guid]::NewGuid()
-        New-RsFolder -Path $folderPath -FolderName $subFolderName 
+        New-RsFolder -Path $folderPath -FolderName $subFolderName
         # Test if the folder was created
         $allFolderList = Get-RsFolderContent -RsFolder / -Recurse
         $subFolderPath = $folderPath + '/' + $subFolderName
@@ -34,7 +48,7 @@ Describe "New-RsFolder" {
             $parentFolderCount | Should be 1
         }
         It "Should the subfolder"{
-            $subFolderCount | Should be 1    
+            $subFolderCount | Should be 1
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
@@ -44,14 +58,14 @@ Describe "New-RsFolder" {
         # Declaring the parameters name, path and proxy
         $folderName = 'SutFolderParameterProxy' + [guid]::NewGuid()
         $folderPath = '/' + $folderName
-        $proxy = New-RsWebServiceProxy 
+        $proxy = New-RsWebServiceProxy
         # Creating the folder with the parameters name, path and proxy
         New-RsFolder -Path / -FolderName $folderName -Proxy $proxy
         # Test if the folder was created
         $folderList = Get-RsFolderContent -RsFolder /
         $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should be a new folder with the parameter proxy"{
-            $folderCount | Should be 1    
+            $folderCount | Should be 1
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
@@ -73,13 +87,13 @@ Describe "New-RsFolder" {
         # Removing folders used for testing
         Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
-    
+
     Context "Create a folder with all the parameters except credentials"{
         # Declaring the parameters name, path and ReportServerUri
         $folderName = 'SutFolderAllParameters' + [guid]::NewGuid()
         $folderPath = '/'  + $folderName
         $folderReportServerUri = 'http://localhost/reportserver'
-        $proxy = New-RsWebServiceProxy 
+        $proxy = New-RsWebServiceProxy
         # Creating the folder with the parameters name, path, ReportServerUri and proxy
         New-RsFolder -ReportServerUri $folderReportServerUri -Path / -FolderName $folderName -Proxy $proxy
         # Test if the folder was created
@@ -90,5 +104,5 @@ Describe "New-RsFolder" {
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
-    } 
+    }
 }
