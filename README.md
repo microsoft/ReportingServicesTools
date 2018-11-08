@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/github/microsoft/reportingservicestools?branch=master&svg=true)](https://ci.appveyor.com/project/jtarquino/reportingservicestools)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/microsoft/reportingservicestools?branch=master&svg=true)](https://ci.appveyor.com/project/jtarquino/reportingservicestools) [![ReportingServicesTools](https://img.shields.io/powershellgallery/v/ReportingServicesTools.svg?style=flat-square&label=ReportingServicesTools)](https://www.powershellgallery.com/packages/ReportingServicesTools/)
 # Reporting Services PowerShell
 SQL Server Reporting Services PowerShell utilities 
 
