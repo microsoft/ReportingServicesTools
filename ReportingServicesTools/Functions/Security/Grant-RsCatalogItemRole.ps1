@@ -126,11 +126,11 @@ function Grant-RsCatalogItemRole
         {
             if ($Strict)
             {
-                throw "$($Identity) already has $($RoleName) privileges"
+                throw "$($Identity) already has $($RoleName) privileges on $Path"
             }
             else
             {
-                Write-Warning "$($Identity) already has $($RoleName) privileges"
+                Write-Warning "$($Identity) already has $($RoleName) privileges on $Path"
                 return
             }
         }
