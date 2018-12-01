@@ -291,7 +291,6 @@ function Write-RsRestCatalogItem
                     {
                         throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
                     }
-                    return
                 }
 
                 throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
