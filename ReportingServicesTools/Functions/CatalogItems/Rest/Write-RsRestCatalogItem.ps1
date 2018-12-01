@@ -146,7 +146,7 @@ function Write-RsRestCatalogItem
                 $itemPath = "$RsFolder/$itemName"
             }
 
-            Write-Verbose "Reading file content..."
+            Write-Verbose "Reading file $item content..."
             if ($itemType -eq 'DataSource')
             {
                 [xml] $dataSourceXml = Get-Content -Path $EntirePath
@@ -289,11 +289,13 @@ function Write-RsRestCatalogItem
                     }
                     catch
                     {
-                        throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                        Write-Error (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
                     }
                 }
-
-                throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                else
+                {
+                    Wrote-Error (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                }
             }
         }
     }
