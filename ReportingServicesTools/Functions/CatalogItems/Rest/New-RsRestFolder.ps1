@@ -11,7 +11,7 @@ function New-RsRestFolder
             This script creates a new folder in the Report Server
 
         .PARAMETER RsFolder
-            Specify the location where the folder should be created 
+            Specify the location where the folder should be created
 
         .PARAMETER FolderName
             Specify the name of the the new folder
@@ -91,11 +91,11 @@ function New-RsRestFolder
 
             if ($Credential -ne $null)
             {
-                $response = Invoke-WebRequest -Uri $foldersUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential -Verbose:$false
+                $response = Invoke-WebRequest -Uri $foldersUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Credential $Credential -Verbose:$false
             }
             else
             {
-                $response = Invoke-WebRequest -Uri $foldersUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials -Verbose:$false
+                $response = Invoke-WebRequest -Uri $foldersUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -Verbose:$false
             }
 
             Write-Verbose "Folder $TargetFolderPath was created successfully!"
