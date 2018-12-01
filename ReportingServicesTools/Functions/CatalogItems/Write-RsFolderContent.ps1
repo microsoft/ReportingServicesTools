@@ -48,11 +48,11 @@ function Write-RsFolderContent
     param(
         [switch]
         $Recurse,
-        
+
         [Parameter(Mandatory = $True)]
         [string]
         $Path,
-        
+
         [Alias('DestinationFolder')]
         [Parameter(Mandatory = $True)]
         [string]
@@ -61,27 +61,27 @@ function Write-RsFolderContent
         [Alias('Override')]
         [switch]
         $Overwrite,
-        
+
         [string]
         $ReportServerUri,
-        
+
         [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         $Proxy
     )
-    
+
     if ($PSCmdlet.ShouldProcess($Path, "Upload all contents in folder $(if ($Recurse) { "and subfolders " })to $RsFolder"))
     {
         $Proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
-        
+
         if(-not (Test-Path $Path -PathType Container))
         {
             throw "$Path is not a folder"
         }
         $sourceFolder = Get-Item $Path
-        
+
         if ($Recurse)
         {
             $items = Get-ChildItem $Path -Recurse
@@ -105,12 +105,13 @@ function Write-RsFolderContent
                 {
                     $parentFolder = $RsFolder + $relativePath
                 }
-
+                #replace possible double slash
+                $itemToUpload = ("$parentFolder/$($item.Name)") -replace "//", "/"
                 try
                 {
-                    if ($Proxy.GetItemType("$parentFolder/$($item.Name)") -ne "Folder" )
+                    if ($Proxy.GetItemType($itemToUpload) -ne "Folder" )
                     {
-                        Write-Verbose "Creating folder $parentFolder/$($item.Name)"
+                        Write-Verbose "Creating folder $itemToUpload"
                         $Proxy.CreateFolder($item.Name, $parentFolder, $null) | Out-Null
                     }
                     else
@@ -144,7 +145,7 @@ function Write-RsFolderContent
                 {
                     $parentFolder = $RsFolder + $relativePath
                 }
-                
+
                 try
                 {
                     Write-RsCatalogItem -proxy $Proxy -Path $item.FullName -RsFolder $parentFolder -Overwrite:$Overwrite -ErrorAction Stop
