@@ -39,28 +39,28 @@ function Write-RsRestCatalogItem
 
         .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
-            
+
             Description
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' using v2.0 REST Endpoint to Report Server located at http://localhost/reports/.
 
         .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -RestApiVersion 'v1.0'
-            
+
             Description
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v1.0 REST Endpoint to Report Server located at http://localhost/reports/.
 
         .EXAMPLE
             Write-RsRestCatalogItem -WebSession $mySession -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
-            
+
             Description
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' to v2.0 REST Endpoint to Report Server located at the specified WebSession object.
 
         .EXAMPLE
             Write-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
-            
+
             Description
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' using v2.0 REST Endpoint to Report Server located at http://myserver/reports.
@@ -146,13 +146,13 @@ function Write-RsRestCatalogItem
                 $itemPath = "$RsFolder/$itemName"
             }
 
-            Write-Verbose "Reading file content..."
+            Write-Verbose "Reading file $item content..."
             if ($itemType -eq 'DataSource')
             {
                 [xml] $dataSourceXml = Get-Content -Path $EntirePath
                 if ($item.Extension -eq '.rsds')
                 {
-                    if ($dataSourceXml -eq $null -or 
+                    if ($dataSourceXml -eq $null -or
                         $dataSourceXml.DataSourceDefinition -eq $null -or
                         $dataSourceXml.DataSourceDefinition.Extension -eq $null -or
                         $dataSourceXml.DataSourceDefinition.ConnectString -eq $null)
@@ -167,7 +167,7 @@ function Write-RsRestCatalogItem
                 }
                 elseif ($item.Extension -eq '.rds')
                 {
-                    if ($dataSourceXml -eq $null -or 
+                    if ($dataSourceXml -eq $null -or
                         $dataSourceXml.RptDataSource -eq $null -or
                         $dataSourceXml.RptDataSource.Name -eq $null -or
                         $dataSourceXml.RptDataSource.ConnectionProperties -eq $null -or
@@ -178,7 +178,7 @@ function Write-RsRestCatalogItem
                     }
 
                     $itemName = $dataSourceXml.RptDataSource.Name
-                    $itemPath = $itemPath.Substring(0, $itemPath.LastIndexOf('/') + 1) + $itemName 
+                    $itemPath = $itemPath.Substring(0, $itemPath.LastIndexOf('/') + 1) + $itemName
                     $enabled = $true
                     $connectionProperties = $dataSourceXml.RptDataSource.ConnectionProperties
                     $connectionString = $connectionProperties.ConnectString
@@ -245,11 +245,11 @@ function Write-RsRestCatalogItem
 
                 if ($Credential -ne $null)
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
                 }
                 else
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
+                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
                 }
 
                 Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
@@ -279,22 +279,23 @@ function Write-RsRestCatalogItem
                         $uri = [String]::Format($catalogItemsUpdateUri, $itemId)
                         if ($Credential -ne $null)
                         {
-                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
                         }
                         else
                         {
-                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $payloadJson -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
                         }
                         Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
                     }
                     catch
                     {
-                        throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                        Write-Error (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
                     }
-                    return
                 }
-
-                throw (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                else
+                {
+                    Wrote-Error (New-Object System.Exception("Failed to create catalog item: $($_.Exception.Message)", $_.Exception))
+                }
             }
         }
     }

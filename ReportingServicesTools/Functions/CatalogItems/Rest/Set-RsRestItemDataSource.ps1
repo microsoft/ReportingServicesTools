@@ -152,7 +152,7 @@ function Set-RsRestItemDataSource
                     {
                         throw "DataModelDataSource.AuthType must be specified: $ds!"
                     }
-                    elseif (($ds.DataModelDataSource.AuthType -LIKE 'Windows' -or 
+                    elseif (($ds.DataModelDataSource.AuthType -LIKE 'Windows' -or
                             $ds.DataModelDataSource.AuthType -LIKE 'UsernamePassword' -or
                             $ds.DataModelDataSource.AuthType -LIKE 'Impersonate') -and
                             ($ds.DataModelDataSource.Username -eq $null -or
@@ -171,9 +171,9 @@ function Set-RsRestItemDataSource
                 elseif ($ds.DataSourceSubType -eq $null)
                 {
                     # DataSourceType, ConnectionString and CredentialRetrieval must always be specified!
-                    if ($ds.DataSourceType -eq $null -or 
+                    if ($ds.DataSourceType -eq $null -or
                         $ds.ConnectionString -eq $null -or
-                        $ds.CredentialRetrieval -eq $null -or  
+                        $ds.CredentialRetrieval -eq $null -or
                         !($ds.CredentialRetrieval -LIKE 'Integrated' -or
                         $ds.CredentialRetrieval -LIKE 'Store' -or
                         $ds.CredentialRetrieval -LIKE 'Prompt' -or
@@ -183,7 +183,7 @@ function Set-RsRestItemDataSource
                     }
                     elseif ($ds.DataModelDataSource -ne $null)
                     {
-                        # since this is an embedded data source for Paginated Report/Shared data set, 
+                        # since this is an embedded data source for Paginated Report/Shared data set,
                         # you should not set any value to DataModelDataSource
                         throw "You cannot specify DataModelDataSource for this datasource: $ds!"
                     }
@@ -208,8 +208,8 @@ function Set-RsRestItemDataSource
 
             $dataSourcesUri = [String]::Format($dataSourcesUri, $RsItemType + "s", $RsItem)
 
-            # Converting $DataSources into array as PowerBIReport(...)/DataSources expects data sources 
-            # to be in an array in the request body. If $DataSources is already an array, this operation 
+            # Converting $DataSources into array as PowerBIReport(...)/DataSources expects data sources
+            # to be in an array in the request body. If $DataSources is already an array, this operation
             # combines $DataSources array with an empty array, so result is still an array.
             $dataSourcesArray = @($DataSources)
 
@@ -235,11 +235,11 @@ function Set-RsRestItemDataSource
                 Write-Verbose "Updating data sources for $($RsItem)..."
                 if ($Credential -ne $null)
                 {
-                    Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body $payloadJson -ContentType "application/json" -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
+                    Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -WebSession $WebSession -Credential $Credential -Verbose:$false | Out-Null
                 }
                 else
                 {
-                    Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body $payloadJson -ContentType "application/json" -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
+                    Invoke-WebRequest -Uri $dataSourcesUri -Method $method -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -WebSession $WebSession -UseDefaultCredentials -Verbose:$false | Out-Null
                 }
                 Write-Verbose "Data sources were updated successfully!"
             }
