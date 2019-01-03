@@ -24,6 +24,9 @@ function Write-RsCatalogItem
        .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
 
+        .PARAMETER Hidden
+            Mark the item as hidden on the destination server.
+
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
@@ -61,6 +64,9 @@ function Write-RsCatalogItem
         [Alias('Override')]
         [switch]
         $Overwrite,
+
+        [switch]
+        $Hidden,
 
         [string]
         $ReportServerUri,
@@ -231,6 +237,14 @@ function Write-RsCatalogItem
 
                     $additionalProperties.Add($property)
 
+                    if ($Hidden)
+                    {
+                        $hiddenProperty = New-Object $propertyDataType
+                        $hiddenProperty.Name = 'Hidden'
+                        $hiddenProperty.Value = $Hidden
+                        $additionalProperties.Add($hiddenProperty)
+                    }
+                
                     $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
                     $warnings = $null
                     try

@@ -2,9 +2,22 @@
 # Licensed under the MIT License (MIT)
 
 Describe "New-RsFolder" {
-    Context "Create Folder with minimun parameters"{
+    Context "Create Folder with minimum parameters"{
         $folderName = 'SutFolderMinParameters' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName
+        $folderList = Get-RsFolderContent -RsFolder /
+        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
+        $folderPath = '/' + $folderName
+        It "Should be a new folder" {
+            $folderCount | Should Be 1
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
+    }
+
+    Context "Create Folder with hidden parameter"{
+        $folderName = 'SutFolderHidden' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $folderName -Hidden
         $folderList = Get-RsFolderContent -RsFolder /
         $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         $folderPath = '/' + $folderName
