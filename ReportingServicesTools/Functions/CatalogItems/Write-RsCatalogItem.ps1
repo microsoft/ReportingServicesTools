@@ -18,10 +18,13 @@ function Write-RsCatalogItem
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
 
+        .PARAMETER Name
+            Specify the Name to be used for the report.
+
         .PARAMETER Description
             Specify the description to be added to the report.
 
-       .PARAMETER Overwrite
+        .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
 
         .PARAMETER Hidden
@@ -57,6 +60,9 @@ function Write-RsCatalogItem
         [Parameter(Mandatory = $True)]
         [string]
         $RsFolder,
+
+        [string]
+        $Name,
 
         [string]
         $Description,
@@ -98,7 +104,14 @@ function Write-RsCatalogItem
             $EntirePath = Convert-Path $item
             $item = Get-Item $EntirePath
             $itemType = Get-ItemType $item.Extension
-            $itemName = $item.BaseName
+            if ([string]::IsNullOrEmpty($Name))
+            {
+                $itemName = $item.BaseName
+            }
+            else
+            {
+                $itemName = $Name
+            }
 
             if (
                 (
