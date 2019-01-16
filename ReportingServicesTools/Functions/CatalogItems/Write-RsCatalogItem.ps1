@@ -18,11 +18,17 @@ function Write-RsCatalogItem
         .PARAMETER RsFolder
             Folder on reportserver to upload the item to.
 
+        .PARAMETER Name
+            Specify the Name to be used for the report.
+
         .PARAMETER Description
             Specify the description to be added to the report.
 
-       .PARAMETER Overwrite
+        .PARAMETER Overwrite
             Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
+
+        .PARAMETER Hidden
+            Mark the item as hidden on the destination server.
 
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
@@ -56,11 +62,17 @@ function Write-RsCatalogItem
         $RsFolder,
 
         [string]
+        $Name,
+
+        [string]
         $Description,
 
         [Alias('Override')]
         [switch]
         $Overwrite,
+
+        [switch]
+        $Hidden,
 
         [string]
         $ReportServerUri,
@@ -92,7 +104,14 @@ function Write-RsCatalogItem
             $EntirePath = Convert-Path $item
             $item = Get-Item $EntirePath
             $itemType = Get-ItemType $item.Extension
-            $itemName = $item.BaseName
+            if ([string]::IsNullOrEmpty($Name))
+            {
+                $itemName = $item.BaseName
+            }
+            else
+            {
+                $itemName = $Name
+            }
 
             if (
                 (
@@ -231,6 +250,14 @@ function Write-RsCatalogItem
 
                     $additionalProperties.Add($property)
 
+                    if ($Hidden)
+                    {
+                        $hiddenProperty = New-Object $propertyDataType
+                        $hiddenProperty.Name = 'Hidden'
+                        $hiddenProperty.Value = $Hidden
+                        $additionalProperties.Add($hiddenProperty)
+                    }
+                
                     $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
                     $warnings = $null
                     try

@@ -34,6 +34,68 @@ Describe "Write-RsCatalogItem" {
         Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
+    Context "Write-RsCatalogItem with hidden parameters"{
+        $folderName = 'SutWriteRsCatalogItem_Hidden' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $folderName -Hidden
+        $folderPath = '/' + $folderName
+        $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+
+        It "Should upload a local report in Report Server" {
+            $localReportPath = $localPath + '\emptyReport.rdl'
+            Write-RsCatalogItem -Path $localReportPath -RsFolder $folderPath -Description 'newDescription' -Hidden
+            $uploadedReport = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
+            $uploadedReport.Name | Should Be 'emptyReport'
+            $uploadedReport.Description | Should Be 'newDescription'
+        }
+
+        It "Should upload a local RsDataSource in Report Server" {
+            $localDataSourcePath = $localPath + '\SutWriteRsFolderContent_DataSource.rsds'
+            Write-RsCatalogItem -Path $localDataSourcePath -RsFolder $folderPath -Hidden
+            $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSource'
+            $uploadedDataSource.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+        }
+
+        It "Should upload a local DataSet in Report Server" {
+            $localDataSetPath = $localPath + '\UnDataset.rsd'
+            Write-RsCatalogItem -Path $localDataSetPath -RsFolder $folderPath -Hidden
+            $uploadedDataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
+            $uploadedDataSet.Name | Should Be 'UnDataset'
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
+    }
+
+    Context "Write-RsCatalogItem with name parameter"{
+        $folderName = 'SutWriteRsCatalogItem_Name' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $folderName -Hidden
+        $folderPath = '/' + $folderName
+        $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+
+        It "Should upload a local report in Report Server" {
+            $localReportPath = $localPath + '\emptyReport.rdl'
+            Write-RsCatalogItem -Path $localReportPath -RsFolder $folderPath -Description 'newDescription' -Name 'Test Report'
+            $uploadedReport = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
+            $uploadedReport.Name | Should Be 'Test Report'
+            $uploadedReport.Description | Should Be 'newDescription'
+        }
+
+        It "Should upload a local RsDataSource in Report Server" {
+            $localDataSourcePath = $localPath + '\SutWriteRsFolderContent_DataSource.rsds'
+            Write-RsCatalogItem -Path $localDataSourcePath -RsFolder $folderPath -Name 'Test DataSource'
+            $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSource'
+            $uploadedDataSource.Name | Should Be 'Test DataSource'
+        }
+
+        It "Should upload a local DataSet in Report Server" {
+            $localDataSetPath = $localPath + '\UnDataset.rsd'
+            Write-RsCatalogItem -Path $localDataSetPath -RsFolder $folderPath -Name 'Test DataSet'
+            $uploadedDataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
+            $uploadedDataSet.Name | Should Be 'Test DataSet'
+        }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
+    }
+
     Context "Write-RsCatalogItem with Proxy parameter"{
         $folderName = 'SutWriteRsCatalogItem_ProxyParameter' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName

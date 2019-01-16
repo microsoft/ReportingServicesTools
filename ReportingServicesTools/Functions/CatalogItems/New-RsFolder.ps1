@@ -19,6 +19,9 @@ function New-RsFolder
         .PARAMETER Description
             Specify the description to be added to the new folder
 
+        .PARAMETER Hidden
+            Mark the item as hidden on the destination server.
+
         .PARAMETER ReportServerUri
             Specify the Report Server URL to your SQL Server Reporting Services Instance.
             Use the "Connect-RsReportServer" function to set/update a default value.
@@ -68,6 +71,9 @@ function New-RsFolder
         [string]
         $Description,
 
+        [switch]
+        $Hidden,
+
         [string]
         $ReportServerUri,
 
@@ -89,6 +95,14 @@ function New-RsFolder
         $descriptionProperty.Name = 'Description'
         $descriptionProperty.Value = $Description
         $additionalProperties.Add($descriptionProperty)
+    }
+
+    if ($Hidden)
+    {
+        $hiddenProperty = New-Object $propertyDataType
+        $hiddenProperty.Name = 'Hidden'
+        $hiddenProperty.Value = $Hidden
+        $additionalProperties.Add($hiddenProperty)
     }
 
     try
