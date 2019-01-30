@@ -1,0 +1,1 @@
+<DataSourceDefinition><Extension>SQL</Extension><ConnectString>Data Source=localhost;Initial Catalog=ReportServer</ConnectString><UseOriginalConnectString>False</UseOriginalConnectString><OriginalConnectStringExpressionBased>False</OriginalConnectStringExpressionBased><CredentialRetrieval>None</CredentialRetrieval><Enabled>True</Enabled></DataSourceDefinition>

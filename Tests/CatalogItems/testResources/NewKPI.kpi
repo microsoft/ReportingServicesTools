@@ -1,0 +1,45 @@
+{
+    "Data":  {
+                 "Value":  {
+                               "@odata.type":  "#Model.KpiStaticDataItem",
+                               "Type":  "Static",
+                               "Value":  "513120"
+                           },
+                 "Goal":  null,
+                 "Status":  {
+                                "@odata.type":  "#Model.KpiStaticDataItem",
+                                "Type":  "Static",
+                                "Value":  "1"
+                            },
+                 "TrendSet":  {
+                                  "@odata.type":  "#Model.KpiStaticDataItem",
+                                  "Type":  "Static",
+                                  "Value":  "[7.0,6.0,1.0,7.0,2.0,6.0,5.0,9.0]"
+                              }
+             },
+    "Description":  null,
+    "DrillthroughTarget":  null,
+    "Hidden":  false,
+    "IsFavorite":  false,
+    "Name":  "NewKPI",
+	"@odata.type": "#Model.Kpi",
+    "Path":  "/NewKPI",
+    "Type":  "Kpi",
+    "ValueFormat":  "General",
+    "Values":  {
+                   "Value":  "513120",
+                   "Goal":  null,
+                   "Status":  1.0,
+                   "TrendSet":  [
+                                    7.0,
+                                    6.0,
+                                    1.0,
+                                    7.0,
+                                    2.0,
+                                    6.0,
+                                    5.0,
+                                    9.0
+                                ]
+               },
+    "Visualization":  "Bar"
+}

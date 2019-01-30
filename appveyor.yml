@@ -5,6 +5,8 @@ environment:
     secure: 0PgkUpRd+qAfL0WFe5pFmOE/KasEJY19wogMfkRzk1NFqFqfDGLIU+CPbd1ZoR+1  
   access_token:
     secure: kGlQZapsnS3J41iYVKMP4kqeYcSeFRPI3rXNxl5GwgkcnPiGJxQmU+HO30xaegQq
+  SqlSaPwd: i<3ReportingServices
+
 # Skip on updates to the readme.
 # We can force this by adding [skip ci] or [ci skip] anywhere in commit message
 skip_commits:
@@ -13,13 +15,67 @@ skip_commits:
 install:
 - ps: Install-PackageProvider -Name NuGet -Force
 - ps: Install-Module -Name PSScriptAnalyzer -Force
+- ps: Install-Module -Name Pester
 
 build: false
+
+before_test:
+- cmd: NET USER rsuser1 "%SqlSaPwd%" /ADD /Y
+- ps: |
+    $ErrorActionPreference = 'Stop';
+    [Environment]::SetEnvironmentVariable("RsUser", "$($env:ComputerName)\rsuser1")
+    $url = "$($env:downloadUrl)/SQLServer2017-x64-ENU.exe"
+    $urlBox = "$($env:downloadUrl)/SQLServer2017-x64-ENU.box"
+    $pbiRsUrl = "$($env:pbirsDownloadUrl)/PowerBIReportServer.exe"
+    #arguments sqlserver needs for the installation 
+    $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`" /SECURITYMODE=SQL /SAPWD=`"$($env:SqlSaPwd)`""
+    $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2017"
+    if ((Test-Path $tempDir) -eq $false) { New-Item -ItemType Directory -Path $tempDir}
+    $fileFullPath = "$tempDir\SQLServer.exe"
+    $fileFullPathBox = "$tempDir\SQLServer.box"
+    $fileFullPathPbiRs = "$tempDir\PowerBIReportServer.exe"
+    Write-Host "Downloading... SQL Engine exe" (Get-Date).DateTime
+    (New-Object Net.WebClient).DownloadFile($url , $fileFullPath)
+    Write-Host "Downloading... SQL Engine box" (Get-Date).DateTime
+    (New-Object Net.WebClient).DownloadFile($urlBox , $fileFullPathBox)
+    Write-Host "Downloading... PBIRS" (Get-Date).DateTime
+    (New-Object Net.WebClient).DownloadFile($pbiRsUrl , $fileFullPathPbiRs)
+    Write-Host "Extracting..." (Get-Date).DateTime
+    $extractPath = "$tempDir\SQL2017TEMP"
+    Start-Process "$fileFullPath" "/Q /x:`"$extractPath`"" -Wait
+    Write-Host "Installing SQL Server..." (Get-Date).DateTime
+    Write-Host "Installation args: $silentArgs"
+    $setupPath = "$extractPath\setup.exe"
+    Start-Process $setupPath "$silentArgs" -Wait
+    Write-Host "Installation completed" (Get-Date).DateTime
+
+    Write-Host "Installing PBI RS" (Get-Date).DateTime
+    $pbiServerSilentArgs = "/Q /NORESTART IACCEPTLICENSETERMS=true"
+    Start-Process $fileFullPathPbiRs "$pbiServerSilentArgs" -Wait
+    Write-Host "Installation completed" (Get-Date).DateTime
+
+    Write-Host "Importing SQLPS Module..." (Get-Date).DateTime
+    Import-Module "C:\Program Files (x86)\Microsoft SQL Server\140\Tools\PowerShell\Modules\sqlps\sqlps.psd1"
+    Write-Host "SQLPS Module imported" (Get-Date).DateTime
+
+    # Activate verbose on Powershell
+    $VerbosePreference = "continue" 
+    # Import Reporting Services tools 
+
+    Import-Module .\ReportingServicesTools\ReportingServicesTools.psd1 
+    Write-Host "Configuring PBI RS" (Get-Date).DateTime
+    Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017 -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount -Confirm:$false
+    Set-PbiRsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    Stop-Service PowerBIReportServer
+    Start-Service PowerBIReportServer
+    Start-Service SQLSERVERAGENT
+    Write-Host "Configuration completed" (Get-Date).DateTime
 
 test_script:
 - ps: |
     # Execute the script analyzer
-    $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse | where severity -eq "Error"
+    $results = Invoke-ScriptAnalyzer -Path .\ReportingServicesTools\functions -Recurse | where severity -eq "Error"
     # Format the results
     $header = "<testsuite tests=`"$($results.Count)`">" 
     $body = $results | ForEach-Object {"<testcase classname=`"analyzer`" name=`"$($_.RuleName)`"><failure type=`"$($_.ScriptName)`">$($_.Message)</failure></testcase>"}
@@ -30,26 +86,38 @@ test_script:
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
     # Fail if thre are issues
     if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
-   
+
+    # Integration test section
+    # Activate verbose on Powershell
+    $VerbosePreference = "continue" 
+    # Executing integration tests
+    $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
+    # Upload integration tests results
+    $wcIT = New-Object 'System.Net.WebClient'
+    $wcIT.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResultsIT.xml))
+    # Fail if thre are issues on integration tests
+    if($resultsIT.FailedCount -gt 0){throw "Integration Test found $($resultsIT.FailedCount) issues"}
+    
 deploy_script:
 - ps: |
     # Deploy to Powershell Gallery only where there is a tag which will have the version number
+    $ErrorActionPreference = 'Continue';
     $deploy = ($env:APPVEYOR_REPO_TAG -eq $true)
     if ($deploy)
     {
       $gitOut = git checkout master 2>&1
       Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
       $moduleName = "ReportingServicesTools"
-      $currentVersion = (Import-PowerShellDataFile .\$moduleName.psd1).ModuleVersion
-      ((Get-Content .\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\$moduleName.psd1
-      Publish-Module -Path .\ -NuGetApiKey $env:galleryPublishingKey
+      $currentVersion = (Import-PowerShellDataFile .\ReportingServicesTools\$moduleName.psd1).ModuleVersion
+      ((Get-Content .\ReportingServicesTools\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\ReportingServicesTools\$moduleName.psd1
+      Publish-Module -Path .\ReportingServicesTools -NuGetApiKey $env:galleryPublishingKey
       
       git config --global core.safecrlf false
       git config --global credential.helper store
       Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
       git config --global user.email "jaimeta@microsoft.com"
       git config --global user.name "Jaime Tarquino"
-      git add ReportingServicesTools.psd1  
+      git add ReportingServicesTools\ReportingServicesTools.psd1  
       git commit -m "Automatic Version Update from CI"
       $gitOut = git push 2>&1
       if ($?) {$out} else {$out.Exception}
