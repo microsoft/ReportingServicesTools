@@ -65,8 +65,8 @@ before_test:
     Import-Module .\ReportingServicesTools\ReportingServicesTools.psd1 
     Write-Host "Configuring PBI RS" (Get-Date).DateTime
     Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017 -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount -Confirm:$false
-    Set-PbiRsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
-    Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    Set-PbiRsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
+    Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
     Stop-Service PowerBIReportServer
     Start-Service PowerBIReportServer
     Start-Service SQLSERVERAGENT
