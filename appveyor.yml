@@ -66,7 +66,7 @@ before_test:
     Write-Host "Configuring PBI RS" (Get-Date).DateTime
     Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount -Confirm:$false
     Set-PbiRsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
-    Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
+    try {Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext} catch {}
     Stop-Service PowerBIReportServer
     Start-Service PowerBIReportServer
     Start-Service SQLSERVERAGENT
