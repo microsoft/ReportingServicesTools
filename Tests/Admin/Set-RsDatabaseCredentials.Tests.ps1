@@ -1,5 +1,5 @@
 function Get-CredentialType() {
-    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
     switch ($wmiObject.DatabaseLogonType) {
         0 { return 'Windows' }
         1 { return 'SQL' }
@@ -20,7 +20,7 @@ Describe "Set-RsDatabaseCredentials" {
     Context "Changing database credential type to ServiceAccount credentials" {
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        Set-RsDatabaseCredentials -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+        Set-RsDatabaseCredentials -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
         It "Should update credentials" {
             Get-CredentialType | Should be $credentialType
@@ -29,7 +29,7 @@ Describe "Set-RsDatabaseCredentials" {
 
     Context "Changing database credential type to SQL credentials" {
         $credentialType = 'ServiceAccount'
-        Set-RsDatabaseCredentials -DatabaseCredentialType $credentialType -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+        Set-RsDatabaseCredentials -DatabaseCredentialType $credentialType -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
         It "Should update credentials" {
             Get-CredentialType | Should be $credentialType
