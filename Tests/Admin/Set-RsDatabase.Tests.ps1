@@ -1,10 +1,10 @@
 function Get-DatabaseName() {
-    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
     return $wmiObject.DatabaseName
 }
 
 function Get-CredentialType() {
-    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+    $wmiObject = New-RsConfigurationSettingObject -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
     switch ($wmiObject.DatabaseLogonType) {
         0 { return 'Windows' }
         1 { return 'SQL' }
@@ -26,7 +26,7 @@ Describe "Set-RsDatabase" {
         $databaseServerName = 'localhost'
         $databaseName = 'ReportServer' + [System.DateTime]::Now.Ticks
         $credentialType = 'ServiceAccount'
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
@@ -39,7 +39,7 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer' + [System.DateTime]::Now.Ticks
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
@@ -52,7 +52,7 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer'
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
@@ -64,7 +64,7 @@ Describe "Set-RsDatabase" {
         $databaseServerName = 'localhost'
         $databaseName = 'ReportServer'
         $credentialType = 'ServiceAccount'
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2017
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
