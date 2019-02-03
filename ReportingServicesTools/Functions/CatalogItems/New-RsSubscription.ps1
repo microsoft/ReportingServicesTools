@@ -76,7 +76,7 @@ function New-RsSubscription
             Use with -DeliveryMethod 'FileShare' to specify the filename of the generated report.
 
         .PARAMETER FileWriteMode
-            Use with -DeliveryMethod 'FileShare' to specify the filename of the generated report.
+            Use with -DeliveryMethod 'FileShare' to specify the write behaviour when a file of the same name already exists. Valid values are NONE, OVERWRITE and AUTOINCREMENT.
 
         .EXAMPLE
             New-RsSubscription -RsItem '/path/to/my/Report' -Description 'Daily to folder' -RenderFormat 'PDF' -Schedule (New-RsScheduleXML -Daily 1) -DeliveryMethod 'FileShare' -FileSharePath '\\Myserver\folder' -FileName 'MyReport' -FileWriteMode Overwrite
