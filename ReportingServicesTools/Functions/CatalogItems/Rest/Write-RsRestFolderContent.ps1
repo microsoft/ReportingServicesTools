@@ -154,11 +154,11 @@ function Write-RsRestFolderContent
                     # Try to get folder info
                     if ($Credential -ne $null)
                     {
-                        $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                        $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false -UseBasicParsing
                     }
                     else
                     {
-                        $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                        $response = Invoke-WebRequest -Uri $uri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false -UseBasicParsing
                     }
 
                     # parsing response to get folder name
