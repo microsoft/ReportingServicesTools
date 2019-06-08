@@ -195,8 +195,82 @@ Describe "Write-RsCatalogItem" {
             $jpgImageResource.ItemMetadata.Value | Should Be 'image/png'
         }
 
+        $gifFolderName = 'SutWriteCatalogItem_GIFimages' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $gifFolderName
+        $gifFolderPath = '/' + $gifFolderName
+        $localPNGImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\imagesResources\PBIOverview.gif'
+        Write-RsCatalogItem -Path $localPNGImagePath -RsFolder $gifFolderPath
+
+        It "Should upload a local png image in ReportServer" {
+            $jpgImageResource = (Get-RsFolderContent -RsFolder $gifFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $jpgImageResource.Name | Should Be 'PBIOverview.gif'
+            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $jpgImageResource.ItemMetadata.Value | Should Be 'image/gif'
+        }
+
+        $bmpFolderName = 'SutWriteCatalogItem_BMPimages' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $bmpFolderName
+        $bmpFolderPath = '/' + $bmpFolderName
+        $localPNGImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\imagesResources\SSRS.bmp'
+        Write-RsCatalogItem -Path $localPNGImagePath -RsFolder $bmpFolderPath
+
+        It "Should upload a local png image in ReportServer" {
+            $bmpImageResource = (Get-RsFolderContent -RsFolder $bmpFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $bmpImageResource.Name | Should Be 'SSRS.bmp'
+            $bmpImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $bmpImageResource.ItemMetadata.Value | Should Be 'image/bmp'
+        }
+
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $jpgFolderPath -Confirm:$false
         Remove-RsCatalogItem -RsFolder $pngFolderPath -Confirm:$false
+        Remove-RsCatalogItem -RsFolder $gifFolderPath -Confirm:$false
+        Remove-RsCatalogItem -RsFolder $bmpFolderPath -Confirm:$false
+    }
+
+    Context "Write-RsCatalogItem with other resources"{
+        $pdfFolderName = 'SutWriteCatalogItem_PDF' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $pdfFolderName
+        $pdfFolderPath = '/' + $pdfFolderName
+        $localPDFPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\SQL_Server_2016_Reporting_Services_datasheet_EN_US.pdf'
+        Write-RsCatalogItem -Path $localPDFPath -RsFolder $pdfFolderPath
+
+        It "Should upload a local pdf in ReportServer" {
+            $pdfResource = (Get-RsFolderContent -RsFolder $pdfFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $pdfResource.Name | Should Be 'SQL_Server_2016_Reporting_Services_datasheet_EN_US.pdf'
+            $pdfResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $pdfResource.ItemMetadata.Value | Should Be 'application/pdf'
+        }
+
+        $xlsxFolderName = 'SutWriteCatalogItem_XLSX' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $xlsxFolderName
+        $xlsxFolderPath = '/' + $xlsxFolderName
+        $localXLSXImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\NewExcelWorkbook.xlsx'
+        Write-RsCatalogItem -Path $localXLSXImagePath -RsFolder $xlsxFolderPath
+
+        It "Should upload a local png image in ReportServer" {
+            $jpgImageResource = (Get-RsFolderContent -RsFolder $xlsxFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $jpgImageResource.Name | Should Be 'NewExcelWorkbook.xlsx'
+            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $jpgImageResource.ItemMetadata.Value | Should Be 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+
+        $xlsFolderName = 'SutWriteCatalogItem_XLS' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $xlsFolderName
+        $xlsFolderPath = '/' + $xlsFolderName
+        $localXLSImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\OldExcelWorkbook.xls'
+        Write-RsCatalogItem -Path $localXLSImagePath -RsFolder $xlsFolderPath
+
+        It "Should upload a local png image in ReportServer" {
+            $jpgImageResource = (Get-RsFolderContent -RsFolder $xlsFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $jpgImageResource.Name | Should Be 'OldExcelWorkbook.xls'
+            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $jpgImageResource.ItemMetadata.Value | Should Be 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $pdfFolderPath -Confirm:$false
+        Remove-RsCatalogItem -RsFolder $xlsxFolderPath -Confirm:$false
+        Remove-RsCatalogItem -RsFolder $xlsFolderPath -Confirm:$false
     }
 }
