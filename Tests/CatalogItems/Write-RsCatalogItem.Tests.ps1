@@ -179,7 +179,7 @@ Describe "Write-RsCatalogItem" {
             $jpgImageResource = (Get-RsFolderContent -RsFolder $jpgFolderPath ) | Where-Object TypeName -eq 'Resource'
             $jpgImageResource.Name | Should Be 'PowerShellHero.jpg'
             $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
-            $jpgImageResource.ItemMetadata.Value | Should Be 'image/jpeg'
+            $jpgImageResource.ItemMetadata.Value | Should Be 'image/jpg'
         }
 
         $pngFolderName = 'SutWriteCatalogItem_PNGimages' + [guid]::NewGuid()
@@ -189,10 +189,10 @@ Describe "Write-RsCatalogItem" {
         Write-RsCatalogItem -Path $localPNGImagePath -RsFolder $pngFolderPath
 
         It "Should upload a local png image in ReportServer" {
-            $jpgImageResource = (Get-RsFolderContent -RsFolder $pngFolderPath ) | Where-Object TypeName -eq 'Resource'
-            $jpgImageResource.Name | Should Be 'SSRS.png'
-            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
-            $jpgImageResource.ItemMetadata.Value | Should Be 'image/png'
+            $pngImageResource = (Get-RsFolderContent -RsFolder $pngFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $pngImageResource.Name | Should Be 'SSRS.png'
+            $pngImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $pngImageResource.ItemMetadata.Value | Should Be 'image/png'
         }
 
         $gifFolderName = 'SutWriteCatalogItem_GIFimages' + [guid]::NewGuid()
@@ -201,22 +201,22 @@ Describe "Write-RsCatalogItem" {
         $localPNGImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\imagesResources\PBIOverview.gif'
         Write-RsCatalogItem -Path $localPNGImagePath -RsFolder $gifFolderPath
 
-        It "Should upload a local png image in ReportServer" {
-            $jpgImageResource = (Get-RsFolderContent -RsFolder $gifFolderPath ) | Where-Object TypeName -eq 'Resource'
-            $jpgImageResource.Name | Should Be 'PBIOverview.gif'
-            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
-            $jpgImageResource.ItemMetadata.Value | Should Be 'image/gif'
+        It "Should upload a local gif image in ReportServer" {
+            $gifImageResource = (Get-RsFolderContent -RsFolder $gifFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $gifImageResource.Name | Should Be 'PBIOverview.gif'
+            $gifImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $gifImageResource.ItemMetadata.Value | Should Be 'image/gif'
         }
 
         $bmpFolderName = 'SutWriteCatalogItem_BMPimages' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $bmpFolderName
         $bmpFolderPath = '/' + $bmpFolderName
-        $localPNGImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\imagesResources\SSRS.bmp'
+        $localPNGImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\imagesResources\PowerShellHero.bmp'
         Write-RsCatalogItem -Path $localPNGImagePath -RsFolder $bmpFolderPath
 
-        It "Should upload a local png image in ReportServer" {
+        It "Should upload a local bmp image in ReportServer" {
             $bmpImageResource = (Get-RsFolderContent -RsFolder $bmpFolderPath ) | Where-Object TypeName -eq 'Resource'
-            $bmpImageResource.Name | Should Be 'SSRS.bmp'
+            $bmpImageResource.Name | Should Be 'PowerShellHero.bmp'
             $bmpImageResource.ItemMetadata.Name | Should Be 'MIMEType'
             $bmpImageResource.ItemMetadata.Value | Should Be 'image/bmp'
         }
@@ -248,11 +248,11 @@ Describe "Write-RsCatalogItem" {
         $localXLSXImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\NewExcelWorkbook.xlsx'
         Write-RsCatalogItem -Path $localXLSXImagePath -RsFolder $xlsxFolderPath
 
-        It "Should upload a local png image in ReportServer" {
-            $jpgImageResource = (Get-RsFolderContent -RsFolder $xlsxFolderPath ) | Where-Object TypeName -eq 'Resource'
-            $jpgImageResource.Name | Should Be 'NewExcelWorkbook.xlsx'
-            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
-            $jpgImageResource.ItemMetadata.Value | Should Be 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        It "Should upload a local xlsx image in ReportServer" {
+            $xlsxImageResource = (Get-RsFolderContent -RsFolder $xlsxFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $xlsxImageResource.Name | Should Be 'NewExcelWorkbook.xlsx'
+            $xlsxImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $xlsxImageResource.ItemMetadata.Value | Should Be 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
 
         $xlsFolderName = 'SutWriteCatalogItem_XLS' + [guid]::NewGuid()
@@ -261,11 +261,11 @@ Describe "Write-RsCatalogItem" {
         $localXLSImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\OldExcelWorkbook.xls'
         Write-RsCatalogItem -Path $localXLSImagePath -RsFolder $xlsFolderPath
 
-        It "Should upload a local png image in ReportServer" {
-            $jpgImageResource = (Get-RsFolderContent -RsFolder $xlsFolderPath ) | Where-Object TypeName -eq 'Resource'
-            $jpgImageResource.Name | Should Be 'OldExcelWorkbook.xls'
-            $jpgImageResource.ItemMetadata.Name | Should Be 'MIMEType'
-            $jpgImageResource.ItemMetadata.Value | Should Be 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        It "Should upload a local xls image in ReportServer" {
+            $xlsImageResource = (Get-RsFolderContent -RsFolder $xlsFolderPath ) | Where-Object TypeName -eq 'Resource'
+            $xlsImageResource.Name | Should Be 'OldExcelWorkbook.xls'
+            $xlsImageResource.ItemMetadata.Name | Should Be 'MIMEType'
+            $xlsImageResource.ItemMetadata.Value | Should Be 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
 
         # Removing folders used for testing
