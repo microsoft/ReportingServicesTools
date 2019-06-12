@@ -82,7 +82,16 @@ function Out-RsRestCatalogItemId
         if ($RsItemInfo.Type -ne 'MobileReport')
         {
             $itemId = $RsItemInfo.Id
-            $fileName = $RsItemInfo.Name + (Get-FileExtension -TypeName $RsItemInfo.Type)
+            var $extension = "";
+            try {
+                $extension = (Get-FileExtension -TypeName $RsItemInfo.Type)
+            } 
+            catch
+            {
+                Write-Warning "Unsupported Type: $($RsItemInfo.Type) Unable to export: $($RsItemInfo.Name)"
+                break;
+            }
+            $fileName = $RsItemInfo.Name + $extension
         }
         else
         {
