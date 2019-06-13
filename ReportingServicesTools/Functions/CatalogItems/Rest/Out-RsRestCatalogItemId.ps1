@@ -82,7 +82,7 @@ function Out-RsRestCatalogItemId
         if ($RsItemInfo.Type -ne 'MobileReport')
         {
             $itemId = $RsItemInfo.Id
-            var $extension = "";
+            $extension = "";
             try {
                 $extension = (Get-FileExtension -TypeName $RsItemInfo.Type)
             } 
