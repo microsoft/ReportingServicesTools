@@ -248,7 +248,7 @@ Describe "Write-RsCatalogItem" {
         $localXLSXImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\NewExcelWorkbook.xlsx'
         Write-RsCatalogItem -Path $localXLSXImagePath -RsFolder $xlsxFolderPath
 
-        It "Should upload a local xlsx image in ReportServer" {
+        It "Should upload a local xlsx in ReportServer" {
             $xlsxImageResource = (Get-RsFolderContent -RsFolder $xlsxFolderPath ) | Where-Object TypeName -eq 'Resource'
             $xlsxImageResource.Name | Should Be 'NewExcelWorkbook.xlsx'
             $xlsxImageResource.ItemMetadata.Name | Should Be 'MIMEType'
@@ -261,7 +261,7 @@ Describe "Write-RsCatalogItem" {
         $localXLSImagePath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources\OldExcelWorkbook.xls'
         Write-RsCatalogItem -Path $localXLSImagePath -RsFolder $xlsFolderPath
 
-        It "Should upload a local xls image in ReportServer" {
+        It "Should upload a local xls in ReportServer" {
             $xlsImageResource = (Get-RsFolderContent -RsFolder $xlsFolderPath ) | Where-Object TypeName -eq 'Resource'
             $xlsImageResource.Name | Should Be 'OldExcelWorkbook.xls'
             $xlsImageResource.ItemMetadata.Name | Should Be 'MIMEType'
