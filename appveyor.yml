@@ -96,7 +96,7 @@ test_script:
             $isAllowedFileFormatUpdated = $true;
             Invoke-RestMethod -Uri "http://localhost/reports/api/v1.0/ReportServerInfo/Model.UpdateSettings" -Method POST -UseDefaultCredentials -ContentType 'application/json' -Body $stringNewRequest
         }
-        catch (){
+        catch{
             $isAllowedFileFormatUpdated = $false
             Start-Sleep -Seconds 1
         }
