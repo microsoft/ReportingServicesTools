@@ -90,7 +90,16 @@ test_script:
     # Enable additional file formats
     $newSettings = New-Object PSCustomObject -Property @{"PropertyValues" = @( @{"@odata.type"="#Model.Property"; "Name" = "AllowedResourceExtensionsForUpload"; "Value" = "*,*.xml,*.xsd,*.xsl,*.png,*.gif,*.jpg,*.tif,*.jpeg,*.tiff,*.bmp,*.pdf,*.svg,*.rtf,*.txt,*.doc,*.docx,*.pps,*.ppt,*.pptx,*.xlsx"})}
     $stringNewRequest =  $newSettings | ConvertTo-JSON -Depth 5
-    try {Invoke-RestMethod -Uri "http://localhost/reports/api/v1.0/ReportServerInfo/Model.UpdateSettings" -Method POST -UseDefaultCredentials -ContentType 'application/json' -Body $stringNewRequest} catch {}
+    for ($i=0 ; $i -le 10 -and $sucess -eq $false ;i++){
+        try{
+            $sucess = $true;
+            Invoke-RestMethod -Uri "http://localhost/reports/api/v1.0/ReportServerInfo/Model.UpdateSettings" -Method POST -UseDefaultCredentials -ContentType 'application/json' -Body $stringNewRequest
+        }
+        catch (){
+            $sucess = $false
+            Start-Sleep -Seconds 1
+        }
+    }
     
     # Integration test section
     # Activate verbose on Powershell
