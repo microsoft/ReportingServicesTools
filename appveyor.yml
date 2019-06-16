@@ -101,7 +101,7 @@ test_script:
             Start-Sleep -Seconds 1
         }
     }
-    if (isAllowedFileFormatUpdated -eq $false) {throw (New-Object System.Exception("Failed to update the AllowedResourceExtensionsForUpload") }
+    if ($isAllowedFileFormatUpdated -eq $false) {throw (New-Object System.Exception("Failed to update the AllowedResourceExtensionsForUpload") }
     
     
     # Integration test section
