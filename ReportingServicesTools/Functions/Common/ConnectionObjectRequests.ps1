@@ -43,7 +43,7 @@
     {
         if ($goodKeys -contains $key)
         {
-            $NewRsWebServiceProxyParam[$key] = $BoundParameters[$key]
+            $NewRsWebServiceProxyParam["$key"] = $BoundParameters["$key"]
         }
     }
     
@@ -96,7 +96,7 @@ function New-RsRestSessionHelper
     {
         if ($goodKeys -contains $key)
         {
-            $NewRsRestSessionParams[$key] = $BoundParameters[$key]
+            $NewRsRestSessionParams["$key"] = $BoundParameters["$key"]
         }
     }
 
@@ -184,7 +184,7 @@ function New-RsConfigurationSettingObjectHelper
     {
         if ($goodKeys -contains $key)
         {
-            $NewRsConfigurationSettingObjectParam[$key] = $BoundParameters[$key]
+            $NewRsConfigurationSettingObjectParam["$key"] = $BoundParameters["$key"]
         }
     }
     
