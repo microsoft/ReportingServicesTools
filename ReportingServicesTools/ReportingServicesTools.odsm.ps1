@@ -1,6 +1,6 @@
 ﻿# Octopus deploy module export
 $mainScript = "$PSScriptRoot\ReportingServicesTools.Designer.ps1"
-@('# AUTO GENERATED SCRIPT') | sc -path $mainScript 
+@('# AUTO GENERATED SCRIPT', '# SOURCE https://github.com/microsoft/ReportingServicesTools') | sc -path $mainScript 
 gc "$PSScriptRoot\Libraries\library.ps1" | ac -path $mainScript
 
 $mainScript
