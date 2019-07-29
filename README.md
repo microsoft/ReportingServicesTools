@@ -141,7 +141,7 @@ If you have any scripts you would like to share, we request you to please format
 
 ## Contributions
 
-For contributions please provide the minimun possible increment per Pull Request so it can reviewed and merged quickly.
+For contributions please provide the minimum possible increment per Pull Request so it can reviewed and merged quickly.
 
 ## Code of Conduct
 
