@@ -84,11 +84,11 @@ function Get-RsRestItemDataSource
             $catalogItemsUri = [String]::Format($catalogItemsUri, $RsItem)
             if ($Credential -ne $null)
             {
-                $response = Invoke-WebRequest -Uri $catalogItemsUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                $response = Invoke-WebRequest -Uri $catalogItemsUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false -UseBasicParsing
             }
             else
             {
-                $response = Invoke-WebRequest -Uri $catalogItemsUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                $response = Invoke-WebRequest -Uri $catalogItemsUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false -UseBasicParsing
             }
 
             $item = ConvertFrom-Json $response.Content
@@ -99,11 +99,11 @@ function Get-RsRestItemDataSource
 
             if ($Credential -ne $null)
             {
-                $response = Invoke-WebRequest -Uri $dataSourcesUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                $response = Invoke-WebRequest -Uri $dataSourcesUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false -UseBasicParsing
             }
             else
             {
-                $response = Invoke-WebRequest -Uri $dataSourcesUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                $response = Invoke-WebRequest -Uri $dataSourcesUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false -UseBasicParsing
             }
 
             $itemWithDataSources = ConvertFrom-Json $response.Content

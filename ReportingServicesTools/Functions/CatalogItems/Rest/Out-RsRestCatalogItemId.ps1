@@ -82,7 +82,16 @@ function Out-RsRestCatalogItemId
         if ($RsItemInfo.Type -ne 'MobileReport')
         {
             $itemId = $RsItemInfo.Id
-            $fileName = $RsItemInfo.Name + (Get-FileExtension -TypeName $RsItemInfo.Type)
+            $extension = "";
+            try {
+                $extension = (Get-FileExtension -TypeName $RsItemInfo.Type)
+            } 
+            catch
+            {
+                Write-Warning "Unsupported Type: $($RsItemInfo.Type) Unable to export: $($RsItemInfo.Name)"
+                break;
+            }
+            $fileName = $RsItemInfo.Name + $extension
         }
         else
         {
@@ -128,11 +137,11 @@ function Out-RsRestCatalogItemId
             $url = [string]::Format($catalogItemContentApi, $itemId)
             if ($Credential -ne $null)
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
+                $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false -UseBasicParsing
             }
             else
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
+                $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false -UseBasicParsing
             }
         }
         catch
