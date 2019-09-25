@@ -36,7 +36,10 @@ function Connect-RsReportServer
             The version of the API to use, 2010 by default. Sepcifiy '2005' or '2006' if you need
             to query a Sql Server Reporting Service Instance running a version prior to
             SQL Server 2008 R2 to access those respective APIs.
-                    
+        
+        .PARAMETER CustomAuthentication
+            If the server implements a custom authentication schema such as 'Forms' instead of standard Basic/NTLM.
+
         .EXAMPLE
             Connect-RsReportServer -ComputerName "srv-foobar" -ReportServerInstance "Northwind" -ReportServerUri "http://srv-foobar/reportserver/"
     
@@ -79,9 +82,13 @@ function Connect-RsReportServer
         [switch]
         $RegisterProxy,
 
+        [Alias('ApiVersion')]
         [ValidateSet('2005','2006','2010')]
         [string]
-        $SoapEndpointApiVersion = '2010'
+        $SoapEndpointApiVersion = '2010',
+
+        [switch]
+        $CustomAuthentication
     )
     
     if ($PSBoundParameters.ContainsKey("ComputerName"))
@@ -106,7 +113,7 @@ function Connect-RsReportServer
         [Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri = $ReportServerUri
         try
         {
-            $proxy = New-RsWebServiceProxy -ReportServerUri ([Microsoft.ReportingServicesTools.ConnectionHost]::ReportServerUri) -Credential ([Microsoft.ReportingServicesTools.ConnectionHost]::Credential) -ApiVersion $SoapEndpointApiVersion -ErrorAction Stop
+            $proxy = New-RsWebServiceProxyHelper -BoundParameters $PSBoundParameters
             [Microsoft.ReportingServicesTools.ConnectionHost]::Proxy = $proxy
         }
         catch
@@ -115,7 +122,7 @@ function Connect-RsReportServer
         }
     }
 
-    if ($PSBoundParameters.ContainsKey("ReportPortalUri"))
+    if ($PSBoundParameters.ContainsKey("ReportPortalUri")) 
     {
         [Microsoft.ReportingServicesTools.ConnectionHost]::ReportPortalUri = $ReportPortalUri
     }

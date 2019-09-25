@@ -12,6 +12,7 @@
             - Credential
             - Proxy
             - APIVersion
+            - CustomAuthentication
             These parameters are passed on to the New-RsWebServiceProxy function, unless Proxy was specified.
             If the bound parameters contain the proxy parameter, the function will return that object.
             All other bound parameters are ignored.
@@ -36,7 +37,7 @@
         return $BoundParameters["Proxy"]
     }
     
-    $goodKeys = @("ReportServerUri", "Credential", "ApiVersion")
+    $goodKeys = @("ReportServerUri", "Credential", "ApiVersion", "CustomAuthentication")
     $NewRsWebServiceProxyParam = @{ }
     
     foreach ($key in $BoundParameters.Keys)
