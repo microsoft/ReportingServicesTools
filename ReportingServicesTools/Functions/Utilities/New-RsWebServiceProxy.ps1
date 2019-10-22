@@ -24,9 +24,12 @@ function New-RsWebServiceProxy
             By Default, this parameter uses the credentials (if any) specified by the Connect-RsReportingServer function.
         
         .PARAMETER ApiVersion
-            The version of the API to use, 2010 by default. Sepcifiy '2005' or '2006' if you need
+            The version of the API to use, 2010 by default. Specify '2005' or '2006' if you need
             to query a Sql Server Reporting Service Instance running a version prior to
             SQL Server 2008 R2 to access those respective APIs.
+
+        .PARAMETER CustomAuthentication
+            If the server implements a custom authentication schema such as 'Forms' instead of standard Basic/NTLM.
                     
         .EXAMPLE
             New-RsWebServiceProxy
@@ -60,7 +63,10 @@ function New-RsWebServiceProxy
 
         [ValidateSet('2005','2006','2010')]
         [string]
-        $ApiVersion = '2010'
+        $ApiVersion = '2010',
+
+        [switch]
+        $CustomAuthentication
     )
     
     #region If we did not specify a connection parameter, use a default connection
@@ -102,12 +108,28 @@ function New-RsWebServiceProxy
         Write-Verbose "Establishing proxy connection to $ReportServerUri..."
         if ($Credential)
         {
-            New-WebServiceProxy -Uri $ReportServerUri -Credential $Credential -ErrorAction Stop
+            $proxy = New-WebServiceProxy -Uri $ReportServerUri -Credential $Credential -ErrorAction Stop
         }
         else
         {
-            New-WebServiceProxy -Uri $ReportServerUri -UseDefaultCredential -ErrorAction Stop
+            $proxy = New-WebServiceProxy -Uri $ReportServerUri -UseDefaultCredential -ErrorAction Stop
         }
+
+        if ($CustomAuthentication)
+        {
+            if (!$Credential) 
+            {
+                $Credential = Get-Credential
+            }
+            $NetworkCredential = $Credential.GetNetworkCredential()
+
+            $proxy.CookieContainer = New-Object System.Net.CookieContainer
+            $proxy.LogonUser($NetworkCredential.UserName, $NetworkCredential.Password, "Forms")
+
+            Write-Verbose "Authenticated!"    
+        }
+
+        return $proxy
     }
     catch
     {
