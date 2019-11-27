@@ -135,7 +135,14 @@ function Set-RsDatabaseCredentials
         Write-Verbose "Executing database rights script..."
         try
         {
-            Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLscript -QueryTimeout $QueryTimeout -ErrorAction Stop
+            if ($isWindowsAccount)
+            {
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLscript -QueryTimeout $QueryTimeout -ErrorAction Stop
+            }
+            else 
+            {
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLscript -QueryTimeout $QueryTimeout -ErrorAction Stop -Username $username -Password $password
+            }
         }
         catch
         {
