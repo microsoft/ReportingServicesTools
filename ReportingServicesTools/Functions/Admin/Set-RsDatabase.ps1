@@ -64,6 +64,9 @@ function Set-RsDatabase
             This credential is used for *setup* only; it is not used for PowerBI Report Server during runtime.
             Note: This parameter will be ignored whenever AdminDatabaseCredentialType is set to Service Account!
 
+        .PARAMETER QueryTimeout
+            Specify how many seconds the query will be running before exit by timeout. Default value is 30.
+
         .EXAMPLE
             Set-RsDatabase -DatabaseServerName localhost -Name ReportServer -DatabaseCredentialType ServiceAccount
             Description
@@ -120,7 +123,10 @@ function Set-RsDatabase
         $ComputerName,
 
         [System.Management.Automation.PSCredential]
-        $Credential
+        $Credential,
+
+        [int]
+        $QueryTimeout = 30
     )
 
     if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Configure to use $DatabaseServerName as database, using $DatabaseCredentialType runtime authentication and $AdminDatabaseCredentialType setup authentication"))
@@ -198,11 +204,11 @@ function Set-RsDatabase
             {
                 if ($isSQLAdminAccount)
                 {
-                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop -Username $adminUsername -Password $adminPassword
+                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop -Username $adminUsername -Password $adminPassword
                 }
                 else
                 {
-                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop
+                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop
                 }
             }
             catch
@@ -236,11 +242,11 @@ function Set-RsDatabase
         {
             if ($isSQLAdminAccount)
             {
-                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop -Username $adminUsername -Password $adminPassword
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop -Username $adminUsername -Password $adminPassword
             }
             else
             {
-                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -ErrorAction Stop
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop
             }
         }
         catch
