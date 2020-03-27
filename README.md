@@ -59,7 +59,7 @@ The following is a list of commands which are available for you to use once you 
 |New-RsScheduleXml|This command creates an XML string definition of a subscription schedule. For use with the -Schedule parameter or New-RsSubscription.|
 |New-RsWebServiceProxy|This command creates a new Web Service Proxy which is used to interact with the SOAP Endpoint.|
 |Out-RsCatalogItem|This command downloads a catalog item.|
-|Out-RsFolderContent|This command all catalog items in folder.|
+|Out-RsFolderContent|This command downloads all catalog items in folder.|
 |Out-RsRestFolderContent|This command downloads all catalog items under a folder using the REST Endpoint.|
 |Out-RsRestCatalogItem|This command downloads a catalog item using the REST Endpoint.|
 |Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services. Alias: Register-RSPowerBI|
