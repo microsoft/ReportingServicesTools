@@ -106,7 +106,8 @@ function Out-RsFolderContent
         if ($item.TypeName -eq "Resource" -or 
             $item.TypeName -eq "Report" -or 
             $item.TypeName -eq "DataSource" -or 
-            $item.TypeName -eq "DataSet")
+            $item.TypeName -eq "DataSet"   -or 
+            $item.TypeName -eq "Component")
         {
             # We're relying on the fact that the implementation of Get-RsFolderContent will show us the folder before their content, 
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains
