@@ -147,7 +147,7 @@ function Copy-RsSubscription
         }
         catch
         {
-            Write-Error "Error occurred while creating subscription $($subscriptionId)! $($_.Exception.Message)"
+            Write-Error "Error occurred while creating subscription $($sub.SubscriptionId) because: $($_.Exception.Message)"
         }
     }
 }
