@@ -37,12 +37,25 @@ function Import-RsSubscriptionXml {
             and output a PowerShell object with the result.
 
         .EXAMPLE
-            Import-RsSubscriptionXml .\MySubscriptions.xml | Set-RsSubscription -Path /Example/Report
+            Import-RsSubscriptionXml .\MySubscriptions.xml | Copy-RsSubscription -RsItem /Example/Report
+
+            Description
+            -----------
+            This command will import all the subscriptions contained in .\MySubscriptions.xml, recreate any SRSS specific properties
+            and pipe the results to Copy-RsSubscription which will add them to the /Example/Report report.
+            NOTE: You will need to supply the correct path for the -ReportServerUri parameter to both the Import-RsSubscriptionXml 
+            & Copy-RsSubscription functions.  It has been omitted from this example for brevity.
+
+        .EXAMPLE
+            Import-RsSubscriptionXml .\MySubscriptions.xml | 
+            Out-GridView -PassThru |
+            Copy-RsSubscription -RsItem /Example/Report
 
             Description
             -----------
             This command will import the subscriptions contained in .\MySubscriptions.xml, recreate any SRSS specific properties
-            and pipe the results to Set-RsSubscription which will add them to the /Example/Report report.
+            and output a PowerShell object with the result.  The Out-GridView cmdlet allows you to examine and optionally filter the
+            subscriptions from the .XML file, before adding them to the report via the Copy-RsSubscription function.
     #>
 
     [cmdletbinding()]
