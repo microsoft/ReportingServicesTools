@@ -147,7 +147,7 @@ function Copy-RsSubscription
         }
         catch
         {
-            throw (New-Object System.Exception("Exception occurred while creating subscription! $($_.Exception.Message)", $_.Exception))
+            Write-Error "Error occurred while creating subscription $($sub.SubscriptionId) because: $($_.Exception.Message)"
         }
     }
 }
