@@ -86,6 +86,11 @@ function Out-RsFolderContent
     
     $Destination = Convert-Path $Destination
 
+    ## Loop for folders first, because we need to ensure folders are written to disk before we  
+    ## attempt to write any files. Otherwise, file writes will randomly fail to write because 
+    ## its folder has not been created yet. 
+    ## The Solution was to loop and create all folders then work on the files.
+    ## Basically, create all folders, then write all the files.
     foreach ($item in $items)
     {
         if (($item.TypeName -eq 'Folder') -and $Recurse)
@@ -102,13 +107,18 @@ function Out-RsFolderContent
             New-Item $newFolder -ItemType Directory -Force | Out-Null
             Write-Verbose "Folder: $newFolder was created successfully."
         }
-        
+    } ## End Folder Loop
+    
+   ## Loop for non-folders.
+   foreach ($item in $items)
+   {     
         if ($item.TypeName -eq "Resource" -or 
             $item.TypeName -eq "Report" -or 
             $item.TypeName -eq "DataSource" -or 
             $item.TypeName -eq "DataSet"   -or 
             $item.TypeName -eq "Component")
         {
+            # TODO: REMOVE this comment below. This is the comment that caused me to look for a solution.
             # We're relying on the fact that the implementation of Get-RsFolderContent will show us the folder before their content, 
             # when using the -recurse option, so we can assume that any subfolder will be created before we download the items it contains
             $relativePath = $item.Path
@@ -122,5 +132,5 @@ function Out-RsFolderContent
             $folder = $Destination + $relativePath
             Out-RsCatalogItem -proxy $proxy -RsFolder $item.Path -Destination $folder
         }
-    }
+    } ## End non-Folder loop
 }
