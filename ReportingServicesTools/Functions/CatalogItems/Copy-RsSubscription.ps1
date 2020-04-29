@@ -34,6 +34,9 @@ function Copy-RsSubscription
             Use "New-RsWebServiceProxy" to generate a proxy object for reuse.
             Useful when repeatedly having to connect to multiple different Report Server.
 
+        .PARAMETER SkipOwner
+            Used to skip attempting to change the owner of a subscription to the owner being piped in. 
+
         .EXAMPLE
             Get-RsSubscription -ReportServerUri 'http://localhost/ReportServer_sql14' -RsItem '/path/to/my/oldReport' | Copy-RsSubscription -ReportServerUri 'http://remote-machine:8080/reportserver_sql16' -RsItem '/path/to/newReport'
 
@@ -58,6 +61,18 @@ function Copy-RsSubscription
             -----------
             This command will establish a connection to the Report Server located at http://localhost/ReportServer_sql14 using current user's credentials get all the paths from all reports at '/Origin' folder.
             Then it uses the $paths variable to get all existing subscriptions and pipe the results to Copy-RsSubscription which will create a new subscription on each report that exists with the same name on the destination folder '/New Folder' located at Report Server 'http://remote-machine:8080/reportserver_sql16'
+
+        .EXAMPLE
+            Import-RsSubscriptionXml .\MySubscriptions.xml | Copy-RsSubscription -RsItem /Example/Report -SkipOwner $True
+
+            Description
+            -----------
+            This command will import all the subscriptions contained in .\MySubscriptions.xml, recreate any SRSS specific properties
+            and pipe the results to Copy-RsSubscription which will add them to the /Example/Report report.  The newly copied 
+            subscriptions will have their owner set to the person running the command since the -SkipOwner parameter was supplied 
+            with a value of $True.
+            NOTE: You will need to supply the correct path for the -ReportServerUri parameter to both the Import-RsSubscriptionXml 
+            & Copy-RsSubscription functions.  It has been omitted from this example for brevity.
     #>
 
     [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
@@ -83,7 +98,11 @@ function Copy-RsSubscription
 
         [Parameter(Mandatory = $True, ValueFromPipeline=$true)]
         [object[]]
-        $Subscription
+        $Subscription,
+
+        [parameter(Mandatory = $False)]
+        [System.Boolean]
+        $SkipOwner = $False
     )
     Begin
     {
@@ -142,6 +161,15 @@ function Copy-RsSubscription
                         OriginalReport    = $sub.Path
                     }
                     Write-Verbose "Subscription created successfully! Generated subscriptionId: $subscriptionId"
+                    if ($SkipOwner -eq $False)
+                    {
+                        try {
+                            $proxy.ChangeSubscriptionOwner($subscriptionId,$sub.owner)
+                        }
+                        catch {
+                            Write-Warning "Unable to change owner of $($subscriptionId) after creating subscription because: $($_.Exception.Message)"
+                        }
+                    }
                 }
             }
         }
