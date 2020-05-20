@@ -72,6 +72,7 @@
         'Get-RsItemDataSource',
         'Get-RsItemReference',
         'Get-RsRestItemDataSource',
+        'Get-RsRestItem',
         'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
@@ -127,7 +128,9 @@
     # Aliases are stored in ReportingServicesTools.psm1
     AliasesToExport = @(
         'Get-RsCatalogItems',
+        'Get-RsCatalogItem',
         'Get-RsChildItem',
+        'Get-RsItem',
         'Get-RsItemReferences',
         'Grant-AccessOnCatalogItem',
         'Grant-AccessToRS',
