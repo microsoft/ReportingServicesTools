@@ -8,7 +8,7 @@ Describe "Get-RsRestFolderContent" {
     Context "Get folder with reportPortalUri parameter"{
         # Create a folder
         $folderName = 'SutGetFolderReportPortalUriParameter' + [guid]::NewGuid()
-        New-RsRestFolder -Path / -FolderName $folderName
+        New-RsRestFolder -RsFolder / -FolderName $folderName
         $folderPath = '/' + $folderName
         # Test if the folder can be found
         $folderList = Get-RsRestFolderContent -reportPortalUri $reportPortalUri -RsFolder / 
@@ -17,13 +17,13 @@ Describe "Get-RsRestFolderContent" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsFolder $folderPath -Confirm:$false
+        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $folderPath -Confirm:$false
     }
 
     Context "Get folder inside 4 folders"{
         # Create the first folder in the root
         $sutRootFolder = 'SutGetFolderParent' + [guid]::NewGuid()
-        New-RsRestFolder -Path / -FolderName $sutRootFolder
+        New-RsRestFolder -RsFolder / -FolderName $sutRootFolder
         # Create 5 folders, one inside the other
         $currentFolderDepth = 2
         $folderParentName = $sutRootFolder
@@ -32,7 +32,7 @@ Describe "Get-RsRestFolderContent" {
             # Create a folder in a specified path 
             $folderParentPath +=  '/' + $folderParentName
             $folderParentName = 'SutGetFolderParent' + $currentFolderDepth 
-            New-RsRestFolder -Path $folderParentPath -FolderName $folderParentName
+            New-RsRestFolder -RsFolder $folderParentPath -FolderName $folderParentName
             $currentFolderDepth +=1
             
         }
@@ -46,6 +46,6 @@ Describe "Get-RsRestFolderContent" {
             $folderList.Count | Should be 4
         }
          # Removing folders used for testing
-        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsFolder $rootFolderPath -Confirm:$false
+        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
     }
 }
