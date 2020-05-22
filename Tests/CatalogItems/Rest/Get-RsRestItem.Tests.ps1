@@ -39,7 +39,7 @@ Describe "Get-RsRestItem" {
         # Test if the ´SutGetFolderParent5´ folder inside the other folders can be found
         $fifthFolderPath = $folderParentPath + '/' + $folderParentName
         $rootFolderPath = '/'  + $sutRootFolder 
-        $folderList = Get-RsRestItem -RsItem "$folderParentPath/$folderParentName" -Recurse
+        $folderList = Get-RsRestItem -RsItem "$folderParentPath/$folderParentName"
         $folderCount = ($folderList | Where-Object path -eq $fifthFolderPath).Count
         It "Should found 4 subfolders" {
             $folderCount | Should Be 1
