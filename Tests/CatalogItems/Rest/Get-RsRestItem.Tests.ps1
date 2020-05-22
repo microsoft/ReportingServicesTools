@@ -17,7 +17,7 @@ Describe "Get-RsRestItem" {
             $folderCount | Should Be 1
         }
         # Removing folders used for testing
-        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsFolder $folderPath -Confirm:$false
+        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $folderPath -Confirm:$false
     }
 
     Context "Get folder inside 4 folders"{
@@ -46,6 +46,6 @@ Describe "Get-RsRestItem" {
             $folderList.Count | Should be 1
         }
          # Removing folders used for testing
-        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsFolder $rootFolderPath -Confirm:$false
+        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
     }
 }
