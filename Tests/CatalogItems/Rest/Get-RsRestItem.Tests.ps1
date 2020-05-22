@@ -11,7 +11,7 @@ Describe "Get-RsRestItem" {
         New-RsRestFolder -RsFolder / -FolderName $folderName
         $folderPath = '/' + $folderName
         # Test if the folder can be found
-        $folderList = Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem / 
+        $folderList = Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem $folderPath
         $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should found a folder" {
             $folderCount | Should Be 1
