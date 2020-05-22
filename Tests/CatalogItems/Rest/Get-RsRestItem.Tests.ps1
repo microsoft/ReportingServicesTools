@@ -19,6 +19,8 @@ Describe "Get-RsRestItem" {
         # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $folderPath -Confirm:$false
     }
+"$($folderName)";
+"$($folderList.Name)";
 
     Context "Get folder inside 4 folders"{
         # Create the first folder in the root
@@ -48,4 +50,7 @@ Describe "Get-RsRestItem" {
          # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
     }
+"$($folderName)";
+"$($folderList.Name)";
+
 }
