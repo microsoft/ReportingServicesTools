@@ -8,7 +8,7 @@ Describe "Get-RsRestItem" {
     Context "Get folder with reportPortalUri parameter"{
         # Create a folder
         $folderName = 'SutGetFolderReportPortalUriParameter' + [guid]::NewGuid()
-        New-RsRestFolder -Path / -FolderName $folderName
+        New-RsRestFolder -RsFolder / -FolderName $folderName
         $folderPath = '/' + $folderName
         # Test if the folder can be found
         $folderList = Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem / 
@@ -23,7 +23,7 @@ Describe "Get-RsRestItem" {
     Context "Get folder inside 4 folders"{
         # Create the first folder in the root
         $sutRootFolder = 'SutGetFolderParent' + [guid]::NewGuid()
-        New-RsRestFolder -Path / -FolderName $sutRootFolder
+        New-RsRestFolder -RsFolder / -FolderName $sutRootFolder
         # Create 5 folders, one inside the other
         $currentFolderDepth = 2
         $folderParentName = $sutRootFolder
