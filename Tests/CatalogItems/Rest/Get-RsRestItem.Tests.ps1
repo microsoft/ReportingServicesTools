@@ -32,14 +32,14 @@ Describe "Get-RsRestItem" {
             # Create a folder in a specified path 
             $folderParentPath +=  '/' + $folderParentName
             $folderParentName = 'SutGetFolderParent' + $currentFolderDepth 
-            New-RsRestFolder -Path $folderParentPath -FolderName $folderParentName
+            New-RsRestFolder -RsFolder $folderParentPath -FolderName $folderParentName
             $currentFolderDepth +=1
             
         }
         # Test if the ´SutGetFolderParent5´ folder inside the other folders can be found
         $fifthFolderPath = $folderParentPath + '/' + $folderParentName
         $rootFolderPath = '/'  + $sutRootFolder 
-        $folderList = Get-RsRestItem -RsItem $rootFolderPath -Recurse
+        $folderList = Get-RsRestItem -RsItem "$folderParentPath/$folderParentName" -Recurse
         $folderCount = ($folderList | Where-Object path -eq $fifthFolderPath).Count
         It "Should found 4 subfolders" {
             $folderCount | Should Be 1
