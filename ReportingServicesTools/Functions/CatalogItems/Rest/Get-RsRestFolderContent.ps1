@@ -69,25 +69,21 @@ function Get-RsRestFolderContent
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/Folders(Path='{0}')/CatalogItems?`$expand=Properties"
-        $dataSourcesUri = $ReportPortalUri + "api/$RestApiVersion/{0}(Path='{1}')?`$expand=DataSources"
     }
     Process
     {
         try
         {
             Write-Verbose "Fetching metadata for $RsFolder..."
-            $catalogItemsUri = [String]::Format($catalogItemsUri, $RsFolder)
+            $url = [String]::Format($catalogItemsUri, $RsFolder)
             if ($Credential -ne $null)
             {
-                $response = Invoke-WebRequest -Uri $catalogItemsUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
             }
             else
             {
-                $response = Invoke-WebRequest -Uri $catalogItemsUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                $response = Invoke-WebRequest -Uri $url -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
             }
-
-            $item = ConvertFrom-Json $response.Content
-            $itemType = $item.Type
 
             $catalogItems = (ConvertFrom-Json $response.Content).value
             foreach ($catalogItem in $catalogItems)
@@ -97,11 +93,23 @@ function Get-RsRestFolderContent
                     if ($Recurse)
                     {
                         # check for subfolders
-                        $subFolderPath = "$Destination/$($catalogItem.Name)"
+                        $subFolderPath = "$RsFolder/$($catalogItem.Name)"
                         Write-Verbose "Searching folder $($subFolderPath)"
     
                         # get contents of the subfolders
                         Get-RsRestFolderContent -RsFolder $catalogItem.Path -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Credential $Credential -WebSession $WebSession -Recurse
+                        
+                        [pscustomobject]@{
+                            Type = $catalogItem.Type
+                            Name = $catalogItem.Name
+                            Size = $catalogItem.Size
+                            ModifiedBy = $catalogItem.ModifiedBy
+                            ModifiedDate = $catalogItem.ModifiedDate
+                            Hidden = $catalogItem.Hidden
+                            Path = $catalogItem.Path
+                            Id   = $catalogItem.Id
+                            Description = $catalogItem.Description
+                        }
                     }
                     else
                     {
