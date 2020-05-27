@@ -12,14 +12,30 @@ Describe "Get-RsRestFolderContent" {
         $folderPath = '/' + $folderName
         # Test if the folder can be found
         $folderList = Get-RsRestFolderContent -reportPortalUri $reportPortalUri -RsFolder / 
-        $folderCount = $folderList | Where-Object name -eq $folderName | measure
+        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
         It "Should found a folder" {
-            $folderCount.Count | Should Be 1
+            $folderCount | Should Be 1
         }
         # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $folderPath -Confirm:$false
     }
-
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderName variable for single folder test
+'
+Write-Host $folderName
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderList variable for single folder test
+'
+Write-Host $folderList
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderCount variable for single folder test
+'
+Write-Host $folderCount
+Write-Host '----------------------------
+'
     Context "Get folder inside 4 folders"{
         # Create the first folder in the root
         $sutRootFolder = 'SutGetFolderParent' + [guid]::NewGuid()
@@ -40,7 +56,7 @@ Describe "Get-RsRestFolderContent" {
         $fifthFolderPath = $folderParentPath + '/' + $folderParentName
         $rootFolderPath = '/'  + $sutRootFolder 
         $folderList = Get-RsRestFolderContent-reportPortalUri $reportPortalUri -RsFolder $rootFolderPath -Recurse
-        $folderCount = $folderList | Where-Object path -eq $fifthFolderPath | measure
+        $folderCount = ($folderList | Where-Object path -eq $fifthFolderPath).Count
         It "Should found 4 subfolders" {
             $folderCount | Should Be 1
             $folderList.Count | Should be 4
@@ -49,3 +65,20 @@ Describe "Get-RsRestFolderContent" {
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
     }
 }
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderName variable for 4 folders test
+'
+Write-Host $folderName
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderList variable for 4 folders test
+'
+Write-Host $folderList
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderCount variable for 4 folders test
+'
+Write-Host $folderCount
+Write-Host '----------------------------
+'
