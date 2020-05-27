@@ -12,9 +12,9 @@ Describe "Get-RsRestFolderContent" {
         $folderPath = '/' + $folderName
         # Test if the folder can be found
         $folderList = Get-RsRestFolderContent -reportPortalUri $reportPortalUri -RsFolder / 
-        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
+        $folderCount = $folderList | Where-Object name -eq $folderName | measure
         It "Should found a folder" {
-            $folderCount | Should Be 1
+            $folderCount.Count | Should Be 1
         }
         # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $folderPath -Confirm:$false
@@ -40,7 +40,7 @@ Describe "Get-RsRestFolderContent" {
         $fifthFolderPath = $folderParentPath + '/' + $folderParentName
         $rootFolderPath = '/'  + $sutRootFolder 
         $folderList = Get-RsRestFolderContent-reportPortalUri $reportPortalUri -RsFolder $rootFolderPath -Recurse
-        $folderCount = ($folderList | Where-Object path -eq $fifthFolderPath).Count
+        $folderCount = $folderList | Where-Object path -eq $fifthFolderPath | measure
         It "Should found 4 subfolders" {
             $folderCount | Should Be 1
             $folderList.Count | Should be 4
