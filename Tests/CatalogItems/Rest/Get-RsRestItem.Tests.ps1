@@ -12,7 +12,7 @@ Describe "Get-RsRestItem" {
         $folderPath = '/' + $folderName
         # Test if the folder can be found
         $folderList = Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem $folderPath
-        $folderCount = ($folderList | Where-Object name -eq $folderName).Count
+        $folderCount = $folderList | Where-Object name -eq $folderName | measure
         It "Should found a folder" {
             $folderCount | Should Be 1
         }
@@ -42,8 +42,8 @@ Describe "Get-RsRestItem" {
         $fifthFolderPath = $folderParentPath + '/' + $folderParentName
         $rootFolderPath = '/'  + $sutRootFolder 
         $folderList = Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem "$folderParentPath/$folderParentName"
-        $folderCount = ($folderList | Where-Object path -eq $fifthFolderPath).Count
-        It "Should found 4 subfolders" {
+        $folderCount = $folderList | Where-Object path -eq $fifthFolderPath | measure
+        It "Should find 1 subfolder underneath 4 subfolders" {
             $folderCount | Should Be 1
             $folderList.Count | Should be 1
         }
