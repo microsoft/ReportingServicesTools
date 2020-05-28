@@ -23,17 +23,17 @@ Write-Host "----------------------------
 "
 Write-Host "Showing $folderName variable for single folder test
 "
-Write-Host $folderName
+Write-Host "$folderName"
 Write-Host "----------------------------
 "
 Write-Host "Showing $folderList variable for single folder test
 "
-Write-Host $folderList
+Write-Host "$folderList"
 Write-Host "----------------------------
 "
 Write-Host "Showing $folderCount variable for single folder test
 "
-Write-Host $folderCount
+Write-Host "$folderCount"
 Write-Host "----------------------------
 "
     Context "Get folder inside 4 folders"{
@@ -69,16 +69,16 @@ Write-Host "----------------------------
 "
 Write-Host "Showing $folderName variable for 4 folders test
 "
-Write-Host $folderName
+Write-Host "$folderName"
 Write-Host "----------------------------
 "
 Write-Host "Showing $folderList variable for 4 folders test
 "
-Write-Host $folderList
+Write-Host "$folderList"
 Write-Host "----------------------------
 "
 Write-Host "Showing $folderCount variable for 4 folders test
 "
-Write-Host $folderCount
+Write-Host "$folderCount"
 Write-Host "----------------------------
 "
