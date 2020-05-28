@@ -14,13 +14,28 @@ Describe "Get-RsRestItem" {
         $folderList = Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem $folderPath
         $folderCount = $folderList | Where-Object name -eq $folderName | measure
         It "Should found a folder" {
-            $folderCount | Should Be 1
+            $folderCount.Count | Should Be 1
         }
         # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $folderPath -Confirm:$false
     }
-"$($folderName)";
-"$($folderList.Name)";
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderName variable for 4 folders test
+'
+Write-Host $folderName
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderList variable for 4 folders test
+'
+Write-Host $folderList
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderCount variable for 4 folders test
+'
+Write-Host $folderCount
+Write-Host '----------------------------
+'
 
     Context "Get folder inside 4 folders"{
         # Create the first folder in the root
@@ -44,13 +59,28 @@ Describe "Get-RsRestItem" {
         $folderList = Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem "$folderParentPath/$folderParentName"
         $folderCount = $folderList | Where-Object path -eq $fifthFolderPath | measure
         It "Should find 1 subfolder underneath 4 subfolders" {
-            $folderCount | Should Be 1
+            $folderCount.Count | Should Be 1
             $folderList.Count | Should be 1
         }
          # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
     }
-"$($folderName)";
-"$($folderList.Name)";
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderName variable for 4 folders test
+'
+Write-Host $folderName
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderList variable for 4 folders test
+'
+Write-Host $folderList
+Write-Host '----------------------------
+'
+Write-Host 'Showing $folderCount variable for 4 folders test
+'
+Write-Host $folderCount
+Write-Host '----------------------------
+'
 
 }
