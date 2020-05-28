@@ -60,7 +60,7 @@ Write-Host '----------------------------
         $folderCount = $folderList | Where-Object path -eq $fifthFolderPath | measure
         It "Should find 1 subfolder underneath 4 subfolders" {
             $folderCount.Count | Should Be 1
-            ($folderList.Count | measure).count | Should be 1
+            ($folderList | measure).count | Should be 1
         }
          # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
