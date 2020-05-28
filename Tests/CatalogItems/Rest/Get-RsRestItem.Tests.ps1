@@ -23,17 +23,17 @@ Write-Host '----------------------------
 '
 Write-Host 'Showing $folderName variable for 4 folders test
 '
-Write-Host $folderName
+Write-Host "$($folderName)"
 Write-Host '----------------------------
 '
 Write-Host 'Showing $folderList variable for 4 folders test
 '
-Write-Host $folderList
+Write-Host "$($folderList)"
 Write-Host '----------------------------
 '
 Write-Host 'Showing $folderCount variable for 4 folders test
 '
-Write-Host $folderCount
+Write-Host "$($folderCount)"
 Write-Host '----------------------------
 '
 
@@ -69,17 +69,17 @@ Write-Host '----------------------------
 '
 Write-Host 'Showing $folderName variable for 4 folders test
 '
-Write-Host $folderName
+Write-Host "$($folderName)"
 Write-Host '----------------------------
 '
 Write-Host 'Showing $folderList variable for 4 folders test
 '
-Write-Host $folderList
+Write-Host "$($folderList)"
 Write-Host '----------------------------
 '
 Write-Host 'Showing $folderCount variable for 4 folders test
 '
-Write-Host $folderCount
+Write-Host "$($folderCount)"
 Write-Host '----------------------------
 '
 
