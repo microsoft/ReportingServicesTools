@@ -56,7 +56,7 @@ Describe "Get-RsRestFolderContent" {
         $fifthFolderPath = $folderParentPath + '/' + $folderParentName
         $rootFolderPath = '/'  + $sutRootFolder 
         $folderList = Get-RsRestFolderContent -reportPortalUri $reportPortalUri -RsFolder $rootFolderPath -Recurse
-        $folderCount = ($folderList | Where-Object path -eq $fifthFolderPath).Count
+        $folderCount = ($folderList | Where-Object path -eq $fifthFolderPath | measure).Count
         It "Should found 4 subfolders" {
             $folderCount | Should Be 1
             $folderList.Count | Should be 4
