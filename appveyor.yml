@@ -15,7 +15,7 @@ skip_commits:
 install:
 - ps: Install-PackageProvider -Name NuGet -Force
 - ps: Install-Module -Name PSScriptAnalyzer -Force
-- ps: Install-Module -Name Pester
+- ps: Install-Module -Name Pester -RequiredVersion 4.10.1
 
 build: false
 
