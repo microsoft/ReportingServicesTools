@@ -15,13 +15,15 @@ skip_commits:
 install:
 - ps: Install-PackageProvider -Name NuGet -Force
 - ps: Install-Module -Name PSScriptAnalyzer -Force
-- ps: Install-Module -Name Pester
+- ps: Install-Module -Name Pester -RequiredVersion 4.10.1
 
 build: false
 
 before_test:
 - cmd: NET USER rsuser1 "%SqlSaPwd%" /ADD /Y
 - ps: |
+    write-host "Showing Version of Pester"
+    gci "C:\Program Files\WindowsPowerShell\Modules\Pester"
     $ErrorActionPreference = 'Stop';
     [Environment]::SetEnvironmentVariable("RsUser", "$($env:ComputerName)\rsuser1")
     $url = "$($env:downloadUrl)/SQLServer2017-x64-ENU.exe"
@@ -75,7 +77,9 @@ before_test:
 test_script:
 - ps: |
     # Execute the script analyzer
+    Write-Host "Starting execution of script analyzer"
     $results = Invoke-ScriptAnalyzer -Path .\ReportingServicesTools\functions -Recurse | where severity -eq "Error"
+    Write-Host "Completed execution of script analyzer"
     # Format the results
     $header = "<testsuite tests=`"$($results.Count)`">" 
     $body = $results | ForEach-Object {"<testcase classname=`"analyzer`" name=`"$($_.RuleName)`"><failure type=`"$($_.ScriptName)`">$($_.Message)</failure></testcase>"}
@@ -105,10 +109,12 @@ test_script:
     
     
     # Integration test section
+    Write-Host "Starting execution of Pester Tests"
     # Activate verbose on Powershell
     $VerbosePreference = "continue" 
     # Executing integration tests
     $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
+    Write-Host "Completed execution of Pester Tests"
     # Upload integration tests results
     $wcIT = New-Object 'System.Net.WebClient'
     $wcIT.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResultsIT.xml))
