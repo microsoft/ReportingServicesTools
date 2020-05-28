@@ -16,26 +16,26 @@ Describe "Get-RsRestFolderContent" {
         It "Should found a folder" {
             $folderCount | Should Be 1
         }
+        Write-Host "----------------------------
+        "
+        Write-Host "Showing $folderName variable for single folder test
+        "
+        Write-Host "$folderName"
+        Write-Host "----------------------------
+        "
+        Write-Host "Showing $folderList variable for single folder test
+        "
+        Write-Host "$folderList"
+        Write-Host "----------------------------
+        "
+        Write-Host "Showing $folderCount variable for single folder test
+        "
+        Write-Host "$folderCount"
+        Write-Host "----------------------------
+        "
         # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $folderPath -Confirm:$false
     }
-Write-Host "----------------------------
-"
-Write-Host "Showing $folderName variable for single folder test
-"
-Write-Host "$folderName"
-Write-Host "----------------------------
-"
-Write-Host "Showing $folderList variable for single folder test
-"
-Write-Host "$folderList"
-Write-Host "----------------------------
-"
-Write-Host "Showing $folderCount variable for single folder test
-"
-Write-Host "$folderCount"
-Write-Host "----------------------------
-"
     Context "Get folder inside 4 folders"{
         # Create the first folder in the root
         $sutRootFolder = 'SutGetFolderParent' + [guid]::NewGuid()
@@ -61,24 +61,24 @@ Write-Host "----------------------------
             $folderCount | Should Be 1
             $folderList.Count | Should be 4
         }
+        Write-Host "----------------------------
+        "
+        Write-Host "Showing $folderName variable for 4 folders test
+        "
+        Write-Host "$folderName"
+        Write-Host "----------------------------
+        "
+        Write-Host "Showing $folderList variable for 4 folders test
+        "
+        Write-Host "$folderList"
+        Write-Host "----------------------------
+        "
+        Write-Host "Showing $folderCount variable for 4 folders test
+        "
+        Write-Host "$folderCount"
+        Write-Host "----------------------------
+        "
          # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
     }
-Write-Host "----------------------------
-"
-Write-Host "Showing $folderName variable for 4 folders test
-"
-Write-Host "$folderName"
-Write-Host "----------------------------
-"
-Write-Host "Showing $folderList variable for 4 folders test
-"
-Write-Host "$folderList"
-Write-Host "----------------------------
-"
-Write-Host "Showing $folderCount variable for 4 folders test
-"
-Write-Host "$folderCount"
-Write-Host "----------------------------
-"
 }
