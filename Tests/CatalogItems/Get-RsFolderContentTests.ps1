@@ -18,6 +18,8 @@ Describe "Get-RsFolderContent" {
         # Removing folders used for testing
         Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $folderPath -Confirm:$false
     }
+"$($folderName)";
+"$($folderList.Name)";
 
     Context "Get folder with proxy parameter"{
         # Create a folder
@@ -82,4 +84,7 @@ Describe "Get-RsFolderContent" {
          # Removing folders used for testing
         Remove-RsCatalogItem -ReportServerUri 'http://localhost/reportserver' -RsFolder $rootFolderPath -Confirm:$false
     }
+"$($folderName)";
+"$($folderList.Name)";
+
 }

@@ -69,6 +69,7 @@
         'Get-RsCatalogItemRole',
         'Get-RsDataSource',
         'Get-RsFolderContent',
+        'Get-RsRestFolderContent',
         'Get-RsItemDataSource',
         'Get-RsItemReference',
         'Get-RsRestItemDataSource',
