@@ -60,7 +60,7 @@ Describe "Get-RsRestFolderContent" {
         It "Should found 4 subfolders" {
             $folderCount | Should Be 1
             $folderList.Count | Should be 4
-        }
+        
         Write-Host "----------------------------
         "
         Write-Host "Showing $folderName variable for 4 folders test
@@ -78,6 +78,7 @@ Describe "Get-RsRestFolderContent" {
         Write-Host "$folderCount"
         Write-Host "----------------------------
         "
+        }
          # Removing folders used for testing
         Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rootFolderPath -Confirm:$false
     }
