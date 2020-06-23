@@ -7,7 +7,7 @@ function Deploy-RsProject
         .DESCRIPTION
             This function deploys a full SSRS project to a Power BI Report Server.
 
-        .PARAMETER ProjectFile
+        .PARAMETER RsProjectFile
             Specify the location of the SSRS project file whose deployment profiles should be fetched.
 
         .EXAMPLE
@@ -16,6 +16,13 @@ function Deploy-RsProject
             Description
             -----------
             Deploys all project files using all applicable settings from the project file.
+        
+        .EXAMPLE
+            $RSConfig = Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\SSRS_FR.rptproj' -ConfigurationToUse Dev01 $RSConfig |
+            Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/'
+            $RSConfig | Deploy-RsProject
+
+            Retrieves all deployment settings for the 'Dev01' deployment configuration, adds a NoteProperty for the ReportPortal to deploy to, and then deploys all the project files by calling Deploy-RsProject and passing in all the settings in the $RSConfig variable.
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
