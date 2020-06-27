@@ -108,7 +108,7 @@ foreach{
     }
 
     Write-RsRestCatalogItem -Path "$ProjectFolder\$($_.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder -Overwrite
-    Set-RsDataSourceReference -ReportServerUri $ReportServer -Path "$TargetDatasetFolder/$($_.BaseName)" -DataSourceName DataSetDataSource -DataSourcePath "$($TargetDatasourceFolder)/$($DSetConfig.DataSourceReference)"
+    Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetDatasetFolder/$($_.BaseName)" -DataSourceName DataSetDataSource -DataSourcePath "$($TargetDatasourceFolder)/$($DSetConfig.DataSourceReference)"
 }
 
 <# Deploy the Reports #>
@@ -117,11 +117,11 @@ Write-Host "Deploying the report files to $TargetReportFolder...
 dir -Path $ProjectFolder -Filter *.rdl | 
 foreach{
     $ReportName=$_.BaseName
-    Write-RsCatalogItem -Path "$ProjectFolder\$($_.Name)" -ReportServerUri $ReportServer -RsFolder $TargetReportFolder -Overwrite
+    Write-RsCatalogItem -Path "$ProjectFolder\$($_.Name)" -ReportServerUri $TargetServerURL -RsFolder $TargetReportFolder -Overwrite
     "$($_.BaseName)";
     Get-RsRestItemDataSource -ReportPortalUri $ReportPortal -RsItem "$TargetReportFolder/$ReportName" | 
     foreach{
-        Set-RsDataSourceReference -ReportServerUri $ReportServer -Path "$TargetReportFolder/$ReportName" -DataSourceName $_.Name -DataSourcePath "$($TargetDatasourceFolder)/$($_.Name)"
+        Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$ReportName" -DataSourceName $_.Name -DataSourcePath "$($TargetDatasourceFolder)/$($_.Name)"
     }
 }
 
@@ -133,7 +133,7 @@ if($TargetDatasetFolder -ne $TargetReportFolder){
     {
     [XML]$ReportDSetRef = Get-Content $Report.FullName
     foreach($SDS in $ReportDSetRef.Report.DataSets.DataSet){
-        Set-RsDataSetReference -ReportServerUri $ReportServer -Path "$TargetReportFolder/$($Report.BaseName)" -DataSetName $SDS.Name -DataSetPath "$TargetDatasetFolder/$($SDS.SharedDataSet.SharedDataSetReference)"
+        Set-RsDataSetReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$($Report.BaseName)" -DataSetName $SDS.Name -DataSetPath "$TargetDatasetFolder/$($SDS.SharedDataSet.SharedDataSetReference)"
         }
     }
 }
