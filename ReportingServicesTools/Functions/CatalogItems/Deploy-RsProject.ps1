@@ -7,27 +7,46 @@ function Deploy-RsProject
         .DESCRIPTION
             This function deploys a full SSRS project to a Power BI Report Server.
 
-        .PARAMETER RsProjectFile
+        .PARAMETER ProjectFolder
             Specify the location of the SSRS project file whose deployment profiles should be fetched.
 
         .EXAMPLE
-            Deploy-RsProject -ProjectFile 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj'
+            Get-RsDeploymentConfig -ProjectFile 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' |
+            Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/' |
+            Deploy-RsProject
 
             Description
             -----------
-            Deploys all project files using all applicable settings from the project file.
+            Get-RsDeploymentConfig prompts the user to select whick deployment configuration to use from 
+            the 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' project file.  These settings 
+            are piped to the Add-Member where the ReportPortal property is added and set to 'http://localhost/PBIRSportal/'.
+            The settings are then piped to the Deploy-RsProject function, which deploys all project files using all applicable 
+            settings from the deployment configuration chosen.
         
         .EXAMPLE
-            $RSConfig = Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\SSRS_FR.rptproj' -ConfigurationToUse Dev01 $RSConfig |
+            $RSConfig = Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\SSRS_FR.rptproj' -ConfigurationToUse Dev01
             Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/'
             $RSConfig | Deploy-RsProject
 
-            Retrieves all deployment settings for the 'Dev01' deployment configuration, adds a NoteProperty for the ReportPortal to deploy to, and then deploys all the project files by calling Deploy-RsProject and passing in all the settings in the $RSConfig variable.
+            Description
+            -----------
+            Retrieves all deployment settings for the 'Dev01' deployment configuration, adds a NoteProperty for the ReportPortal to 
+            deploy to, and then deploys all the project files by calling Deploy-RsProject and passing in all the settings in 
+            the $RSConfig variable.
+        
+        .EXAMPLE
+            Deploy-RsProject -TargetServerURL 'http://localhost/PBIRServer/' -ReportPortal 'http://localhost/PBIRSportal/' -TargetReportFolder /Finance -TargetDatasourceFolder '/Finance/Data Sources' -TargetDatasetFolder /Finance/DataSets -RsProjectFolder 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\'
+
+            Description
+            -----------
+            Deploys the project files found in the 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\' to the target locations 
+            specified in the parameters list.  Use this option when you want to deploy to a location not already listed in 
+            the .rptproj project file.
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [string]$RsProjectFile,
+        [string]$RsProjectFolder,
 
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [string]$TargetServerURL,
@@ -57,10 +76,8 @@ function Deploy-RsProject
         [string]$ReportPortal
         )
 
-[string]$ProjectFolder=Split-Path -Path $RsProjectFile
-
-"`$ProjectFolder = '$ProjectFolder'"
-"This deployment is going to happen using the $ConfigurationToUse profile.
+Write-Host "`$RsProjectFolder = '$RsProjectFolder' being used is
+This deployment is going to happen using the following settings...
 "
 $RSConfig | FL
 
@@ -81,13 +98,13 @@ foreach {
 Write-Host "
 Deploying Data Sources to $($TargetDatasourceFolder)...
 "
-foreach($RDS in dir -Path $ProjectFolder -Filter *.rds)
+foreach($RDS in dir -Path $RsProjectFolder -Filter *.rds)
 {
     try{ Write-Verbose "Checking for $TargetDatasourceFolder/$($_.BaseName)"
         Get-RsRestItem -ReportPortalUri $ReportPortal -RsItem "$TargetDatasourceFolder/$($RDS.BaseName)" | ft -AutoSize
     }
     catch{ Write-Verbose 'Did not find Data Source'
-        Write-RsRestCatalogItem -Path "$ProjectFolder\$($RDS.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasourceFolder
+        Write-RsRestCatalogItem -Path "$RsProjectFolder\$($RDS.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasourceFolder
     }
 }
 
@@ -95,9 +112,9 @@ foreach($RDS in dir -Path $ProjectFolder -Filter *.rds)
 Write-Host "
 Deploying DataSets to $TargetDatasetFolder...
 "
-dir -Path $ProjectFolder  -Filter *.rsd | 
+dir -Path $RsProjectFolder  -Filter *.rsd | 
 foreach{
-    [XML]$dsetref = Get-Content "$ProjectFolder\$($_.Name)"
+    [XML]$dsetref = Get-Content "$RsProjectFolder\$($_.Name)"
     $DataSetQuery = $dsetref.SharedDataSet.DataSet.Query
 
     $DSetConfig = [pscustomobject]@{
@@ -107,17 +124,17 @@ foreach{
         DataSetParameters   = $dsetref.SharedDataSet.DataSet.Query.DataSetParameters
     }
 
-    Write-RsRestCatalogItem -Path "$ProjectFolder\$($_.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder -Overwrite
+    Write-RsRestCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder -Overwrite
     Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetDatasetFolder/$($_.BaseName)" -DataSourceName DataSetDataSource -DataSourcePath "$($TargetDatasourceFolder)/$($DSetConfig.DataSourceReference)"
 }
 
 <# Deploy the Reports #>
 Write-Host "Deploying the report files to $TargetReportFolder...
 "
-dir -Path $ProjectFolder -Filter *.rdl | 
+dir -Path $RsProjectFolder -Filter *.rdl | 
 foreach{
     $ReportName=$_.BaseName
-    Write-RsCatalogItem -Path "$ProjectFolder\$($_.Name)" -ReportServerUri $TargetServerURL -RsFolder $TargetReportFolder -Overwrite
+    Write-RsCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportServerUri $TargetServerURL -RsFolder $TargetReportFolder -Overwrite
     "$($_.BaseName)";
     Get-RsRestItemDataSource -ReportPortalUri $ReportPortal -RsItem "$TargetReportFolder/$ReportName" | 
     foreach{
@@ -127,7 +144,7 @@ foreach{
 
 <# Now read in the DataSet References directly from the report files and set them on the server #>
 if($TargetDatasetFolder -ne $TargetReportFolder){
-    $Reports = dir -Path $ProjectFolder -Filter *.rdl
+    $Reports = dir -Path $RsProjectFolder -Filter *.rdl
 
     foreach($Report in $Reports)
     {
