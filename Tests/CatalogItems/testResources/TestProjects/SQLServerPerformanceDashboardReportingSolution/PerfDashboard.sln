@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "SQL Server Performance Dashboard", "SQL Server Performance Dashboard\SQL Server Performance Dashboard.rptproj", "{280F4418-C6F5-4763-8CA4-63AD770AFB58}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		DebugLocal|Default = DebugLocal|Default
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.Debug|Default.ActiveCfg = Debug
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.Debug|Default.Build.0 = Debug
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.Debug|Default.Deploy.0 = Debug
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.DebugLocal|Default.ActiveCfg = DebugLocal
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.DebugLocal|Default.Build.0 = DebugLocal
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.Release|Default.ActiveCfg = Release
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.Release|Default.Build.0 = Release
+		{280F4418-C6F5-4763-8CA4-63AD770AFB58}.Release|Default.Deploy.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
