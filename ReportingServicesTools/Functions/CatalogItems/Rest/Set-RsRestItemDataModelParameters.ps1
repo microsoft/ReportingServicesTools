@@ -8,7 +8,7 @@ function Set-RsRestItemDataModelParameters
             This script updates data sources related to a catalog item from the Report Server.
 
         .DESCRIPTION
-            This script updates data sources related to a catalog item from the Report Server. This is currently only applicable to Power BI Reports.
+            This script updates data sources related to a catalog item from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.
 
         .PARAMETER RsItem
             Specify the location of the catalog item whose data sources will be updated.
@@ -31,7 +31,7 @@ function Set-RsRestItemDataModelParameters
         .EXAMPLE
             $parameters = Get-RsRestItemDataModelParameters -RsItem '/MyPowerBIReport'
             $parameters[0].Value = 'NewValue'
-            RsRestItemDataModelParameters -RsItem '/MyPowerBIReport' -DataModelParameters $parameters
+            Set-RsRestItemDataModelParameters -RsItem '/MyPowerBIReport' -DataModelParameters $parameters
 
             Description
             -----------
@@ -41,7 +41,6 @@ function Set-RsRestItemDataModelParameters
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
         [Parameter(Mandatory = $True)]
-        [Alias('ItemPath','Path')]
         [string]
         $RsItem,
 
@@ -51,12 +50,10 @@ function Set-RsRestItemDataModelParameters
         [string]
         $ReportPortalUri,
 
-        [Alias('ApiVersion')]
         [ValidateSet("v2.0")]
         [string]
         $RestApiVersion = "v2.0",
 
-        [Alias('ReportServerCredentials')]
         [System.Management.Automation.PSCredential]
         $Credential,
 
