@@ -137,13 +137,14 @@ foreach{
     Write-RsCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportServerUri $TargetServerURL -RsFolder $TargetReportFolder -Overwrite
     "$($_.BaseName)";
     Get-RsRestItemDataSource -ReportPortalUri $ReportPortal -RsItem "$TargetReportFolder/$ReportName" | 
+    where {$_.IsReference -eq $true} | 
     foreach{
         Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$ReportName" -DataSourceName $_.Name -DataSourcePath "$($TargetDatasourceFolder)/$($_.Name)"
     }
 }
 
 <# Now read in the DataSet References directly from the report files and set them on the server #>
-if($TargetDatasetFolder -ne $TargetReportFolder){
+if($TargetDatasetFolder -ne $TargetReportFolder -and (Get-RsRestFolderContent -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder).Count -gt 0){
     $Reports = dir -Path $RsProjectFolder -Filter *.rdl
 
     foreach($Report in $Reports)

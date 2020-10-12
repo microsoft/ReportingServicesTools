@@ -35,9 +35,9 @@
     <OverwriteDataSources>False</OverwriteDataSources>
     <TargetServerVersion>SSRS2008R2</TargetServerVersion>
     <Platform>Win32</Platform>
-    <TargetReportFolder>SQL Server Performance Dashboard</TargetReportFolder>
-    <TargetDatasetFolder>Datasets</TargetDatasetFolder>
-    <TargetDatasourceFolder>Data Sources</TargetDatasourceFolder>
+    <TargetReportFolder>/SQL Server Performance Dashboard</TargetReportFolder>
+    <TargetDatasetFolder>/Datasets</TargetDatasetFolder>
+    <TargetDatasourceFolder>/Data Sources</TargetDatasourceFolder>
     <TargetReportPartFolder>Report Parts</TargetReportPartFolder>
     <TargetServerURL>http://localhost/reportserver</TargetServerURL>
   </PropertyGroup>
