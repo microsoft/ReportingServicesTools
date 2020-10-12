@@ -5,23 +5,27 @@ Describe "Get-RsDeploymentConfig" {
         # Create a folder
         $RSConfig = Get-RsDeploymentConfig -RsProjectFile "$($PSScriptRoot)\testResources\TestProjects\SQLServerPerformanceDashboardReportingSolution\SQL Server Performance Dashboard\SQL Server Performance Dashboard.rptproj" -ConfigurationToUse Release |
         Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value $reportPortalUri
-        $RSConfig | Deploy-RsProject
         
-        # Test if the config was found
+        # Test if the config was retrieved
+        It "Should verify a config was retrieved" {
+            @($RSConfig).Count | Should -Be 1
+        }
+        
+        # Test if the TargetServerURL in the config was found
         It "Should verify TargetServerURL matches" {
-            $RSConfig.TargetServerURL | Should Be 'http://localhost/reportserver'
+            $RSConfig.TargetServerURL | Should -Be 'http://localhost/reportserver'
         }
 
-        # Test if the folder can be found
-        It "Should verify a config was retrieved" {
-            $RSConfig.Count | Should Be 1
-        }
-        
-        $folderList = Get-RsRestFolderContent -reportPortalUri $reportPortalUri -RsFolder / -Recurse
-        $folderCount = ($folderList).Count
+        $RSConfig | Deploy-RsProject
+        $CatalogList = Get-RsRestFolderContent -reportPortalUri $RSConfig.ReportPortal -RsFolder / -Recurse
+        $folderCount = ($CatalogList | measure).Count
         It "Should find at least 1 folder" {
-            $folderCount | Should Be 1
+            $folderCount | Should -Be 26
         }
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $RSConfig.TargetReportFolder -Confirm:$false
+        Remove-RsCatalogItem -RsFolder $RSConfig.TargetDatasetFolder -Confirm:$false
+        Remove-RsCatalogItem -RsFolder $RSConfig.TargetDatasourceFolder -Confirm:$false
         
     }
 }    
