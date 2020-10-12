@@ -76,85 +76,84 @@ function Deploy-RsProject
         [string]$ReportPortal
         )
 
-Write-Host "`$RsProjectFolder = '$RsProjectFolder' being used is
-This deployment is going to happen using the following settings...
-"
-$RSConfig | FL
+    Write-Host "`$RsProjectFolder = '$RsProjectFolder' being used is
+    This deployment is going to happen using the following settings...
+    "
+    $RSConfig | FL
 
-<# RsFolder Structure
-    Make sure all the folders needed already exist with the following code. #>
-Write-Host "
-Beginning deployment.
-Building folder structures...
-"
+    <# RsFolder Structure
+        Make sure all the folders needed already exist with the following code. #>
+    Write-Host "
+    Beginning deployment.
+    Building folder structures...
+    "
 
-$TargetReportFolder, $TargetDatasourceFolder, $TargetDatasetFolder | 
-sort -Unique | 
-foreach {
-    MakeDeploymentFolders -RsFolder $_ -ReportPortal $ReportPortal
-}
-
-<# Deploy Data Sources #>
-Write-Host "
-Deploying Data Sources to $($TargetDatasourceFolder)...
-"
-foreach($RDS in dir -Path $RsProjectFolder -Filter *.rds)
-{
-    try{ Write-Verbose "Checking for $TargetDatasourceFolder/$($_.BaseName)"
-        Get-RsRestItem -ReportPortalUri $ReportPortal -RsItem "$TargetDatasourceFolder/$($RDS.BaseName)" | ft -AutoSize
-    }
-    catch{ Write-Verbose 'Did not find Data Source'
-        Write-RsRestCatalogItem -Path "$RsProjectFolder\$($RDS.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasourceFolder
-    }
-}
-
-<# Deploy Data Sets & set their Data Source References. #>
-Write-Host "
-Deploying DataSets to $TargetDatasetFolder...
-"
-dir -Path $RsProjectFolder  -Filter *.rsd | 
-foreach{
-    [XML]$dsetref = Get-Content "$RsProjectFolder\$($_.Name)"
-    $DataSetQuery = $dsetref.SharedDataSet.DataSet.Query
-
-    $DSetConfig = [pscustomobject]@{
-        DataSourceReference = $dsetref.SharedDataSet.DataSet.Query.DataSourceReference
-        CommandText         = $dsetref.SharedDataSet.DataSet.Query.CommandText
-        CommandType         = $dsetref.SharedDataSet.DataSet.Query.CommandType
-        DataSetParameters   = $dsetref.SharedDataSet.DataSet.Query.DataSetParameters
+    $TargetReportFolder, $TargetDatasourceFolder, $TargetDatasetFolder | 
+    sort -Unique | 
+    foreach {
+        MakeDeploymentFolders -RsFolder $_ -ReportPortal $ReportPortal
     }
 
-    Write-RsRestCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder -Overwrite
-    Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetDatasetFolder/$($_.BaseName)" -DataSourceName DataSetDataSource -DataSourcePath "$($TargetDatasourceFolder)/$($DSetConfig.DataSourceReference)"
-}
-
-<# Deploy the Reports #>
-Write-Host "Deploying the report files to $TargetReportFolder...
-"
-dir -Path $RsProjectFolder -Filter *.rdl | 
-foreach{
-    $ReportName=$_.BaseName
-    Write-RsCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportServerUri $TargetServerURL -RsFolder $TargetReportFolder -Overwrite
-    "$($_.BaseName)";
-    Get-RsRestItemDataSource -ReportPortalUri $ReportPortal -RsItem "$TargetReportFolder/$ReportName" | 
-    where {$_.IsReference -eq $true} | 
-    foreach{
-        Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$ReportName" -DataSourceName $_.Name -DataSourcePath "$($TargetDatasourceFolder)/$($_.Name)"
-    }
-}
-
-<# Now read in the DataSet References directly from the report files and set them on the server #>
-if($TargetDatasetFolder -ne $TargetReportFolder -and (Get-RsRestFolderContent -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder).Count -gt 0){
-    $Reports = dir -Path $RsProjectFolder -Filter *.rdl
-
-    foreach($Report in $Reports)
+    <# Deploy Data Sources #>
+    Write-Host "
+    Deploying Data Sources to $($TargetDatasourceFolder)...
+    "
+    foreach($RDS in dir -Path $RsProjectFolder -Filter *.rds)
     {
-    [XML]$ReportDSetRef = Get-Content $Report.FullName
-    foreach($SDS in $ReportDSetRef.Report.DataSets.DataSet){
-        Set-RsDataSetReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$($Report.BaseName)" -DataSetName $SDS.Name -DataSetPath "$TargetDatasetFolder/$($SDS.SharedDataSet.SharedDataSetReference)"
+        try{ Write-Verbose "Checking for $TargetDatasourceFolder/$($_.BaseName)"
+            Get-RsRestItem -ReportPortalUri $ReportPortal -RsItem "$TargetDatasourceFolder/$($RDS.BaseName)" | ft -AutoSize
+        }
+        catch{ Write-Verbose 'Did not find Data Source'
+            Write-RsRestCatalogItem -Path "$RsProjectFolder\$($RDS.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasourceFolder
         }
     }
-}
 
+    <# Deploy Data Sets & set their Data Source References. #>
+    Write-Host "
+    Deploying DataSets to $TargetDatasetFolder...
+    "
+    dir -Path $RsProjectFolder  -Filter *.rsd | 
+    foreach{
+        [XML]$dsetref = Get-Content "$RsProjectFolder\$($_.Name)"
+        $DataSetQuery = $dsetref.SharedDataSet.DataSet.Query
+
+        $DSetConfig = [pscustomobject]@{
+            DataSourceReference = $dsetref.SharedDataSet.DataSet.Query.DataSourceReference
+            CommandText         = $dsetref.SharedDataSet.DataSet.Query.CommandText
+            CommandType         = $dsetref.SharedDataSet.DataSet.Query.CommandType
+            DataSetParameters   = $dsetref.SharedDataSet.DataSet.Query.DataSetParameters
+        }
+
+        Write-RsRestCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder -Overwrite
+        Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetDatasetFolder/$($_.BaseName)" -DataSourceName DataSetDataSource -DataSourcePath "$($TargetDatasourceFolder)/$($DSetConfig.DataSourceReference)"
+    }
+
+    <# Deploy the Reports #>
+    Write-Host "Deploying the report files to $TargetReportFolder...
+    "
+    dir -Path $RsProjectFolder -Filter *.rdl | 
+    foreach{
+        $ReportName=$_.BaseName
+        Write-RsCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportServerUri $TargetServerURL -RsFolder $TargetReportFolder -Overwrite
+        "$($_.BaseName)";
+        Get-RsRestItemDataSource -ReportPortalUri $ReportPortal -RsItem "$TargetReportFolder/$ReportName" | 
+        where {$_.IsReference -eq $true} | 
+        foreach{
+            Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$ReportName" -DataSourceName $_.Name -DataSourcePath "$($TargetDatasourceFolder)/$($_.Name)"
+        }
+    }
+
+    <# Now read in the DataSet References directly from the report files and set them on the server #>
+    if($TargetDatasetFolder -ne $TargetReportFolder -and (Get-RsRestFolderContent -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder).Count -gt 0){
+        $Reports = dir -Path $RsProjectFolder -Filter *.rdl
+
+        foreach($Report in $Reports)
+        {
+        [XML]$ReportDSetRef = Get-Content $Report.FullName
+        foreach($SDS in $ReportDSetRef.Report.DataSets.DataSet){
+            Set-RsDataSetReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$($Report.BaseName)" -DataSetName $SDS.Name -DataSetPath "$TargetDatasetFolder/$($SDS.SharedDataSet.SharedDataSetReference)"
+            }
+        }
+    }
 
 }
