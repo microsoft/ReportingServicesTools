@@ -52,10 +52,10 @@ function Get-RsDeploymentConfig {
                 FullPath               = $Deployment.FullPath
                 OverwriteDatasets      = $Deployment.OverwriteDatasets
                 OverwriteDataSources   = $Deployment.OverwriteDataSources
-                TargetReportFolder     = (StripTrailingSlash $Deployment.TargetReportFolder)
-                TargetDatasetFolder    = (StripTrailingSlash $Deployment.TargetDatasetFolder)
-                TargetDatasourceFolder = (StripTrailingSlash $Deployment.TargetDatasourceFolder)
-                TargetReportPartFolder = (StripTrailingSlash $Deployment.TargetReportPartFolder)
+                TargetReportFolder     = ($Deployment.TargetReportFolder).Trimend("/")
+                TargetDatasetFolder    = ($Deployment.TargetDatasetFolder).Trimend("/")
+                TargetDatasourceFolder = ($Deployment.TargetDatasourceFolder).Trimend("/")
+                TargetReportPartFolder = ($Deployment.TargetReportPartFolder).Trimend("/")
                 TargetServerURL        = $Deployment.TargetServerURL
                 RsProjectFolder        = Split-Path -Path $RsProjectFile
             }
@@ -70,10 +70,10 @@ function Get-RsDeploymentConfig {
                 FullPath               = $Deployment.FullPath
                 OverwriteDatasets      = $Deployment.OverwriteDatasets
                 OverwriteDataSources   = $Deployment.OverwriteDataSources
-                TargetReportFolder     = (StripTrailingSlash $Deployment.TargetReportFolder)
-                TargetDatasetFolder    = (StripTrailingSlash $Deployment.TargetDatasetFolder)
-                TargetDatasourceFolder = (StripTrailingSlash $Deployment.TargetDatasourceFolder)
-                TargetReportPartFolder = (StripTrailingSlash $Deployment.TargetReportPartFolder)
+                TargetReportFolder     = ($Deployment.TargetReportFolder).Trimend("/")
+                TargetDatasetFolder    = ($Deployment.TargetDatasetFolder).Trimend("/")
+                TargetDatasourceFolder = ($Deployment.TargetDatasourceFolder).Trimend("/")
+                TargetReportPartFolder = ($Deployment.TargetReportPartFolder).Trimend("/")
                 TargetServerURL        = $Deployment.TargetServerURL
                 RsProjectFolder        = Split-Path -Path $RsProjectFile
             }
