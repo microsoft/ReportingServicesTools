@@ -17,7 +17,7 @@ function Publish-RsProject
 
             Description
             -----------
-            Get-RsDeploymentConfig prompts the user to select whick deployment configuration to use from 
+            Get-RsDeploymentConfig prompts the user to select which deployment configuration to use from 
             the 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' project file.  These settings 
             are piped to the Add-Member where the ReportPortal property is added and set to 'http://localhost/PBIRSportal/'.
             The settings are then piped to the Publish-RsProject function, which deploys all project files using all applicable 
