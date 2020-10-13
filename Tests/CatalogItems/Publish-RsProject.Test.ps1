@@ -17,10 +17,10 @@ Describe "Publish-RsProject" {
         }
 
         $RSConfig | Publish-RsProject
-        $CatalogList = Get-RsRestFolderContent -reportPortalUri $RSConfig.ReportPortal -RsFolder / -Recurse
+        $CatalogList = Get-RsRestFolderContent -reportPortalUri $RSConfig.ReportPortal -RsFolder '/SQL Server Performance Dashboard' -Recurse
         $folderCount = ($CatalogList | measure).Count
         It "Should find at least 1 folder" {
-            $folderCount | Should Be 25
+            $folderCount | Should Be 22
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $RSConfig.TargetReportFolder -Confirm:$false
