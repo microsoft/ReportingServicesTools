@@ -1,4 +1,4 @@
-function Deploy-RsProject
+function Publish-RsProject
 {
     <#
         .SYNOPSIS
@@ -13,29 +13,29 @@ function Deploy-RsProject
         .EXAMPLE
             Get-RsDeploymentConfig -ProjectFile 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' |
             Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/' |
-            Deploy-RsProject
+            Publish-RsProject
 
             Description
             -----------
             Get-RsDeploymentConfig prompts the user to select whick deployment configuration to use from 
             the 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' project file.  These settings 
             are piped to the Add-Member where the ReportPortal property is added and set to 'http://localhost/PBIRSportal/'.
-            The settings are then piped to the Deploy-RsProject function, which deploys all project files using all applicable 
+            The settings are then piped to the Publish-RsProject function, which deploys all project files using all applicable 
             settings from the deployment configuration chosen.
         
         .EXAMPLE
             $RSConfig = Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\SSRS_FR.rptproj' -ConfigurationToUse Dev01
             Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/'
-            $RSConfig | Deploy-RsProject
+            $RSConfig | Publish-RsProject
 
             Description
             -----------
             Retrieves all deployment settings for the 'Dev01' deployment configuration, adds a NoteProperty for the ReportPortal to 
-            deploy to, and then deploys all the project files by calling Deploy-RsProject and passing in all the settings in 
+            deploy to, and then deploys all the project files by calling Publish-RsProject and passing in all the settings in 
             the $RSConfig variable.
         
         .EXAMPLE
-            Deploy-RsProject -TargetServerURL 'http://localhost/PBIRServer/' -ReportPortal 'http://localhost/PBIRSportal/' -TargetReportFolder /Finance -TargetDatasourceFolder '/Finance/Data Sources' -TargetDatasetFolder /Finance/DataSets -RsProjectFolder 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\'
+            Publish-RsProject -TargetServerURL 'http://localhost/PBIRServer/' -ReportPortal 'http://localhost/PBIRSportal/' -TargetReportFolder /Finance -TargetDatasourceFolder '/Finance/Data Sources' -TargetDatasetFolder /Finance/DataSets -RsProjectFolder 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\'
 
             Description
             -----------

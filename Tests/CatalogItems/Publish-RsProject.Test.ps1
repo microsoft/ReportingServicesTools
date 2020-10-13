@@ -1,6 +1,6 @@
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 
-Describe "Deploy-RsProject" {
+Describe "Publish-RsProject" {
     Context "Deploy an entire SSRS Project by getting the DeploymentConfig of a ReportServer project file using ConfigurationToUse parameter"{
         # Create a folder
         $RSConfig = Get-RsDeploymentConfig -RsProjectFile "$($PSScriptRoot)\TestProjects\SQLServerPerformanceDashboardReportingSolution\SQL Server Performance Dashboard\SQL Server Performance Dashboard.rptproj" -ConfigurationToUse Release |
@@ -16,7 +16,7 @@ Describe "Deploy-RsProject" {
             $RSConfig.TargetServerURL | Should Be 'http://localhost/reportserver'
         }
 
-        $RSConfig | Deploy-RsProject
+        $RSConfig | Publish-RsProject
         $CatalogList = Get-RsRestFolderContent -reportPortalUri $RSConfig.ReportPortal -RsFolder / -Recurse
         $folderCount = ($CatalogList | measure).Count
         It "Should find at least 1 folder" {
