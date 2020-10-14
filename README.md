@@ -39,6 +39,7 @@ The following is a list of commands which are available for you to use once you 
 |Export-RsSubscriptionXml|This command exports a collection of subscriptions to an XML file on disk.|
 |Get-RsFolderContent|This command lists all catalog items under a folder.|
 |Get-RsDataSource|This command lists information about data source located at the specified path.|
+|Get-RsDeploymentConfig|This command retrieves a list of deployment configurations from a Reporting Services project file.|
 |Get-RsItemReference|This command gets the item references of a report or a dataset.|
 |Get-RsItemDataSource|This command fetches embedded data sources associated to a report.|
 |Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
@@ -62,6 +63,7 @@ The following is a list of commands which are available for you to use once you 
 |Out-RsFolderContent|This command downloads all catalog items in folder.|
 |Out-RsRestFolderContent|This command downloads all catalog items under a folder using the REST Endpoint.|
 |Out-RsRestCatalogItem|This command downloads a catalog item using the REST Endpoint.|
+|Publish-RsProject|This command deploys a Reporting Services project to a Power BI Report Server.|
 |Register-PowerBI|This command registers Power BI information with SQL Server Reporting Services. Alias: Register-RSPowerBI|
 |Remove-RsCatalogItem|This command removes catalog item located at the specified path.|
 |Remove-RsRestCatalogItem|This command removes catalog item located at the specified path using the REST Endpoint.|
@@ -111,7 +113,7 @@ All of the APIs used by this project are publicly available. There are 2 types o
 
 To verify the versions installed
 ```powershell
-Get-Module -ListAvailable | where Name -eq "reportingservicestools"
+Get-Module -ListAvailable -Name ReportingServicesTools
 ```
 
 After you clone the repo you can make local changes and install them in your local machine with
@@ -128,7 +130,7 @@ For running tests locally you need a local default instance of  SQL Server Repor
 
 To install Pester execute
 ```powershell
-Install-Module -Name Pester
+Install-Module -Name Pester -RequiredVersion 4.10.1
 ```
 
 To excute the tests run (this will execute the CatalogItems test only which doesn't change the local Reporting Services Installation)
