@@ -2,7 +2,7 @@ function Publish-RsProject
 {
     <#
         .SYNOPSIS
-            This script deploys a Reporting Services project to a Power BI Report Server.
+            This command deploys a Reporting Services project to a Power BI Report Server.
 
         .DESCRIPTION
             This function deploys a full SSRS project to a Power BI Report Server.
@@ -87,6 +87,9 @@ function Publish-RsProject
     Beginning deployment.
     Building folder structures...
     "
+    if(-not ($TargetReportFolder).StartsWith("/")){$TargetReportFolder = '/'+$TargetReportFolder}
+    if(-not ($TargetDatasetFolder).StartsWith("/")){$TargetDatasetFolder = '/'+$TargetDatasetFolder}
+    if(-not ($TargetDatasourceFolder).StartsWith("/")){$TargetDatasourceFolder = '/'+$TargetDatasourceFolder}
 
     $TargetReportFolder, $TargetDatasourceFolder, $TargetDatasetFolder | 
     sort -Unique | 
