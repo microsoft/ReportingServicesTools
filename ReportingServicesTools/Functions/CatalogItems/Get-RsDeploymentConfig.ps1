@@ -13,6 +13,24 @@ function Get-RsDeploymentConfig {
             Specify which configuration to use from the SSRS project file, if you already know it's name.
 
         .EXAMPLE
+            Get-RsDeploymentConfig -RsProjectFile 'C:\source\repos\SQL Server Performance Dashboard\SQL Server Performance Dashboard.rptproj' -ConfigurationToUse Release
+
+            FullPath               : Release
+            OverwriteDatasets      : False
+            OverwriteDataSources   : False
+            TargetReportFolder     : /SQL Server Performance Dashboard
+            TargetDatasetFolder    : /Datasets
+            TargetDatasourceFolder : /Data Sources
+            TargetReportPartFolder : Report Parts
+            TargetServerURL        : http://localhost/reportserver
+            RsProjectFolder        : C:\source\repos\SQL Server Performance Dashboard
+
+            Description
+            -----------
+            Retrieves all deployment settings for the 'Release' deployment configuration of the SQL Server Performance Dashboard.rptproj file.  
+            Then returns an object with all applicable settings from that deployment configuration.
+        
+        .EXAMPLE
             Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj'
 
             Description
@@ -29,7 +47,7 @@ function Get-RsDeploymentConfig {
             After the selection is made, the applicable settings are stored in the $RSConfig variable.
         
         .EXAMPLE
-            $RSConfig = Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\SSRS_FR.rptproj' -ConfigurationToUse Dev01 $RSConfig |
+            $RSConfig = Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Financial Reports\SSRS_FR\SSRS_FR.rptproj' -ConfigurationToUse Dev01 |
             Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/'
             $RSConfig | Deploy-RsProject
 
