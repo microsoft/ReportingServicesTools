@@ -71,7 +71,7 @@ function Get-RsRestItemDataModelParameters
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems(Path='{0}')"
-        $dataSourcesUri = $ReportPortalUri + "api/$RestApiVersion/{0}(Path='{1}')?`$expand=DataModelParameters"
+        $parametersUri = $ReportPortalUri + "api/$RestApiVersion/{0}(Path='{1}')?`$expand=DataModelParameters"
     }
     Process
     {
@@ -91,23 +91,25 @@ function Get-RsRestItemDataModelParameters
             $item = ConvertFrom-Json $response.Content
             $itemType = $item.Type
 
-            Write-Verbose "Fetching data sources for $RsItem..."
-            $dataSourcesUri = [String]::Format($dataSourcesUri, $itemType + "s", $RsItem)
+            Write-Verbose "Fetching parameters for $RsItem..."
+            $parametersUri = [String]::Format($parametersUri, $itemType + "s", $RsItem)
 
             if ($Credential -ne $null)
             {
-                $response = Invoke-WebRequest -Uri $dataSourcesUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                $paramResponse = Invoke-WebRequest -Uri $parametersUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
             }
             else
             {
-                $response = Invoke-WebRequest -Uri $dataSourcesUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                $paramResponse = Invoke-WebRequest -Uri $parametersUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
             }
 
-            $itemWithDataSources = ConvertFrom-Json $response.Content
+            Write-Verbose $paramResponse
+            $itemWithDataSources = ConvertFrom-Json $paramResponse.Content
             return $itemWithDataSources.DataModelParameters
         }
         catch
         {
+            Write-Error "Error fetching parameters for '$RsItem': $($_.Exception.Message)"
             throw (New-Object System.Exception("Failed to get data model parameters for '$RsItem': $($_.Exception.Message)", $_.Exception))
         }
     }

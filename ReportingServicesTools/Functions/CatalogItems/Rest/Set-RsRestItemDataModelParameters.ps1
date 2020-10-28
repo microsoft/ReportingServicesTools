@@ -99,6 +99,7 @@ function Set-RsRestItemDataModelParameters
         }
         catch
         {
+            Write-Error "Error updating data model parameters for for '$RsItem': $($_.Exception.Message)"            
             throw (New-Object System.Exception("Failed to update data model parameters for '$RsItem': $($_.Exception.Message)", $_.Exception))
         }
     }
