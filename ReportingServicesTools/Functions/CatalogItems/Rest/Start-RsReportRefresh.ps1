@@ -63,7 +63,7 @@ function Start-RsReportRefresh
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [Alias('CacheRefreshPlan')]
         [string]
-        $Id,
+        $Id = $null,
 
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [string]
@@ -91,7 +91,12 @@ function Start-RsReportRefresh
     {
         try
         {
-            if ($Id -eq $null)
+            if (-not $RsReport)
+            {
+                Write-Verbose "Fetching CacheRefreshPlans for Id $Id..."
+                $CacheRefreshPlansUri = [String]::Format($CacheRefreshPlansUri, $Id)
+            }
+            else
             {
                 Write-Verbose "Fetching CacheRefreshPlans for $RsReport..."
                 if ($Credential -ne $null)
@@ -104,12 +109,9 @@ function Start-RsReportRefresh
                 }
                 $CacheRefreshPlansUri = [String]::Format($CacheRefreshPlansUri, $RefreshPlan.Id)
             }
-            else {
-                $CacheRefreshPlansUri = [String]::Format($CacheRefreshPlansUri, $Id)
-            }
-
+            Write-Verbose "$($CacheRefreshPlansUri)"
             
-            Write-Verbose "Fetching metadata for $($RefreshPlan.CatalogItemPath)..."
+            Write-Verbose "Starting Refresh for $($RefreshPlan.RsReport)$($Id)..."
             if ($Credential -ne $null)
             {
                 $response = Invoke-RestMethod -Uri $CacheRefreshPlansUri -Method Post -WebSession $WebSession -Credential $Credential -Verbose:$false
