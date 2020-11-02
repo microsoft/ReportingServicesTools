@@ -29,7 +29,7 @@ Describe "Set-RsRestItemDataModelParameters" {
     }
 
     Context "ReportPortalUri parameter" {
-        It "fetches data sources for power bi reports" {
+        It "fetches parameters for power bi reports" {
             $dataModelParameters = Get-RsRestItemDataModelParameters -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose            
             $dataModelParameters[0].Value = "NewValue"
 
