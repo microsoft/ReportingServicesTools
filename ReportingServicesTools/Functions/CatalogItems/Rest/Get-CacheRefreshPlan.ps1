@@ -42,8 +42,8 @@ function Get-RsCacheRefreshPlan
 
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $True)]
-        [Alias('ItemPath','Path')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true)]
+        [Alias('ItemPath','Path', 'RsItem')]
         [string]
         $RsReport,
 
@@ -73,7 +73,6 @@ function Get-RsCacheRefreshPlan
         try
         {
             Write-Verbose "Fetching metadata for $RsReport..."
-            
             if ($Credential -ne $null)
             {
                 $Report = Get-RsItem -ReportPortalUri $ReportPortalUri -RsItem $RsReport -WebSession $WebSession -Credential $Credential -Verbose:$false
@@ -83,7 +82,7 @@ function Get-RsCacheRefreshPlan
                 $Report = Get-RsItem -ReportPortalUri $ReportPortalUri -RsItem $RsReport -WebSession $WebSession -Verbose:$false
             }
 
-
+            Write-Verbose "Fetching CacheRefreshPlans for $RsReport..."
             $catalogItemsUri = [String]::Format($catalogItemsUri, $Report.Id)
             if ($Credential -ne $null)
             {
@@ -96,7 +95,7 @@ function Get-RsCacheRefreshPlan
 
             $item = $response.value
             return [pscustomobject]@{
-                CatalogItemPath = $item.CatalogItemPath
+                RsReport = $item.CatalogItemPath
                 EventType = $item.EventType
                 LastRunTime = $item.LastRunTime
                 LastStatus = $item.LastStatus
