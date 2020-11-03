@@ -23,6 +23,7 @@ before_test:
 - cmd: NET USER rsuser1 "%SqlSaPwd%" /ADD /Y
 - ps: |
     write-host "Showing Version of Pester"
+    write-host "PbiRS Download URL $($env:pbirsDownloadUrl)"
     gci "C:\Program Files\WindowsPowerShell\Modules\Pester"
     $ErrorActionPreference = 'Stop';
     [Environment]::SetEnvironmentVariable("RsUser", "$($env:ComputerName)\rsuser1")
