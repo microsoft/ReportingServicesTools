@@ -74,6 +74,7 @@
         'Get-RsItemDataSource',
         'Get-RsItemReference',
         'Get-RsRestItemDataSource',
+        'Get-RsRestItemDataModelParameters',
         'Get-RsRestItem',
         'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
@@ -111,6 +112,7 @@
         'Set-RsDataSourceReference',
         'Set-RsEmailSettings',
         'Set-RsItemDataSource',
+        'Set-RsRestItemDataModelParameters';
         'Set-RsRestItemDataSource',
         'Set-RsSubscription',
         'Set-RsUrlReservation',
