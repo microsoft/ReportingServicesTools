@@ -33,14 +33,14 @@ function Out-RsRestCatalogItem
 
         .EXAMPLE
             Out-RsRestCatalogItem -RsItem '/Report' -Destination 'C:\reports'
-            
+
             Description
             -----------
             Downloads the catalog item 'Report' to folder 'C:\reports' using v2.0 REST Endpoint from the Report Server located at http://localhost/reports.
 
         .EXAMPLE
             Out-RsRestCatalogItem -RsItem '/Report' -Destination 'C:\reports' -RestApiVersion 'v1.0'
-            
+
             Description
             -----------
             Downloads the catalog item 'Report' to folder 'C:\reports' using v1.0 REST Endpoint from the Report Server located at http://localhost/reports.
@@ -54,7 +54,7 @@ function Out-RsRestCatalogItem
 
         .EXAMPLE
             Out-RsRestCatalogItem -ReportPortalUri 'http://myserver/reports' -RsItem '/Report' -Destination 'C:\reports'
-            
+
             Description
             -----------
             Downloads the catalog item found at '/Report' to folder 'C:\reports' using v2.0 REST Endpoint from the Report Server located at http://myserver/reports.
@@ -67,7 +67,7 @@ function Out-RsRestCatalogItem
         [string[]]
         $RsItem,
 
-        [ValidateScript({ Test-Path $_ -PathType Container})]
+        [ValidateScript({Test-Path -LiteralPath $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
         [string]
         $Destination,

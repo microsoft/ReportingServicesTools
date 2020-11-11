@@ -37,7 +37,7 @@ function Out-RsRestCatalogItemId
         [Parameter(Mandatory = $True)]
         $RsItemInfo,
 
-        [ValidateScript({ Test-Path $_ -PathType Container})]
+        [ValidateScript({Test-Path -LiteralPath $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
         [string]
         $Destination,
@@ -66,7 +66,7 @@ function Out-RsRestCatalogItemId
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemContentApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})/Content/`$value"
-        $DestinationFullPath = Convert-Path $Destination
+        $DestinationFullPath = Convert-Path -LiteralPath $Destination
 
         # basic validation of RsItemInfo by checking properties that would be defined on a valid RsItemInfo object
         if ($RsItemInfo.Id -eq $null -or
@@ -145,4 +145,3 @@ function Out-RsRestCatalogItemId
         Write-Verbose "$($RsItemInfo.Path) was downloaded to $destinationFilePath successfully!"
     }
 }
-
