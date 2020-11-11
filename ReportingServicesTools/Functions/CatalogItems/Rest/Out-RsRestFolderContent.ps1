@@ -33,28 +33,28 @@ function Out-RsRestFolderContent
 
         .EXAMPLE
             Out-RsRestFolderContent -RsFolder /folder -Destination 'C:\reports'
-            
+
             Description
             -----------
             Downloads all items found under '/folder' folder to 'C:\reports' using v2.0 REST Endpoint from the Report Server located at http://localhost/reports.
 
         .EXAMPLE
             Out-RsRestFolderContent -RsFolder '/folder' -Destination 'C:\reports' -RestApiVersion 'v1.0'
-            
+
             Description
             -----------
             Downloads all items found under '/folder' folder to 'C:\reports' using v1.0 REST Endpoint from the Report Server located at http://localhost/reports.
 
         .EXAMPLE
             Out-RsRestFolderContent -WebSession $mySession -RsFolder '/folder' -Destination 'C:\reports'
-            
+
             Description
             -----------
             Downloads all items found under '/folder' folder to 'C:\reports' using v2.0 REST Endpoint from the Report Server located at specified WebSession object.
 
         .EXAMPLE
             Out-RsRestFolderContent -ReportPortalUri 'http://myserver/reports' -RsFolder '/folder' -Destination 'C:\reports'
-            
+
             Description
             -----------
             Downloads all items found under '/folder' folder to 'C:\reports' using v2.0 REST Endpoint from the Report Server located at http://myserver/reports.
@@ -66,7 +66,7 @@ function Out-RsRestFolderContent
         [string]
         $RsFolder,
 
-        [ValidateScript({ Test-Path $_ -PathType Container})]
+        [ValidateScript({Test-Path -LiteralPath $_ -PathType Container})]
         [Parameter(Mandatory = $True)]
         [string]
         $Destination,
