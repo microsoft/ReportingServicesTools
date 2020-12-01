@@ -154,7 +154,9 @@ function Publish-RsProject
         {
         [XML]$ReportDSetRef = Get-Content $Report.FullName
         foreach($SDS in $ReportDSetRef.Report.DataSets.DataSet){
-            Set-RsDataSetReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$($Report.BaseName)" -DataSetName $SDS.Name -DataSetPath "$TargetDatasetFolder/$($SDS.SharedDataSet.SharedDataSetReference)"
+            if($SDS.SharedDataSet.SharedDataSetReference){
+                Set-RsDataSetReference -ReportServerUri $TargetServerURL -Path "$TargetReportFolder/$($Report.BaseName)" -DataSetName $SDS.Name -DataSetPath "$TargetDatasetFolder/$($SDS.SharedDataSet.SharedDataSetReference)"
+                }
             }
         }
     }
