@@ -81,6 +81,7 @@
         'Grant-RsSystemRole',
         'Import-RsSubscriptionXml',
 	    'Initialize-Rs',
+        'New-RsRestCacheRefreshPlan',
         'New-RsConfigurationSettingObject',
         'New-RsDataSource',
         'New-RsFolder',
