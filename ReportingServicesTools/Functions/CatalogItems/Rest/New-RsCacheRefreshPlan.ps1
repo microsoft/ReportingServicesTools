@@ -57,6 +57,12 @@ function New-RsRestCacheRefreshPlan
             }
         },
 
+        [Parameter(Mandatory = $False)]
+        $StartDateTime = "2021-01-07T02:00:00-08:00",
+
+        [Parameter(Mandatory = $False)]
+        $EndDate = "1901-02-01T00:00:00-08:00",
+
         [Alias('ApiVersion')]
         [ValidateSet("v2.0")]
         [string]
@@ -84,9 +90,9 @@ function New-RsRestCacheRefreshPlan
                 "EventType" = "DataModelRefresh";
                 "Schedule" =  @{
                     "Definition" = @{
-                        "StartDateTime" = "2021-01-07T02:00:00-08:00";
+                        "StartDateTime" = $StartDateTime;
                         "EndDateSpecified" = $false;
-                        "EndDate" =  "1901-02-01T00:00:00-08:00";
+                        "EndDate" =  $EndDate;
                         "Recurrence" = $recurrence;
                     }
                 }
