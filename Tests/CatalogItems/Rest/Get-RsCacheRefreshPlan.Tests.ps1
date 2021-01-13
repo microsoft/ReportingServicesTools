@@ -27,7 +27,7 @@ function VerifyCatalogItemExists()
     $item | Should Not BeNullOrEmpty
 }
 
-Describe "New-RsRestCacheRefreshPlan" {
+Describe "Get-RsRestCacheRefreshPlan" {
     $rsFolderPath = ""
     $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
 
@@ -44,6 +44,7 @@ Describe "New-RsRestCacheRefreshPlan" {
         $dataSources[0].DataModelDataSource.Username = 'PBIRS'
         $dataSources[0].DataModelDataSource.Secret = 'password'
         Set-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
+        New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -Description 'My New Refresh Plan' -Verbose
 
     }
 
@@ -53,11 +54,11 @@ Describe "New-RsRestCacheRefreshPlan" {
 
     Context "ReportPortalUri parameter" {
         
-        It "Should add a CacheRefreshPlan plan for a PBIX report" {
-            New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -Description 'My New Refresh Plan' -Verbose
+        It "Should retrieve a CacheRefreshPlan plan for a PBIX report" {
             
             $plan = Get-RsCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             $plan | Should Not BeNullOrEmpty
+            $plan.LastStatus | Should -Be 'New Scheduled Refresh Plan'
         }
     }
 }

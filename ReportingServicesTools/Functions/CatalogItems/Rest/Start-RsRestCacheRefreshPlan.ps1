@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Start-RsReportRefresh
+function Start-RsRestCacheRefreshPlan
 {
     <#
         .SYNOPSIS
@@ -127,3 +127,4 @@ function Start-RsReportRefresh
         }
     }
 }
+New-Alias -Name "Start-RsPbiReportRefresh" -Value Get-RsRestItem -Scope Global

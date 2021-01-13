@@ -117,7 +117,7 @@
         'Set-RsSubscription',
         'Set-RsUrlReservation',
         'Set-PbiRsUrlReservation',
-        'Start-RsReportRefresh',
+        'Start-RsRestCacheRefreshPlan',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
         'Write-RsRestCatalogItem',
