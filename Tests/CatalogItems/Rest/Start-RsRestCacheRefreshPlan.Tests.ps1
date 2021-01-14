@@ -59,7 +59,7 @@ Describe "Start-RsRestCacheRefreshPlan" {
 
             $plan = Get-RsCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             $plan | Should Not BeNullOrEmpty
-            $plan.LastStatus | Should Not -Be 'New Scheduled Refresh Plan'
+            $plan.LastStatus | Should Not Be 'New Scheduled Refresh Plan'
         }
     }
 }
