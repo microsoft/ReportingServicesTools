@@ -1,15 +1,15 @@
 # Copyright (c) 2020 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Get-RsCacheRefreshPlan
+function Get-RsRestCacheRefreshPlan
 {
     <#
         .SYNOPSIS
-            This script fetches a catalog item from the Report Server
+            This function fetches a CacheRefreshPlan from a Power BI report.
         .DESCRIPTION
-            This script fetches a catalog item from the Report Server using the REST API.
+            This function fetches a CacheRefreshPlan from a Power BI report.
         .PARAMETER RsReport
-            Specify the location of the catalog item which should be fetched.
+            Specify the location of the Power BI report for which the CacheRefreshPlan should be fetched.
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
         .PARAMETER RestApiVersion
@@ -19,25 +19,25 @@ function Get-RsCacheRefreshPlan
         .PARAMETER WebSession
             Specify the session to be used when making calls to REST Endpoint.
         .EXAMPLE
-            Get-RsRestItem -RsReport "/MyReport"
+            Get-RsRestCacheRefreshPlan -RsReport "/MyReport"
             Description
             -----------
-            Fetches item object "MyReport" catalog item found in "/" folder from the Report Server located at http://localhost/reports.
+            Fetches CacheRefreshPlan object for the "MyReport" catalog item found in "/" folder from the Report Server located at http://localhost/reports.
         .EXAMPLE
-            Get-RsRestItem -RsReport "/MyReport" -WebSession $session
+            Get-RsRestCacheRefreshPlan -RsReport "/MyReport" -WebSession $session
             Description
             -----------
-            Fetches item object "MyReport" catalog item found in "/" folder from the Report Server located at specificed WebSession object.
+            Fetches CacheRefreshPlan object the "MyReport" catalog item found in "/" folder from the Report Server located at specificed WebSession object.
         .EXAMPLE
-            Get-RsRestItem -RsReport "/MyReport" -ReportPortalUri http://myserver/reports
+            Get-RsRestCacheRefreshPlan -RsReport "/MyReport" -ReportPortalUri http://myserver/reports
             Description
             -----------
-            Fetches catalog item "MyReport" catalog item found in "/" folder from the Report Server located at http://myserver/reports.
+            Fetches CacheRefreshPlan object for the "MyReport" catalog item found in "/" folder from the Report Server located at http://myserver/reports.
         .EXAMPLE
-            Get-RsRestItem -RsReport "/Finance" -ReportPortalUri http://myserver/reports
+            Get-RsRestCacheRefreshPlan -RsReport "/Finance" -ReportPortalUri http://myserver/reports
             Description
             -----------
-            Fetches item "Finance" catalog item, which is a Folder object found in "/" folder from the Report Server located at http://myserver/reports.
+            Fetches CacheRefreshPlan object for the "Finance" catalog item, which is a Folder object found in "/" folder from the Report Server located at http://myserver/reports.
     #>
 
     [CmdletBinding()]
@@ -66,7 +66,7 @@ function Get-RsCacheRefreshPlan
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/PowerBIReports({0})/CacheRefreshPlans"
+        $CacheRefreshPlanUri = $ReportPortalUri + "api/$RestApiVersion/PowerBIReports({0})/CacheRefreshPlans"
     }
     Process
     {
@@ -83,14 +83,14 @@ function Get-RsCacheRefreshPlan
             }
 
             Write-Verbose "Fetching CacheRefreshPlans for $RsReport..."
-            $catalogItemsUri = [String]::Format($catalogItemsUri, $Report.Id)
+            $CacheRefreshPlanUri = [String]::Format($CacheRefreshPlanUri, $Report.Id)
             if ($Credential -ne $null)
             {
-                $response = Invoke-RestMethod -Uri $catalogItemsUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
+                $response = Invoke-RestMethod -Uri $CacheRefreshPlanUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
             }
             else
             {
-                $response = Invoke-RestMethod -Uri $catalogItemsUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
+                $response = Invoke-RestMethod -Uri $CacheRefreshPlanUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
             }
 
             $item = $response.value
@@ -111,7 +111,8 @@ function Get-RsCacheRefreshPlan
         }
         catch
         {
-            throw (New-Object System.Exception("Failed to get for '$RsReport': $($_.Exception.Message)", $_.Exception))
+            throw (New-Object System.Exception("Failed to get cache refresh plan for '$RsReport': $($_.Exception.Message)", $_.Exception))
         }
     }
 }
+New-Alias -Name "Get-RsCacheRefreshPlan" -Value Get-RsRestCacheRefreshPlan -Scope Global

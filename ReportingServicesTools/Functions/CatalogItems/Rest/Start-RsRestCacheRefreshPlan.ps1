@@ -127,4 +127,5 @@ function Start-RsRestCacheRefreshPlan
         }
     }
 }
-New-Alias -Name "Start-RsPbiReportRefresh" -Value Get-RsRestItem -Scope Global
+New-Alias -Name "Start-RsPbiReportRefresh" -Value Start-RsRestCacheRefreshPlan -Scope Global
+New-Alias -Name "Start-RsCacheRefreshPlan" -Value Start-RsRestCacheRefreshPlan -Scope Global

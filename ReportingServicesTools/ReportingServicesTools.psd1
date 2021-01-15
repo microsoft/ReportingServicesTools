@@ -66,7 +66,7 @@
         'Connect-RsReportServer',
         'Copy-RsSubscription',
         'Export-RsSubscriptionXml',
-        'Get-RsCacheRefreshPlan',
+        'Get-RsRestCacheRefreshPlan',
         'Get-RsCatalogItemRole',
         'Get-RsDataSource',
         'Get-RsDeploymentConfig',

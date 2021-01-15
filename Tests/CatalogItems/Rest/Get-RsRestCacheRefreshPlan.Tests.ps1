@@ -56,7 +56,7 @@ Describe "Get-RsRestCacheRefreshPlan" {
         
         It "Should retrieve a CacheRefreshPlan plan for a PBIX report" {
             
-            $plan = Get-RsCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            $plan = Get-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             $plan | Should Not BeNullOrEmpty
             $plan.LastStatus | Should -Be 'New Scheduled Refresh Plan'
         }
