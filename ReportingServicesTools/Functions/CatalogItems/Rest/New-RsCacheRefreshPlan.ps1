@@ -34,6 +34,28 @@ function New-RsRestCacheRefreshPlan
             Description
             -----------
             Creates a new CacheRefreshPlan for the ReportCatalog Power BI Report under "/" parent folder.
+
+        .EXAMPLE
+            New-RsRestCacheRefreshPlan -RsItem /ReportCatalog -Recurrence @{
+            "DailyRecurrence" = @{
+                "DaysInterval" = "1";
+            }
+        }
+
+            Description
+            -----------
+            Creates a new CacheRefreshPlan for the ReportCatalog Power BI Report under "/" parent folder, with daily recurrence.
+
+        .EXAMPLE
+            New-RsRestCacheRefreshPlan -RsItem /ReportCatalog -StartDateTime "2021-01-07T06:00:00-08:00" -Recurrence @{
+            "DailyRecurrence" = @{
+                "DaysInterval" = "1";
+            }
+        }
+
+            Description
+            -----------
+            Creates a new CacheRefreshPlan for the ReportCatalog Power BI Report under "/" parent folder, which will reoccur daily at 6 AM.
     #>
 
     [CmdletBinding()]

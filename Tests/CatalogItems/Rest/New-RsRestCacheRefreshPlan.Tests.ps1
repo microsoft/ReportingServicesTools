@@ -59,5 +59,16 @@ Describe "New-RsRestCacheRefreshPlan" {
             $plan = Get-RsCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             $plan | Should Not BeNullOrEmpty
         }
+        
+        It "Should add a CacheRefreshPlan plan for a PBIX report" {
+            New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -StartDateTime "2021-01-07T06:00:00-08:00" -Recurrence @{
+                "DailyRecurrence" = @{
+                    "DaysInterval" = "1";
+                }
+            } -Verbose
+            
+            $plan = Get-RsCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            $plan[0].ScheduleDescription | Should Be @('At 6:00 AM every day, starting 1/7/2021')
+        }
     }
 }
