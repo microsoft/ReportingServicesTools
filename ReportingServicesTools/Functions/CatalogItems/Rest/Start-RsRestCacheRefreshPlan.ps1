@@ -107,7 +107,14 @@ function Start-RsRestCacheRefreshPlan
                 {
                     $RefreshPlan = Get-RsCacheRefreshPlan -ReportPortalUri $ReportPortalUri -RsReport $RsReport -WebSession $WebSession -Verbose:$false
                 }
-                $CacheRefreshPlansUri = [String]::Format($CacheRefreshPlansUri, $RefreshPlan.Id)
+                if ($RefreshPlan.Count -le 1)
+                {
+                    $CacheRefreshPlansUri = [String]::Format($CacheRefreshPlansUri, $RefreshPlan.Id)
+                }
+                else 
+                {
+                    Write-Warning "Unable to start a refresh for $RsReport because multiple CacheRefreshPlans are present."
+                }
             }
             Write-Verbose "$($CacheRefreshPlansUri)"
             
