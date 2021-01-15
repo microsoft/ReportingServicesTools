@@ -54,11 +54,20 @@ Describe "Get-RsRestCacheRefreshPlan" {
 
     Context "ReportPortalUri parameter" {
         
-        It "Should retrieve a CacheRefreshPlan plan for a PBIX report" {
+        It "Should retrieve a CacheRefreshPlan for a PBIX report" {
             
             $plan = Get-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             $plan | Should Not BeNullOrEmpty
             $plan.LastStatus | Should -Be 'New Scheduled Refresh Plan'
+        }
+        
+        It "Should retrieve two CacheRefreshPlans for a PBIX report" {
+            New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -Description 'My Other Refresh Plan' -Verbose
+            
+            $plans = Get-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            $plans | Should Not BeNullOrEmpty
+            $plans.LastStatus | Should -Be @('New Scheduled Refresh Plan', 'New Scheduled Refresh Plan')
+            $plans | ft -AutoSize
         }
     }
 }

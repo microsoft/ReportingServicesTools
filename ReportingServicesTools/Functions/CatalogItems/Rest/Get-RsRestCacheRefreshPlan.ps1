@@ -93,21 +93,25 @@ function Get-RsRestCacheRefreshPlan
                 $response = Invoke-RestMethod -Uri $CacheRefreshPlanUri -Method Get -WebSession $WebSession -UseDefaultCredentials -Verbose:$false
             }
 
-            $item = $response.value
-            return [pscustomobject]@{
-                RsReport = $item.CatalogItemPath
-                EventType = $item.EventType
-                LastRunTime = $item.LastRunTime
-                LastStatus = $item.LastStatus
-                Description = $item.Description
-                Id = $item.Id
-                ScheduleDescription = $item.ScheduleDescription
-                Owner = $item.Owner
-                ModifiedBy = $item.ModifiedBy
-                ModifiedDate = $item.ModifiedDate
-                Schedule   = $item.Schedule
-                ParameterValues   = $item.ParameterValues
+            $items = $response.value
+            foreach($item in $items){
+                $CacheRefreshPlan = @([pscustomobject]@{
+                    RsReport = $item.CatalogItemPath
+                    EventType = $item.EventType
+                    LastRunTime = $item.LastRunTime
+                    LastStatus = $item.LastStatus
+                    Description = $item.Description
+                    Id = $item.Id
+                    ScheduleDescription = $item.ScheduleDescription
+                    Owner = $item.Owner
+                    ModifiedBy = $item.ModifiedBy
+                    ModifiedDate = $item.ModifiedDate
+                    Schedule   = $item.Schedule
+                    ParameterValues   = $item.ParameterValues
+                })
+                $CacheRefreshPlans += $CacheRefreshPlan
             }
+            return $CacheRefreshPlans
         }
         catch
         {
