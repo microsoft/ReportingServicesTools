@@ -5,9 +5,11 @@ function Start-RsRestCacheRefreshPlan
 {
     <#
         .SYNOPSIS
-            This function fetches the CacheRefreshPlans of a report from the Report Server, and refreshes them.
+            This function fetches the CacheRefreshPlan of a report from the Report Server, and refreshes them.
         .DESCRIPTION
-            This function fetches the CacheRefreshPlans of a report from the Report Server, and refreshes them using the REST API.
+            This function fetches the CacheRefreshPlan of a report from the Report Server, and refreshes them using 
+            the REST API.  Alternatively, when a report has multiple CacheRefreshPlans you can sopecify which 
+            CacheRefreshPlan to refresh by passing the Id of the CacheRefreshPlan to the -Id parameter.
         .PARAMETER RsReport
             Specify the location of the report which should have its CacheRefreshPlans fetched & refreshed.
         .PARAMETER Id
@@ -33,8 +35,9 @@ function Start-RsRestCacheRefreshPlan
 
             Description
             -----------
-            Fetches the CacheRefreshPlans of a report named "MyReport" found in "/" folder from the Report Server located at http://localhost/reports, 
-            and refreshes them.
+            Fetches the CacheRefreshPlan of a report named "MyReport" found in "/" folder from the Report Server located at http://localhost/reports, 
+            and refreshes them.  
+            NOTE: This only works when the report has a single CacheRefreshPlan.
 
         .EXAMPLE
             Start-RsReportRefresh -RsReport "/MyReport" -WebSession $session
