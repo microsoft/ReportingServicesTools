@@ -107,27 +107,34 @@ function New-RsRestCacheRefreshPlan
     {
         try
         {
-            $payload = @{
-                "CatalogItemPath" = $RsItem;
-                "EventType" = "DataModelRefresh";
-                "Schedule" =  @{
-                    "Definition" = @{
-                        "StartDateTime" = $StartDateTime;
-                        "EndDateSpecified" = $false;
-                        "EndDate" =  $EndDate;
-                        "Recurrence" = $recurrence;
-                    }
-                }
-                "ScheduleDescription" = $Description;
+            if ((Get-RsRestItem -RsItem $RsItem -ReportPortalUri $ReportPortalUri -WebSession $WebSession -Credential $Credential -Verbose:$false).Type -ne 'PowerBIReport' )
+            {
+                Write-Warning "Unable to create a CacheRefreshPlan for $RsItem because it is not a Power BI report."
             }
+            else
+            {
+                $payload = @{
+                    "CatalogItemPath" = $RsItem;
+                    "EventType" = "DataModelRefresh";
+                    "Schedule" =  @{
+                        "Definition" = @{
+                            "StartDateTime" = $StartDateTime;
+                            "EndDateSpecified" = $false;
+                            "EndDate" =  $EndDate;
+                            "Recurrence" = $recurrence;
+                        }
+                    }
+                    "ScheduleDescription" = $Description;
+                }
 
-            $payloadJson = ConvertTo-Json $payload -Depth 15
-            Write-Verbose "Payload: $payloadJson"
+                $payloadJson = ConvertTo-Json $payload -Depth 15
+                Write-Verbose "Payload: $payloadJson"
 
-            $response = Invoke-RestMethod -Uri $refreshplansUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -Verbose:$false
+                $response = Invoke-RestMethod -Uri $refreshplansUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -Verbose:$false
 
-            Write-Verbose "Schedule payload for $RsItem was created successfully!"
-            return $response
+                Write-Verbose "Schedule payload for $RsItem was created successfully!"
+                return $response
+            }
         }
         catch
         {
