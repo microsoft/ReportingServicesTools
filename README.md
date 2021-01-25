@@ -43,6 +43,10 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsItemReference|This command gets the item references of a report or a dataset.|
 |Get-RsItemDataSource|This command fetches embedded data sources associated to a report.|
 |Get-RsCatalogItemRole|This command retrieves access on catalog items for users or groups.|
+|Get-RsRestCacheRefreshPlan|This function fetches a CacheRefreshPlan from a Power BI report.|
+|Get-RsRestFolderContent|This function fetches data sources related to a catalog item from the Report Server.|
+|Get-RsRestItem|This function fetches a catalog item from the Report Server using the REST API.|
+|Get-RsRestItemDataModelParameters|This function fetches the Data Model Parameters related to a Catalog Item report from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.|
 |Get-RsRestItemDataSource|This command fetches embedded data sources associated to a Paginated report or a Power BI report using the REST Endpoint.|
 |Get-RsSubscription|This command retrieves information about subscriptions for a report.|
 |Grant-RsSystemRole|This command grants access to SQL Server Reporting Services to users or groups. Alias: Grant-AccessToRs|
@@ -52,6 +56,7 @@ The following is a list of commands which are available for you to use once you 
 |New-RsConfigurationSettingObject|This command creates a new RSConfigurationSettingObject which is used to interact with the WMI Provider.|
 |New-RsDataSource|This command creates/overwrites data source to the specified path.|
 |New-RsFolder|This command creates a new folder in the specified path.|
+|New-RsRestCacheRefreshPlan|This function creates a new CacheRefreshPlan for the specified Power BI Report.|
 |New-RsRestCredentialsByUserObject|This command creates a CredentialsByUser object to be used by Set-RsRestItemDataSource command.|
 |New-RsRestCredentialsInServerObject|This command creates a CredentialsInServer object to be used by Set-RsRestItemDataSource command.|
 |New-RsRestFolder|This command creates a new folder in the specified path using the REST Endpoint.|
@@ -79,11 +84,14 @@ The following is a list of commands which are available for you to use once you 
 |Set-RsDataSourcePassword|This command sets the password associated with a data source.|
 |Set-RsEmailSettings|This command configures the SQL Server Reporting Services email settings to use basic authentication. Alias: Set-RsEmailSettingsAsBasicAuth, Set-RsEmailSettingsAsNoAuth, Set-RsEmailSettingsAsNTLMAuth|
 |Set-RsItemDataSource|This command updates embedded data source associated to a report.|
+|Set-RsDataSourceReference|Overrides the reference of a report or dataset to a shared data source.|
+|Set-RsRestItemDataModelParameters|This function updates data sources related to a catalog item from the Report Server.|
 |Set-RsRestItemDataSource|This command updates embedded data sources associated to a Paginated report or a Power BI Report using the REST endpoint.|
 |Set-RsSharedDataSource|This command links a report or a dataset to a data source.|
 |Set-RsUrlReservation|This command configures the SQL Server Reporting Services URLs.|
 |Set-PbiRsUrlReservation|This command configures the Power BI Report Server URLs.|
 |Set-RsSubscription|This command updates existing subscriptions piped from Get-RsSubscription|
+|Start-RsRestCacheRefreshPlan|This function fetches the CacheRefreshPlan of a report from the Report Server, and refreshes them using the REST API.  Alternatively, when a report has multiple CacheRefreshPlans you can sopecify which CacheRefreshPlan to refresh by passing the Id of the CacheRefreshPlan to the -Id parameter.|
 |Write-RsCatalogItem|This command uploads a report, a dataset or a data source using the SOAP Endpoint..|
 |Write-RsFolderContent|This uploads all reports, datasets and data sources in a folder.|
 |Write-RsRestCatalogItem|This command uploads a report, a dataset or a mobile report using the REST Endpoint.|

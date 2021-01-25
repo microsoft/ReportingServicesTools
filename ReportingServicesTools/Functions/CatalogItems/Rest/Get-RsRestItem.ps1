@@ -5,9 +5,9 @@ function Get-RsRestItem
 {
     <#
         .SYNOPSIS
-            This script fetches a catalog item from the Report Server
+            This function fetches a catalog item from the Report Server
         .DESCRIPTION
-            This script fetches a catalog item from the Report Server using the REST API.
+            This function fetches a catalog item from the Report Server using the REST API.
         .PARAMETER RsItem
             Specify the location of the catalog item which should be fetched.
         .PARAMETER ReportPortalUri

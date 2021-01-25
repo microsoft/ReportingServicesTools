@@ -100,6 +100,9 @@ function Set-RsRestItemDataSource
             Description
             -----------
             Updates data sources to the specified $dataSources object. This example is only applicable to Paginated Reports.
+        
+        .LINK
+            https://docs.microsoft.com/en-us/power-bi/report-server/connect-data-source-apis-pre-oct-2020
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
