@@ -31,7 +31,7 @@ function Start-RsRestCacheRefreshPlan
             and refreshes them.
 
         .EXAMPLE
-            Get-RsCacheRefreshPlan -RsReport '/MyReport' | Start-RsReportRefresh
+            Get-RsCacheRefreshPlan -RsReport '/MyReport' | Start-RsRestCacheRefreshPlan
 
             Description
             -----------
@@ -40,7 +40,7 @@ function Start-RsRestCacheRefreshPlan
             NOTE: This only works when the report has a single CacheRefreshPlan.
 
         .EXAMPLE
-            Start-RsReportRefresh -RsReport "/MyReport" -WebSession $session
+            Start-RsRestCacheRefreshPlan -RsReport "/MyReport" -WebSession $session
 
             Description
             -----------
@@ -48,12 +48,20 @@ function Start-RsRestCacheRefreshPlan
             and refreshes them.
 
         .EXAMPLE
-            Start-RsReportRefresh -RsReport "/MyReport" -ReportPortalUri http://myserver/reports
+            Start-RsRestCacheRefreshPlan -RsReport "/MyReport" -ReportPortalUri http://myserver/reports
 
             Description
             -----------
-            Fetches the CacheRefreshPlans of a report named "MyReport" found in "/" folder from the Report Server located at http://myserver/reports, 
-            and refreshes them.
+            Fetches the CacheRefreshPlans of a report named "MyReport" found in "/" folder from the Report Server located at http://myserver/reports, and refreshes them.
+
+        .EXAMPLE
+            $Sub = Get-RsSubscription -RsItem "/MyReport"
+            Start-RsRestCacheRefreshPlan -Id $Sub.Id -ReportPortalUri http://myserver/reports
+
+            Description
+            -----------
+            Fetches the Subscription of a paginated report named "MyReport" found in "/" folder from the Report Server located at http://myserver/reports, 
+            and then pases the Id of the subscription to the Start-RsRestCacheRefreshPlan which starts the refresh.
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
@@ -138,4 +146,3 @@ function Start-RsRestCacheRefreshPlan
     }
 }
 New-Alias -Name "Start-RsPbiReportRefresh" -Value Start-RsRestCacheRefreshPlan -Scope Global
-New-Alias -Name "Start-RsCacheRefreshPlan" -Value Start-RsRestCacheRefreshPlan -Scope Global

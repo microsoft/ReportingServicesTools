@@ -54,6 +54,12 @@ function Grant-RsCatalogItemRole
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reportserver using CaptainAwesome's credentials and then grant Browser access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
+
+        .EXAMPLE
+            Grant-RsCatalogItemRole -Identity 'CONTOSO\Report_Developers' -RoleName 'Browser' -Path '/Finance' -ReportServerUri https://UATPBIRS/reportserver
+            Description
+            -----------
+            This command will grant Browser access to members of the 'Report_Developers' domain group to catalog items found under the '/Finance' folder.  It will do this by establishing a connection to the Report Server located at https://UATPBIRS/reportserver using current user's credentials. 
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
