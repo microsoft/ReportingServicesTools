@@ -8,7 +8,7 @@ function Get-TestUser() {
     return $env:RsUser
 }
 
-Describe "Get-RsRestItemAccess" { 
+Describe "Get-RsRestItemAccessPolicy" { 
     $user = Get-TestUser
     $reportServerUri = 'http://localhost/reportserver'
     $ReportPortalUri = 'http://localhost/reports'
@@ -22,7 +22,7 @@ Describe "Get-RsRestItemAccess" {
             # Grant Access
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $catalogItemPolicy = Get-RsRestItemAccess -Path $catalogItemPath
+            $catalogItemPolicy = Get-RsRestItemAccessPolicy -Path $catalogItemPath
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles -eq $role}).Count
             $catalogItemPolicyCount | Should BeGreaterThan 0
         }
@@ -33,7 +33,7 @@ Describe "Get-RsRestItemAccess" {
             # Grant Access
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $catalogItemPolicy = Get-RsRestItemAccess -Path $catalogItemPath
+            $catalogItemPolicy = Get-RsRestItemAccessPolicy -Path $catalogItemPath
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles -eq $role}).Count
             $catalogItemPolicyCount | Should BeGreaterThan 0
         }
@@ -50,7 +50,7 @@ Describe "Get-RsRestItemAccess" {
             # Grant Access
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $catalogItemPolicy = Get-RsRestItemAccess -Path $catalogItemPath -Identity $user
+            $catalogItemPolicy = Get-RsRestItemAccessPolicy -Path $catalogItemPath -Identity $user
             $catalogItemPolicyCount = @($catalogItemPolicy).Count
             $catalogItemPolicyCount | Should BeGreaterThan 0
         }
@@ -61,7 +61,7 @@ Describe "Get-RsRestItemAccess" {
             # Grant Access
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $catalogItemPolicy = Get-RsRestItemAccess -Path $catalogItemPath -Identity $user
+            $catalogItemPolicy = Get-RsRestItemAccessPolicy -Path $catalogItemPath -Identity $user
             $catalogItemPolicyCount = @($catalogItemPolicy).Count
             $catalogItemPolicyCount | Should BeGreaterThan 0
         }
@@ -79,7 +79,7 @@ Describe "Get-RsRestItemAccess" {
             # Grant Access
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $catalogItemPolicy = Get-RsRestItemAccess -Path $catalogItemPath -ReportPortalUri $ReportPortalUri
+            $catalogItemPolicy = Get-RsRestItemAccessPolicy -Path $catalogItemPath -ReportPortalUri $ReportPortalUri
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles -eq $role}).Count
             $catalogItemPolicyCount | Should BeGreaterThan 0
         }
@@ -90,7 +90,7 @@ Describe "Get-RsRestItemAccess" {
             # Grant Access
             Grant-AccessOnCatalogItem -UserOrGroupName $user -RoleName $role -Path $catalogItemPath -Confirm:$false -Verbose
 
-            $catalogItemPolicy = Get-RsRestItemAccess -Path $catalogItemPath -ReportPortalUri $ReportPortalUri
+            $catalogItemPolicy = Get-RsRestItemAccessPolicy -Path $catalogItemPath -ReportPortalUri $ReportPortalUri
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles -eq $role}).Count
             $catalogItemPolicyCount | Should BeGreaterThan 0
         }

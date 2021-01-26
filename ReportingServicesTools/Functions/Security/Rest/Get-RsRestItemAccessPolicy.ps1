@@ -1,14 +1,14 @@
 # Copyright (c) 2020 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Get-RsRestItemAccess
+function Get-RsRestItemAccessPolicy
 {
     <#
         .SYNOPSIS
-            This script retrieves access to SQL Server Reporting Services Instance or Power BI Report Server Instance from users/groups.
+            This script retrieves access polocies to SQL Server Reporting Services Instance or Power BI Report Server Instance from users/groups.
 
         .DESCRIPTION
-            This script retrieves all access on the SQL Server Reporting Services Instance or Power BI Report Server Instance located at the specified Report Server URI from the specified user/group.
+            This script retrieves all access polocies on the SQL Server Reporting Services Instance or Power BI Report Server Instance located at the specified Report Server URI from the specified user/group.
 
         .PARAMETER RsItem
             Specify the path to catalog item on the server.
@@ -182,7 +182,7 @@ function Get-RsRestItemAccess
         }
         catch
         {
-            throw (New-Object System.Exception("Failed to get cache refresh plan for '$RsItem': $($_.Exception.Message)", $_.Exception))
+            throw (New-Object System.Exception("Failed to get access polocies for '$RsItem': $($_.Exception.Message)", $_.Exception))
         }
     }
 }
