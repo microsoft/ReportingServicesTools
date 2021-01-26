@@ -29,22 +29,22 @@ function Get-RsRestItemAccessPolicy
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            Get-RsRestItemAccess -RsItem "/MyReport"
+            Get-RsRestItemAccessPolicy -RsItem "/MyReport"
             Description
             -----------
             Fetches Policy object for the "MyReport" catalog item found in "/" folder from the Report Server located at http://localhost/reports and returns all access for all users & groups.
         .EXAMPLE
-            Get-RsRestItemAccess -RsItem "/MyReport" -Identity 'jeremymcgee'
+            Get-RsRestItemAccessPolicy -RsItem "/MyReport" -Identity 'jeremymcgee'
             Description
             -----------
             Fetches Policy object the "MyReport" catalog item found in "/" folder from the Report Server located at http://localhost/reports using current user's credentials and then retrieves all access for user 'jmcgee'.
         .EXAMPLE
-            Get-RsRestItemAccess -RsItem "/MyReport" -ReportPortalUri http://myserver/reports
+            Get-RsRestItemAccessPolicy -RsItem "/MyReport" -ReportPortalUri http://myserver/reports
             Description
             -----------
             Fetches Policy object for the "MyReport" catalog item found in "/" folder from the Report Server located at http://myserver/reports and returns all access for all users & groups.
         .EXAMPLE
-            Get-RsRestItemAccess -RsItem "/Finance" -ReportPortalUri http://myserver/reports -Identity 'jeremymcgee' -Recurse
+            Get-RsRestItemAccessPolicy -RsItem "/Finance" -ReportPortalUri http://myserver/reports -Identity 'jeremymcgee' -Recurse
             Description
             -----------
             This command will establish a connection to the Report Server located at http://localhost/reports using current user's credentials and then retrieves all access for user 'jmcgee' recursively.
