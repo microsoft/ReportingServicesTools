@@ -5,10 +5,10 @@ function Get-RsRestItemDataModelParameters
 {
     <#
         .SYNOPSIS
-            This script fetches the Data Model Parameters related to a Catalog Item report from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.
+            This function fetches the Data Model Parameters related to a Catalog Item report from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.
 
         .DESCRIPTION
-            TThis script fetches the Data Model Parameters related to a Catalog Item report from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.
+            This function fetches the Data Model Parameters related to a Catalog Item report from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.
 
         .PARAMETER RsItem
             Specify the location of the catalog item whose data model parameters should be fetched.
@@ -45,6 +45,9 @@ function Get-RsRestItemDataModelParameters
             Description
             -----------
             Fetches data model parameter information associated to "MyReport" catalog item found in "/" folder from the Report Server located at http://myserver/reports.
+        
+        .LINK
+            https://docs.microsoft.com/en-us/power-bi/report-server/connect-data-source-apis
     #>
 
     [CmdletBinding()]

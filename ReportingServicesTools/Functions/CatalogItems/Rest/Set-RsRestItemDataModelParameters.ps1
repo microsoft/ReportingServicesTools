@@ -5,10 +5,10 @@ function Set-RsRestItemDataModelParameters
 {
     <#
         .SYNOPSIS
-            This script updates data sources related to a catalog item from the Report Server.
+            This function updates data sources related to a catalog item from the Report Server.
 
         .DESCRIPTION
-            This script updates data sources related to a catalog item from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.
+            This function updates data sources related to a catalog item from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.
 
         .PARAMETER RsItem
             Specify the location of the catalog item whose data sources will be updated.
@@ -36,6 +36,9 @@ function Set-RsRestItemDataModelParameters
             Description
             -----------
             Updates data model parameters to the specified $parameters object. This example is only applicable for Power BI Reports.
+        
+        .LINK
+            https://docs.microsoft.com/en-us/power-bi/report-server/connect-data-source-apis
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]

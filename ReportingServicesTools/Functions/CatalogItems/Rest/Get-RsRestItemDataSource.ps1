@@ -45,6 +45,9 @@ function Get-RsRestItemDataSource
             Description
             -----------
             Fetches item information (including data sources) associated to "MyReport" catalog item found in "/" folder from the Report Server located at http://myserver/reports.
+        
+        .LINK
+            https://docs.microsoft.com/en-us/power-bi/report-server/connect-data-source-apis-pre-oct-2020
     #>
 
     [CmdletBinding()]

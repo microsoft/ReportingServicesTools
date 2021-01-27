@@ -4,10 +4,10 @@ function Get-RsRestFolderContent
 {
     <#
         .SYNOPSIS
-            This script fetches data sources related to a catalog item from the Report Server
+            This function fetches data sources related to a catalog item from the Report Server.
 
         .DESCRIPTION
-            This script fetches data sources related to a catalog item from the Report Server
+            This function fetches data sources related to a catalog item from the Report Server, using the REST API.
 
         .PARAMETER RsFolder
             Specify the location of the catalog item whose data sources should be fetched.

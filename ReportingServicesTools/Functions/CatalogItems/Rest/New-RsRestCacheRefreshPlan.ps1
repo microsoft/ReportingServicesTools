@@ -5,13 +5,13 @@ function New-RsRestCacheRefreshPlan
 {
     <#
         .SYNOPSIS
-            This function creates a new CacheRefreshPlan for the specified Power BI Report
+            This function creates a new CacheRefreshPlan for the specified Power BI Report.
 
         .DESCRIPTION
-            This function creates a new CacheRefreshPlan for the specified Power BI Report
+            This function creates a new CacheRefreshPlan for the specified Power BI Report.
 
         .PARAMETER RsItem
-            Specify the location of the Power BI Report
+            Specify the location of the Power BI Report.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your Power BI Report Server Instance.
