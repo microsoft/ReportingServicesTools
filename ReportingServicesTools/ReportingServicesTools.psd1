@@ -77,6 +77,7 @@
         'Get-RsRestItemDataSource',
         'Get-RsRestItemDataModelParameters',
         'Get-RsRestItem',
+        'Get-RsRestItemAccessPolicy',
         'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
         'Grant-RsSystemRole',
