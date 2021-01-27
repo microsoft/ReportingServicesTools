@@ -7,7 +7,7 @@
     RootModule = 'ReportingServicesTools.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.0.5.6'
+    ModuleVersion = '0.0.6.0'
     
     # ID used to uniquely identify this module
     GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -66,7 +66,6 @@
         'Connect-RsReportServer',
         'Copy-RsSubscription',
         'Export-RsSubscriptionXml',
-        'Get-RsRestCacheRefreshPlan',
         'Get-RsCatalogItemRole',
         'Get-RsDataSource',
         'Get-RsDeploymentConfig',
@@ -74,6 +73,8 @@
         'Get-RsRestFolderContent',
         'Get-RsItemDataSource',
         'Get-RsItemReference',
+        'Get-RsRestCacheRefreshPlan',
+        'Get-RsRestCacheRefreshPlanHistory',
         'Get-RsRestItemDataSource',
         'Get-RsRestItemDataModelParameters',
         'Get-RsRestItem',
