@@ -2,16 +2,14 @@ function Test-RsRestItemDataSource
 {
     <#
         .SYNOPSIS
-            This function fetches the history of CacheRefreshPlan(s) from a Power BI report.
+            This function fetches the DataSources from a Paginated or Power BI report and tests them to see if the connection can be made.
 
         .DESCRIPTION
-            This function fetches the history of CacheRefreshPlan(s) from a Power BI report.
+            This function fetches the DataSources from a Paginated or Power BI report and tests them to see if the connection can be made.
+            It tests using the connection information currently stopred in the report.
 
         .PARAMETER RsReport
-            Specify the location of the Power BI report for which the CacheRefreshPlans should be fetched.
-
-        .PARAMETER Id
-            Specify the Id of the CacheRefreshPlan for a Power BI report which should be fetched.
+            Specify the location of the Power BI report for which the DataSources should be fetched.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your Power BI Report Server Instance.
@@ -29,25 +27,19 @@ function Test-RsRestItemDataSource
             Test-RsRestItemDataSource -RsReport "/MyReport"
             Description
             -----------
-            Fetches the history of all CacheRefreshPlans for the "MyReport" catalog item found in "/" folder from the Report Server located at http://localhost/reports.
+            Fetches all the DataSources for the "MyReport" catalog item found in "/" folder from the Report Server located at http://localhost/reports, and tests them to see if they can connect.
 
         .EXAMPLE
             Test-RsRestItemDataSource -RsReport "/MyReport" -WebSession $session
             Description
             -----------
-            Fetches the history of all CacheRefreshPlans for the "MyReport" catalog item found in "/" folder from the Report Server located at specificed WebSession object.
+            Fetches all the DataSources for the "MyReport" catalog item found in "/" folder from the Report Server located at specificed WebSession object, and tests them to see if they can connect.
         
         .EXAMPLE
             Test-RsRestItemDataSource -RsReport "/MyReport" -ReportPortalUri http://myserver/reports
             Description
             -----------
-            Fetches the history of all CacheRefreshPlans for the "MyReport" catalog item found in "/" folder from the Report Server located at http://myserver/reports.
-
-        .EXAMPLE
-            Test-RsRestItemDataSource -Id 'f8796f95-31c8-46fe-b184-4677cbbf5abf' -ReportPortalUri http://myserver/reports
-            Description
-            -----------
-            Fetches the history of all CacheRefreshPlans for the "Finance" report from the Report Server located at http://myserver/reports.
+            Fetches all the DataSources for the "MyReport" catalog item found in "/" folder from the Report Server located at http://myserver/reports, and tests them to see if they can connect.
     #>
 
     [CmdletBinding()]
@@ -60,11 +52,6 @@ function Test-RsRestItemDataSource
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [string]
         $ReportPortalUri,
-
-        [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
-        [Alias('CacheRefreshPlan')]
-        [string]
-        $Id = $null,
 
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [Alias('ApiVersion')]

@@ -44,8 +44,12 @@ Describe "Get-RsRestItemDataSource" {
             $datasources[1].ConnectionString | Should Be "Data Source=localhost;Initial Catalog=model"
             
             $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport -Verbose
+            $TestResponse[0].ReportName | Should be "datasourcesReport"
+            $TestResponse[0].DataSourceName | Should be "master"
             $TestResponse[0].IsSuccessful | Should be "True"
             $TestResponse[0].ErrorMessage | Should be $null
+            $TestResponse[1].ReportName | Should be "datasourcesReport"
+            $TestResponse[1].DataSourceName | Should be "model"
             $TestResponse[1].IsSuccessful | Should be "True"
             $TestResponse[1].ErrorMessage | Should be $null
 
@@ -58,6 +62,7 @@ Describe "Get-RsRestItemDataSource" {
             $datasources.ConnectionString | Should Be "localhost;ReportServer"
 
             $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $TestResponse.ReportName | Should be "SqlPowerBIReport"
             $TestResponse.IsSuccessful | Should be "False"
             $TestResponse.ErrorMessage | Should be "A user name wasn't specified"
         }
@@ -68,12 +73,17 @@ Describe "Get-RsRestItemDataSource" {
             $datasources.DataSourceSubType | Should Be "DataModel"
             $datasources.ConnectionString | Should Be "localhost;ReportServer"
 
-            $datasources = Get-RsRestDataModelDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
-
+            $dataSources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $dataSources[0].DataModelDataSource.AuthType = 'UsernamePassword'
+            $dataSources[0].DataModelDataSource.Username = 'sa'
+            $dataSources[0].DataModelDataSource.Secret = 'i<3ReportingServices'
+            Set-RsRestItemDataSource -RsItem $sqlPowerBIReport -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
 
             $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
-            $TestResponse.IsSuccessful | Should be "False"
-            $TestResponse.ErrorMessage | Should be "A user name wasn't specified"
+            $TestResponse.ReportName | Should be "SqlPowerBIReport"
+            $TestResponse.IsSuccessful | Should be "True"
+            $TestResponse.ErrorMessage | Should be $null
+
         }
     }
 
@@ -84,7 +94,7 @@ Describe "Get-RsRestItemDataSource" {
             $rsSession = New-RsRestSession -ReportPortalUri $reportPortalUri
         }
 
-        It "fetches data sources for paginated reports" {
+        It "tests data sources for power bi reports, and expects failure responses" {
             $datasources = Get-RsRestItemDataSource -WebSession $rsSession -RsItem $datasourcesReport -Verbose
             $datasources.Count | Should Be 2
             $datasources[0].DataSourceType | Should Be "SQL"
@@ -93,6 +103,16 @@ Describe "Get-RsRestItemDataSource" {
             $datasources[1].DataSourceType | Should Be "SQL"
             $datasources[1].DataSourceSubType | Should BeNullOrEmpty
             $datasources[1].ConnectionString | Should Be "Data Source=localhost;Initial Catalog=model"
+            
+            $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport -Verbose
+            $TestResponse[0].ReportName | Should be "datasourcesReport"
+            $TestResponse[0].DataSourceName | Should be "master"
+            $TestResponse[0].IsSuccessful | Should be "True"
+            $TestResponse[0].ErrorMessage | Should be $null
+            $TestResponse[1].ReportName | Should be "datasourcesReport"
+            $TestResponse[1].DataSourceName | Should be "model"
+            $TestResponse[1].IsSuccessful | Should be "True"
+            $TestResponse[1].ErrorMessage | Should be $null
         }
 
         It "fetches data sources for power bi reports" {
@@ -100,6 +120,29 @@ Describe "Get-RsRestItemDataSource" {
             $datasources.GetType() | Should BeOfType System.Object
             $datasources.DataSourceSubType | Should Be "DataModel"
             $datasources.ConnectionString | Should Be "localhost;ReportServer"
+
+            $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $TestResponse.ReportName | Should be "SqlPowerBIReport"
+            $TestResponse.IsSuccessful | Should be "False"
+            $TestResponse.ErrorMessage | Should be "A user name wasn't specified"
+        }
+
+        It "tests data sources for power bi reports, and expects success responses" {
+            $datasources = Get-RsRestItemDataSource -WebSession $rsSession -RsItem $sqlPowerBIReport -Verbose
+            $datasources.GetType() | Should BeOfType System.Object
+            $datasources.DataSourceSubType | Should Be "DataModel"
+            $datasources.ConnectionString | Should Be "localhost;ReportServer"
+
+            $dataSources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $dataSources[0].DataModelDataSource.AuthType = 'UsernamePassword'
+            $dataSources[0].DataModelDataSource.Username = 'sa'
+            $dataSources[0].DataModelDataSource.Secret = 'i<3ReportingServices'
+            Set-RsRestItemDataSource -RsItem $sqlPowerBIReport -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
+
+            $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $TestResponse.ReportName | Should be "SqlPowerBIReport"
+            $TestResponse.IsSuccessful | Should be "True"
+            $TestResponse.ErrorMessage | Should be $null
         }
     }
 }
