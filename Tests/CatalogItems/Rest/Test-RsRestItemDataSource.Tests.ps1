@@ -4,7 +4,7 @@
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
-Describe "Get-RsRestItemDataSource" {
+Describe "Test-RsRestItemDataSource" {
     $session = $null
     $rsFolderPath = ""
     $datasourcesReport = ""
