@@ -14,7 +14,7 @@ Describe "Test-RsRestItemDataSource" {
         $session = New-RsRestSession -ReportPortalUri $reportPortalUri
 
         # creating test folder
-        $folderName = 'SUT_GetRsRestItemDataSource_' + [guid]::NewGuid()
+        $folderName = 'SUT_TestRsRestItemDataSource_' + [guid]::NewGuid()
         New-RsRestFolder -WebSession $session -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
 
