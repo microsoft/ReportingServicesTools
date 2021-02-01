@@ -121,6 +121,7 @@
         'Set-RsUrlReservation',
         'Set-PbiRsUrlReservation',
         'Start-RsRestCacheRefreshPlan',
+        'Test-RsRestItemDataSource',
         'Write-RsCatalogItem',
         'Write-RsFolderContent',
         'Write-RsRestCatalogItem',
