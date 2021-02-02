@@ -47,7 +47,7 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsRestCacheRefreshPlanHistory|This function fetches the history of CacheRefreshPlan(s) from a Power BI report.|
 |Get-RsRestFolderContent|This function fetches data sources related to a catalog item from the Report Server.|
 |Get-RsRestItem|This function fetches a catalog item from the Report Server using the REST API.|
-|Get-RsRestItemAccess|This function retrieves access policies to SQL Server Reporting Services Instance or Power BI Report Server Instance from users/groups.|
+|Get-RsRestItemAccessPolicy|This function retrieves access policies to SQL Server Reporting Services Instance or Power BI Report Server Instance from users/groups.|
 |Get-RsRestItemDataModelParameters|This function fetches the Data Model Parameters related to a Catalog Item report from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.|
 |Get-RsRestItemDataSource|This command fetches embedded data sources associated to a Paginated report or a Power BI report using the REST Endpoint.|
 |Get-RsSubscription|This command retrieves information about subscriptions for a report.|
