@@ -81,6 +81,7 @@
         'Get-RsRestItemAccessPolicy',
         'Get-RsSubscription',
         'Grant-RsCatalogItemRole',
+        'Grant-RsRestItemAccessPolicy',
         'Grant-RsSystemRole',
         'Import-RsSubscriptionXml',
 	    'Initialize-Rs',
