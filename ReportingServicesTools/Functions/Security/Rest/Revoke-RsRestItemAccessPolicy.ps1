@@ -1,24 +1,21 @@
 # Copyright (c) 2021 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Grant-RsRestItemAccessPolicy
+function Revoke-RsRestItemAccessPolicy
 {
     <#
         .SYNOPSIS
-            This function grants access policies to SQL Server Reporting Services Instance or Power BI Report Server Instance from users/groups.
-
+            This script revokes access to catalog items from users/groups.
+        
         .DESCRIPTION
-            This function grants all access policies on the SQL Server Reporting Services Instance or Power BI Report Server Instance located at the specified Report Server URI from the specified user/group.
-
+            This script revokes all access on the specified catalog item from the specified user/group.
+        
         .PARAMETER RsItem
             Specify the path to catalog item (folder or report) on the server.
 
         .PARAMETER Identity
-            Specify the user or group name to grant access to.
-
-        .PARAMETER Role
-            Specify the name of the role you want to grant on the catalog item.
-
+            Specify the user or group name to revoke access from.
+        
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services  or Power BI Report Server Instance.
 
@@ -32,28 +29,22 @@ function Grant-RsRestItemAccessPolicy
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            Grant-RsRestItemAccessPolicy -Identity 'johnd' -Role 'Browser' -Path '/My Folder/SalesReport'
+            Revoke-RsRestItemAccessPolicy -Identity 'johnd' -RsItem '/My Folder/SalesReport'
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/reports using current user's credentials and then grant Browser access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
+            This command will establish a connection to the Report Server located at http://localhost/reports using current user's credentials and then revoke all access granted to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
+        
+        .EXAMPLE
+            Revoke-RsRestItemAccessPolicy -ReportPortalUri 'http://localhost/reports_sql2012' -Identity 'johnd' -RsItem '/My Folder/SalesReport'
+            Description
+            -----------
+            This command will establish a connection to the Report Server located at http://localhost/reports_sql2012 using current user's credentials and then revoke all access granted to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
 
         .EXAMPLE
-            Grant-RsRestItemAccessPolicy -ReportPortalUri 'http://localhost/reports_sql2012' -Identity 'johnd' -Role 'Browser' -Path '/My Folder/SalesReport'
+            Revoke-RsRestItemAccessPolicy -Identity 'CONTOSO\Report_Developers' -RsItem '/Finance' -ReportPortalUri https://UATPBIRS/reports
             Description
             -----------
-            This command will establish a connection to the Report Server located at http://localhost/reports_sql2012 using current user's credentials and then grant Browser access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
-
-        .EXAMPLE
-            Grant-RsRestItemAccessPolicy -Credential 'CaptainAwesome' -Identity 'johnd' -Role 'Browser' -Path '/My Folder/SalesReport'
-            Description
-            -----------
-            This command will establish a connection to the Report Server located at http://localhost/reports using CaptainAwesome's credentials and then grant Browser access to user 'johnd' on catalog item found at '/My Folder/SalesReport'.
-
-        .EXAMPLE
-            Grant-RsRestItemAccessPolicy -Identity 'CONTOSO\Report_Developers' -Role 'Browser' -RsItem '/Finance' -ReportPortalUri https://UATPBIRS/reports
-            Description
-            -----------
-            This command will grant Browser access to members of the 'Report_Developers' domain group to catalog items found under the '/Finance' folder.  It will do this by establishing a connection to the Report Server located at https://UATPBIRS/reports using current user's credentials. 
+            This command will revoke all access granted to members of the 'Report_Developers' domain group to catalog items found under the '/Finance' folder.  It will do this by establishing a connection to the Report Server located at https://UATPBIRS/reports using current user's credentials. 
     #>
 
     [CmdletBinding()]
@@ -66,12 +57,6 @@ function Grant-RsRestItemAccessPolicy
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true)]
         [string]
         $Identity,
-
-        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true)]
-        [Alias('RoleName')]
-        [ValidateSet("Browser","Content Manager","My Reports","Publisher","Report Builder")]
-        [string]
-        $Role,
 
         [string]
         $ReportPortalUri,
@@ -134,16 +119,7 @@ function Grant-RsRestItemAccessPolicy
                 }
             }
             
-            $o=[PSCustomObject]@{
-                GroupUserName=$Identity
-                Roles=@([PSCustomObject]@{
-                    Name=$Role
-                    Description=''
-                })
-            }
-            
-            $response.Policies=$response.Policies+$o
-            $response.InheritParentPolicy=$false
+            $response.Policies = @([PSCustomObject]$response.Policies | WHERE {$_.groupusername -ne $Identity})
 
             $payloadJson = $response | ConvertTo-Json -Depth 15
             Write-Verbose "$payloadJson"
@@ -153,7 +129,7 @@ function Grant-RsRestItemAccessPolicy
         }
         catch
         {
-            throw (New-Object System.Exception("Failed to grant access policies for '$RsItem': $($_.Exception.Message)", $_.Exception))
+            throw (New-Object System.Exception("Failed to revoke access policies for '$RsItem': $($_.Exception.Message)", $_.Exception))
         }
     }
 }

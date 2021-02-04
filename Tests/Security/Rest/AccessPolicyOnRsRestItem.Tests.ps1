@@ -10,7 +10,6 @@ function Get-TestUser() {
 
 Describe "Grant-RsRestItemAccessPolicy" { 
     $user = Get-TestUser
-    $reportServerUri = 'http://localhost/reportserver'
     $ReportPortalUri = 'http://localhost/Reports/'
     $catalogItemPath = '/'
 
@@ -39,7 +38,7 @@ Describe "Grant-RsRestItemAccessPolicy" {
         }
 
         AfterEach {
-            Revoke-AccessOnCatalogItem -ReportServerUri $reportServerUri -UserOrGroupName $user -Path $catalogItemPath -Verbose
+            Revoke-RsRestItemAccessPolicy -ReportPortalUri $ReportPortalUri -Identity $user -Path $catalogItemPath -Verbose
         }
     }
 

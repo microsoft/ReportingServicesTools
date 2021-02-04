@@ -108,6 +108,7 @@
         'Remove-RsSubscription',
         'Restore-RsEncryptionKey',
         'Revoke-RsCatalogItemAccess',
+        'Revoke-RsRestItemAccessPolicy',
         'Revoke-RsSystemAccess',
         'Set-RsDatabase',
         'Set-RsDatabaseCredentials',
