@@ -20,7 +20,7 @@ Describe "Grant-RsRestItemAccessPolicy" {
             $role = 'Browser'
 
             # Grant Access
-            Grant-RsRestItemAccessPolicy -ReportPortalUri $ReportPortalUri -UserOrGroupName $user -Role $role -Path $catalogItemPath -Verbose
+            Grant-RsRestItemAccessPolicy -ReportPortalUri $ReportPortalUri -Identity $user -Role $role -Path $catalogItemPath -Verbose
 
             $catalogItemPolicy = Get-RsRestItemAccessPolicy -ReportPortalUri $ReportPortalUri -Path $catalogItemPath
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles -eq $role}).Count
@@ -31,7 +31,7 @@ Describe "Grant-RsRestItemAccessPolicy" {
             $role = 'Content Manager'
 
             # Grant Access
-            Grant-RsRestItemAccessPolicy -ReportPortalUri $ReportPortalUri -UserOrGroupName $user -Role $role -Path $catalogItemPath -Verbose
+            Grant-RsRestItemAccessPolicy -ReportPortalUri $ReportPortalUri -Identity $user -Role $role -Path $catalogItemPath -Verbose
 
             $catalogItemPolicy = Get-RsRestItemAccessPolicy -ReportPortalUri $ReportPortalUri -Path $catalogItemPath
             $catalogItemPolicyCount = @($catalogItemPolicy | Where-Object {$_.Identity -eq $user -and $_.Roles -eq $role}).Count

@@ -13,7 +13,7 @@ function Grant-RsRestItemAccessPolicy
         .PARAMETER RsItem
             Specify the path to catalog item (folder or report) on the server.
 
-        .PARAMETER UserOrGroupName
+        .PARAMETER Identity
             Specify the user or group name to grant access to.
 
         .PARAMETER Role
@@ -65,7 +65,7 @@ function Grant-RsRestItemAccessPolicy
 
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true)]
         [string]
-        $UserOrGroupName,
+        $Identity,
 
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true)]
         [Alias('RoleName')]
@@ -136,7 +136,7 @@ function Grant-RsRestItemAccessPolicy
             
             $o=[PSCustomObject]@{
                 GroupUserName=$Identity
-                Roles=[PSCustomObject]@(@{
+                Roles=@([PSCustomObject]@{
                     Name=$Role
                     Description=''
                 })
@@ -146,13 +146,14 @@ function Grant-RsRestItemAccessPolicy
             $response.InheritParentPolicy=$false
 
             $payloadJson = $response | ConvertTo-Json -Depth 15
+            Write-Verbose "$payloadJson"
             $response = Invoke-RestMethod -Uri $PolicyUri -Method Put -WebSession $WebSession -UseDefaultCredentials -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Verbose:$false
 
             return $response
         }
         catch
         {
-            throw (New-Object System.Exception("Failed to get access policies for '$RsItem': $($_.Exception.Message)", $_.Exception))
+            throw (New-Object System.Exception("Failed to grant access policies for '$RsItem': $($_.Exception.Message)", $_.Exception))
         }
     }
 }
