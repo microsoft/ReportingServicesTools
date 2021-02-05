@@ -41,7 +41,7 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
 
         $dataSources = Get-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri
         $dataSources[0].DataModelDataSource.AuthType = 'UsernamePassword'
-        $dataSources[0].DataModelDataSource.Username = 'PBIRS3'
+        $dataSources[0].DataModelDataSource.Username = 'sa'
         $dataSources[0].DataModelDataSource.Secret = 'i<3ReportingServices'
         Set-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
         New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -Description 'My New Refresh Plan' -Verbose
@@ -66,8 +66,15 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
             @($someHistory).count | Should be 1
             
             Start-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-            Start-Sleep -Seconds 6
-            $moreHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            $timer= get-date
+            while ($true) {
+                $moreHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+                if(@($moreHistory).count -gt 1){ 
+                    break }
+                if(((get-date)-$timer).seconds -ge 15) {
+                    break
+                }
+            }
             @($moreHistory).count | Should be 2
         }
     }
