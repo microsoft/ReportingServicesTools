@@ -32,7 +32,7 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
     $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
 
     BeforeEach {
-        $folderName = 'SUT_WriteRsRestCatalogItem_' + [guid]::NewGuid()
+        $folderName = 'SUT_GetRsRestCacheRefreshPlanHistory_' + [guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName -Verbose
         $rsFolderPath = '/' + $folderName
         $itemPath = $localPath + '\ReportCatalog.pbix'
@@ -61,12 +61,12 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
             $plan | Should Not BeNullOrEmpty
             $plan.LastStatus | Should Not Be 'New Scheduled Refresh Plan'
 
-            Start-Sleep -Seconds 3
+            Start-Sleep -Seconds 6
             $someHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             @($someHistory).count | Should be 1
             
             Start-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-            Start-Sleep -Seconds 3
+            Start-Sleep -Seconds 6
             $moreHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             @($moreHistory).count | Should be 2
         }
