@@ -62,10 +62,8 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
             $plan.LastStatus | Should Not Be 'New Scheduled Refresh Plan'
 
             $timer= get-date
-            while ($true) {
+            while ((@($someHistory).count -lt 1)) {
                 $someHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-                if(@($someHistory).count -gt 0){ 
-                    break }
                 if(((get-date)-$timer).seconds -ge 15) {
                     break
                 }
@@ -74,10 +72,8 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
             
             Start-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             $timer= get-date
-            while ($true) {
+            while ((@($moreHistory).count -lt 2)) {
                 $moreHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-                if(@($moreHistory).count -gt 1){ 
-                    break }
                 if(((get-date)-$timer).seconds -ge 15) {
                     break
                 }
