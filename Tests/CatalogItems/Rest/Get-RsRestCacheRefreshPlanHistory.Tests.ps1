@@ -32,7 +32,7 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
     $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
 
     BeforeEach {
-        $folderName = 'SUT_WriteRsRestCatalogItem_' + [guid]::NewGuid()
+        $folderName = 'SUT_GetRsRestCacheRefreshPlanHistory_' + [guid]::NewGuid()
         New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName -Verbose
         $rsFolderPath = '/' + $folderName
         $itemPath = $localPath + '\ReportCatalog.pbix'
@@ -41,7 +41,7 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
 
         $dataSources = Get-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri
         $dataSources[0].DataModelDataSource.AuthType = 'UsernamePassword'
-        $dataSources[0].DataModelDataSource.Username = 'PBIRS3'
+        $dataSources[0].DataModelDataSource.Username = 'sa'
         $dataSources[0].DataModelDataSource.Secret = 'i<3ReportingServices'
         Set-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
         New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -Description 'My New Refresh Plan' -Verbose
@@ -61,13 +61,23 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
             $plan | Should Not BeNullOrEmpty
             $plan.LastStatus | Should Not Be 'New Scheduled Refresh Plan'
 
-            Start-Sleep -Seconds 3
-            $someHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            $timer= get-date
+            while ((@($someHistory).count -lt 1)) {
+                $someHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+                if(((get-date)-$timer).seconds -ge 15) {
+                    break
+                }
+            }            
             @($someHistory).count | Should be 1
             
             Start-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-            Start-Sleep -Seconds 3
-            $moreHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            $timer= get-date
+            while ((@($moreHistory).count -lt 2)) {
+                $moreHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+                if(((get-date)-$timer).seconds -ge 15) {
+                    break
+                }
+            }
             @($moreHistory).count | Should be 2
         }
     }
