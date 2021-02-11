@@ -51,7 +51,6 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsRestItemDataModelParameters|This function fetches the Data Model Parameters related to a Catalog Item report from the Report Server. This is currently only applicable to Power BI Reports and only from ReportServer October/2020 or higher.|
 |Get-RsRestItemDataSource|This command fetches embedded data sources associated to a Paginated report or a Power BI report using the REST Endpoint.|
 |Get-RsSubscription|This command retrieves information about subscriptions for a report.|
-|Grant-RsRestItemAccessPolicy|This function grants access policies on the SQL Server Reporting Services Instance or Power BI Report Server Instance to the specified user/group, using the REST Endpoint.|
 |Grant-RsSystemRole|This command grants access to SQL Server Reporting Services to users or groups. Alias: Grant-AccessToRs|
 |Grant-RsCatalogItemRole|This script grants access to catalog items to users or groups. Alias: Grant-AccessOnCatalogItem|
 |Import-RsSubscriptionXml|This command imports a collection of subscriptions from an XML file on disk, typically created via Export-RsSubscriptionXml.|
@@ -79,7 +78,6 @@ The following is a list of commands which are available for you to use once you 
 |Remove-RSSubscription|This command removes a subscription associated with a report.|
 |Restore-RsEncryptionKey|This command restores encryption key on to the SQL Server Reporting Services.|
 |Revoke-RsCatalogItemAccess|This command revokes access on catalog item from users or groups. Alias: Revoke-AccessOnCatalogItem|
-|Revoke-RsRestItemAccessPolicy|This function revokes access to catalog items from users/groups, using the REST Endpoint.|
 |Revoke-RsSystemAccess|This command revokes access on SQL Server Reporting Services from users or groups. Alias: Revoke-AccessToRs|
 |Set-RsDatabase|This command configures the database used by SQL Server Reporting Services.|
 |Set-RsDatabaseCredentials|This command configures the credentials to use when connecting to the database used by SQL Server Reporting Services.|
