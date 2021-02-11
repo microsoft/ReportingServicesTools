@@ -8,7 +8,7 @@ function Grant-RsRestItemAccessPolicy
             This function grants access policies to SQL Server Reporting Services Instance or Power BI Report Server Instance from users/groups.
 
         .DESCRIPTION
-            This function grants all access policies on the SQL Server Reporting Services Instance or Power BI Report Server Instance located at the specified Report Server URI from the specified user/group.
+            This function grants all access policies on the SQL Server Reporting Services Instance or Power BI Report Server Instance located at the specified Report Server URI to the specified user/group.
 
         .PARAMETER RsItem
             Specify the path to catalog item (folder or report) on the server.
