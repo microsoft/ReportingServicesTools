@@ -5,10 +5,10 @@ function Revoke-RsRestItemAccessPolicy
 {
     <#
         .SYNOPSIS
-            This script revokes access to catalog items from users/groups.
+            This function revokes access to catalog items from users/groups.
         
         .DESCRIPTION
-            This script revokes all access on the specified catalog item from the specified user/group.
+            This function revokes all access on the specified catalog item from the specified user/group.
         
         .PARAMETER RsItem
             Specify the path to catalog item (folder or report) on the server.
