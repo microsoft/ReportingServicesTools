@@ -71,9 +71,9 @@ function Get-RsDeploymentConfig {
                 OverwriteDatasets      = $Deployment.OverwriteDatasets
                 OverwriteDataSources   = $Deployment.OverwriteDataSources
                 TargetReportFolder     = ($Deployment.TargetReportFolder).Trimend("/")
-                TargetDatasetFolder    = ($Deployment.TargetDatasetFolder).Trimend("/")
-                TargetDatasourceFolder = ($Deployment.TargetDatasourceFolder).Trimend("/")
-                TargetReportPartFolder = ($Deployment.TargetReportPartFolder).Trimend("/")
+                TargetDatasetFolder    = if ($null -eq $Deployment.TargetDatasetFolder) { $null } else { ($Deployment.TargetDatasetFolder).Trimend("/") }
+                TargetDatasourceFolder = if ($null -eq $Deployment.TargetDatasourceFolder) { $null } else { ($Deployment.TargetDatasourceFolder).Trimend("/") }
+                TargetReportPartFolder = if ($null -eq $Deployment.TargetReportPartFolder) { $null } else { ($Deployment.TargetReportPartFolder).Trimend("/") }
                 TargetServerURL        = $Deployment.TargetServerURL
                 RsProjectFolder        = Split-Path -Path $RsProjectFile
             }
@@ -89,9 +89,9 @@ function Get-RsDeploymentConfig {
                 OverwriteDatasets      = $Deployment.OverwriteDatasets
                 OverwriteDataSources   = $Deployment.OverwriteDataSources
                 TargetReportFolder     = ($Deployment.TargetReportFolder).Trimend("/")
-                TargetDatasetFolder    = ($Deployment.TargetDatasetFolder).Trimend("/")
-                TargetDatasourceFolder = ($Deployment.TargetDatasourceFolder).Trimend("/")
-                TargetReportPartFolder = ($Deployment.TargetReportPartFolder).Trimend("/")
+                TargetDatasetFolder    = if ($null -eq $Deployment.TargetDatasetFolder) { $null } else { ($Deployment.TargetDatasetFolder).Trimend("/") }
+                TargetDatasourceFolder = if ($null -eq $Deployment.TargetDatasourceFolder) { $null } else { ($Deployment.TargetDatasourceFolder).Trimend("/") }
+                TargetReportPartFolder = if ($null -eq $Deployment.TargetReportPartFolder) { $null } else { ($Deployment.TargetReportPartFolder).Trimend("/") }
                 TargetServerURL        = $Deployment.TargetServerURL
                 RsProjectFolder        = Split-Path -Path $RsProjectFile
             }
