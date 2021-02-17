@@ -76,7 +76,7 @@
         'Get-RsRestCacheRefreshPlan',
         'Get-RsRestCacheRefreshPlanHistory',
         'Get-RsRestItemDataSource',
-        'Get-RsRestItemDataModelParameters',
+        'Get-RsRestItemDataModelParameter',
         'Get-RsRestItem',
         'Get-RsRestItemAccessPolicy',
         'Get-RsSubscription',
@@ -118,7 +118,7 @@
         'Set-RsDataSourceReference',
         'Set-RsEmailSettings',
         'Set-RsItemDataSource',
-        'Set-RsRestItemDataModelParameters';
+        'Set-RsRestItemDataModelParameter';
         'Set-RsRestItemDataSource',
         'Set-RsSubscription',
         'Set-RsUrlReservation',
