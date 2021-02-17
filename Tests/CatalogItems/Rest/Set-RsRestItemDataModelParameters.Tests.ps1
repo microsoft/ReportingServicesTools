@@ -3,7 +3,7 @@
 
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 
-Describe "Set-RsRestItemDataModelParameters" {
+Describe "Set-RsRestItemDataModelParameter" {
     $session = $null
     $rsFolderPath = ""
     $sqlPowerBIReport = ""
@@ -30,12 +30,12 @@ Describe "Set-RsRestItemDataModelParameters" {
 
     Context "ReportPortalUri parameter" {
         It "fetches parameters for power bi reports" {
-            $dataModelParameters = Get-RsRestItemDataModelParameters -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose            
+            $dataModelParameters = Get-RsRestItemDataModelParameter -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose            
             $dataModelParameters[0].Value = "NewValue"
 
-            Set-RsRestItemDataModelParameters -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -DataModelParameters $dataModelParameters -Verbose
+            Set-RsRestItemDataModelParameter -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -DataModelParameters $dataModelParameters -Verbose
 
-            $dataModelParameters = Get-RsRestItemDataModelParameters -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose            
+            $dataModelParameters = Get-RsRestItemDataModelParameter -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose            
             $dataModelParameters[0].Value | Should Be "NewValue"            
         }
     }
@@ -48,12 +48,12 @@ Describe "Set-RsRestItemDataModelParameters" {
         }
 
         It "fetches data sources for power bi reports" {
-            $dataModelParameters = Get-RsRestItemDataModelParameters -WebSession $rsSession -RsItem $sqlPowerBIReport -Verbose
+            $dataModelParameters = Get-RsRestItemDataModelParameter -WebSession $rsSession -RsItem $sqlPowerBIReport -Verbose
             $dataModelParameters[0].Value = "NewValue"
 
-            Set-RsRestItemDataModelParameters -WebSession $rsSession -RsItem $sqlPowerBIReport -DataModelParameters $dataModelParameters -Verbose
+            Set-RsRestItemDataModelParameter -WebSession $rsSession -RsItem $sqlPowerBIReport -DataModelParameters $dataModelParameters -Verbose
 
-            $dataModelParameters = Get-RsRestItemDataModelParameters -WebSession $rsSession -RsItem $sqlPowerBIReport -Verbose            
+            $dataModelParameters = Get-RsRestItemDataModelParameter -WebSession $rsSession -RsItem $sqlPowerBIReport -Verbose            
             $dataModelParameters[0].Value | Should Be "NewValue" 
         }
     }

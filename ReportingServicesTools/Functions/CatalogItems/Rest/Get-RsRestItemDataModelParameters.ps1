@@ -1,7 +1,7 @@
 # Copyright (c) 2017 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Get-RsRestItemDataModelParameters
+function Get-RsRestItemDataModelParameter
 {
     <#
         .SYNOPSIS
@@ -26,21 +26,21 @@ function Get-RsRestItemDataModelParameters
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            Get-RsRestItemDataModelParameters -RsItem "/MyPbixReport1"
+            Get-RsRestItemDataModelParameter -RsItem "/MyPbixReport1"
 
             Description
             -----------
             Fetches data model parameter information associated to "MyReport" catalog item found in "/" folder from the Report Server located at http://localhost/reports.
 
         .EXAMPLE
-            Get-RsRestItemDataModelParameters -RsItem "/MyReport" -WebSession $session
+            Get-RsRestItemDataModelParameter -RsItem "/MyReport" -WebSession $session
 
             Description
             -----------
             Fetches data model parameter information associated to "MyReport" catalog item found in "/" folder from the Report Server located at specificed WebSession object.
 
         .EXAMPLE
-            Get-RsRestItemDataModelParameters -RsItem "/MyReport" -ReportPortalUri http://myserver/reports
+            Get-RsRestItemDataModelParameter -RsItem "/MyReport" -ReportPortalUri http://myserver/reports
 
             Description
             -----------
@@ -117,3 +117,4 @@ function Get-RsRestItemDataModelParameters
         }
     }
 }
+New-Alias -Name "Get-RsRestItemDataModelParameters" -Value Get-RsRestItemDataModelParameter -Scope Global
