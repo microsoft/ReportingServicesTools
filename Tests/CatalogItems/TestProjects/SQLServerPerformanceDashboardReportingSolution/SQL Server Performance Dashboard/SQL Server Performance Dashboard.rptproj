@@ -27,6 +27,20 @@
     <TargetDatasourceFolder>Data Sources</TargetDatasourceFolder>
     <TargetReportPartFolder>Report Parts</TargetReportPartFolder>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'DebugNull' ">
+    <FullPath>DebugNull</FullPath>
+    <OutputPath>bin\DebugLocal</OutputPath>
+    <ErrorLevel>2</ErrorLevel>
+    <OverwriteDatasets>False</OverwriteDatasets>
+    <OverwriteDataSources>False</OverwriteDataSources>
+    <TargetServerVersion>SSRS2008R2</TargetServerVersion>
+    <Platform>Win32</Platform>
+    <TargetReportFolder>SQL Server Performance Dashboard</TargetReportFolder>
+    <TargetDatasetFolder></TargetDatasetFolder>
+    <TargetDatasourceFolder></TargetDatasourceFolder>
+    <TargetReportPartFolder></TargetReportPartFolder>
+    <TargetServerURL>http://localhost/reportserver</TargetServerURL>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <FullPath>Release</FullPath>
     <OutputPath>bin\Release</OutputPath>
