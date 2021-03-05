@@ -81,9 +81,13 @@ function Restore-RSEncryptionKey
 
         if ($rsWmiObject.InstanceName -ne "MSSQLSERVER")
         {
-            if($rsWmiObject.InstanceName -eq "PBIRS")
+            if ($rsWmiObject.InstanceName -eq "PBIRS")
             {
                 $reportServerService = 'PowerBIReportServer'
+            }
+            elseif ($rsWmiObject.InstanceName -eq "SSRS")
+            {
+                $reportServerService = 'SQLServerReportingServices'
             }
             else
             {
