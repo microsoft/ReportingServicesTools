@@ -47,6 +47,15 @@ function Write-RsFolderContent
             Description
             -----------
             Uploads all reports under c:\monthlyreports to folder /monthlyReports.
+        
+        .EXAMPLE 
+            Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\Reports -RsFolder '/dataSources' -FileExtensionsToUpload @(".rsds", ".rsd", ".rds")
+
+            Write-RsFolderContent -ReportServerUri 'http://localhost/reportserver_sql2012' -Path c:\Reports -RsFolder '/monthlyReports' -FileExtensionsToUpload @(".rsdl")
+            
+            Description
+            -----------
+            Uploads all data sources under c:\monthlyreports to folder /dataSources and then all reports under c:\monthlyreports to folder /monthlyReports
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
