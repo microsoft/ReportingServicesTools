@@ -106,6 +106,7 @@
         'Remove-RsRestFolder',
         'Remove-RsRestCatalogItem',
         'Remove-RsSubscription',
+        'Remove-RsRestCacheRefreshPlan',
         'Restore-RsEncryptionKey',
         'Revoke-RsCatalogItemAccess',
         'Revoke-RsRestItemAccessPolicy',
