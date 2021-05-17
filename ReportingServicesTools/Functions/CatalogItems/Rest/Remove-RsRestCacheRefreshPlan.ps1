@@ -6,7 +6,7 @@ function Remove-RsRestCacheRefreshPlan {
         .SYNOPSIS
             This function deletes a CacheRefreshPlan from a report from the Report Server.
         .DESCRIPTION
-            This function deletes a CacheRefreshPlan of a report from the Report Server using 
+            This function deletes a CacheRefreshPlan from a report from the Report Server using 
             the REST API.  Alternatively, when a report has multiple CacheRefreshPlans you can specify which 
             CacheRefreshPlan to delete by passing the Id of the CacheRefreshPlan to the -Id parameter.
         .PARAMETER RsReport
