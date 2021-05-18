@@ -114,7 +114,7 @@ function Write-RsRestCatalogItem
         }
         $catalogItemsUpdateUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})"
 
-        $maxPortalLargeFileSizeInMb = 1000
+        $maxFileSizeInMb = 2000
         $minPortalLargeFileSizeInMb = 25
     }
     Process
@@ -230,11 +230,15 @@ function Write-RsRestCatalogItem
             }
             elseif ($itemType -eq "PowerBIReport")
             {
+                $maxServerFileSizeInMb = Get-PublicServerSetting -ServerProperty "MaxFileSizeMb"
                 $fileBytes = [System.IO.File]::ReadAllBytes($EntirePath)
                 $fileSizeInMb = (Get-Item $EntirePath).length/1MB
 
-                if ($fileSizeInMb -gt $maxPortalLargeFileSizeInMb)
+                if ($fileSizeInMb -gt $maxFileSizeInMb)
                 {
+                    throw "This file is too large to be uploaded. Files larger than $maxPortalLargeFileSizeInMb MB are not currently supported: $item!"
+                }
+                elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb) {
                     throw "This file is too large to be uploaded. Files larger than $maxPortalLargeFileSizeInMb MB are not currently supported: $item!"
                 }
                 elseif ($fileSizeInMb -ge $minPortalLargeFileSizeInMb)
