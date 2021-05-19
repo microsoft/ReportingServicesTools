@@ -26,7 +26,7 @@ function Write-RsRestCatalogItem
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
 
         .PARAMETER RestApiVersion
-           Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
             NOTE:
                 - v1.0 of REST Endpoint is not supported by Microsoft and is for SSRS 2016.
                 - v2.0 of REST Endpoint is supported by Microsoft and is for SSRS 2017, PBIRS October 2017 and newer releases.
@@ -230,19 +230,20 @@ function Write-RsRestCatalogItem
             }
             elseif ($itemType -eq "PowerBIReport")
             {
-                $maxServerFileSizeInMb = Get-PublicServerSetting -ServerProperty "MaxFileSizeMb"
                 $fileBytes = [System.IO.File]::ReadAllBytes($EntirePath)
                 $fileSizeInMb = (Get-Item $EntirePath).length/1MB
 
-                if ($fileSizeInMb -gt $maxFileSizeInMb)
+                if ($fileSizeInMb -ge $minPortalLargeFileSizeInMb)
                 {
-                    throw "This file is too large to be uploaded. Files larger than $maxPortalLargeFileSizeInMb MB are not currently supported: $item!"
-                }
-                elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb) {
-                    throw "This file is too large to be uploaded. Files larger than $maxPortalLargeFileSizeInMb MB are not currently supported: $item!"
-                }
-                elseif ($fileSizeInMb -ge $minPortalLargeFileSizeInMb)
-                {
+                    $maxServerFileSizeInMb = Get-RsRestPublicServerSetting -Property "MaxFileSizeMb" -ReportPortalUri $ReportPortalUri -WebSession $WebSession
+                    if ($fileSizeInMb -gt $maxFileSizeInMb)
+                    {
+                        throw "This file is too large to be uploaded. Files larger than $maxFileSizeInMb MB are not currently supported: $item!"
+                    }
+                    elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb) {
+                        throw "This file is too large to be uploaded. Files larger than $maxServerFileSizeInMb MB are not currently supported: $item!"
+                    }
+
                     Write-Verbose "PowerBIReport $item is a large"
 
                     $isLargePowerBIReport = $true

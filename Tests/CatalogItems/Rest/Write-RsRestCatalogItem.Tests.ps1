@@ -29,7 +29,8 @@ function VerifyCatalogItemExists()
 
 Describe "Write-RsRestCatalogItem" {
     $rsFolderPath = ""
-    $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
+    $localPath = (Get-Item -Path ".\").FullName + '\Tests\CatalogItems\testResources'
+    $localPathToLargeReport = (Get-Item -Path ".\").FullName + '\Tests\CatalogItems\Rest\Resources'
 
     BeforeEach {
         $folderName = 'SUT_WriteRsRestCatalogItem_' + [guid]::NewGuid()
@@ -66,10 +67,16 @@ Describe "Write-RsRestCatalogItem" {
             VerifyCatalogItemExists -itemName 'SimpleMobileReport' -itemType 'MobileReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
-        It "Should upload a local PBIX file" {
+        It "Should upload a local small PBIX file" {
             $itemPath = $localPath + '\SimplePowerBIReport.pbix'
             Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName 'SimplePowerBIReport' -itemType 'PowerBIReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
+
+        It "Should upload a local large PBIX file" {
+            $itemPath = $localPathToLargeReport + '\LargePowerBIReport.pbix'
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
+            VerifyCatalogItemExists -itemName 'LargePowerBIReport' -itemType 'PowerBIReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should upload a local XLS file" {
