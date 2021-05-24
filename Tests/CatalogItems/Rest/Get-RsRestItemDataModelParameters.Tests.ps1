@@ -3,7 +3,7 @@
 
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 
-Describe "Get-RsRestItemDataModelParameters" {
+Describe "Get-RsRestItemDataModelParameter" {
     $session = $null
     $rsFolderPath = ""
     $sqlPowerBIReport = ""
@@ -30,7 +30,7 @@ Describe "Get-RsRestItemDataModelParameters" {
 
     Context "ReportPortalUri parameter" {
         It "fetches parameters for power bi reports" {
-            $dataModelParameters = Get-RsRestItemDataModelParameters -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $dataModelParameters = Get-RsRestItemDataModelParameter -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
             $dataModelParameters[0].Name | Should Be "Databasename"
             $dataModelParameters[0].Value | Should Be "ReportServer_2019"
         }
@@ -44,7 +44,7 @@ Describe "Get-RsRestItemDataModelParameters" {
         }
 
         It "fetches data sources for power bi reports" {
-            $dataModelParameters = Get-RsRestItemDataModelParameters -WebSession $rsSession -RsItem $sqlPowerBIReport -Verbose
+            $dataModelParameters = Get-RsRestItemDataModelParameter -WebSession $rsSession -RsItem $sqlPowerBIReport -Verbose
             $dataModelParameters[0].Name | Should Be "Databasename"
             $dataModelParameters[0].Value | Should Be "ReportServer_2019"
         }

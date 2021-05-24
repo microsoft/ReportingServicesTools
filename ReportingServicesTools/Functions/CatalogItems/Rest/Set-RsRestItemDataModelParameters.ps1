@@ -1,7 +1,7 @@
 # Copyright (c) 2017 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function Set-RsRestItemDataModelParameters
+function Set-RsRestItemDataModelParameter
 {
     <#
         .SYNOPSIS
@@ -31,7 +31,7 @@ function Set-RsRestItemDataModelParameters
         .EXAMPLE
             $parameters = Get-RsRestItemDataModelParameters -RsItem '/MyPowerBIReport'
             $parameters[0].Value = 'NewValue'
-            Set-RsRestItemDataModelParameters -RsItem '/MyPowerBIReport' -DataModelParameters $parameters
+            Set-RsRestItemDataModelParameter -RsItem '/MyPowerBIReport' -DataModelParameters $parameters
 
             Description
             -----------
@@ -107,3 +107,4 @@ function Set-RsRestItemDataModelParameters
         }
     }
 }
+New-Alias -Name "Set-RsRestItemDataModelParameters" -Value Set-RsRestItemDataModelParameter -Scope Global
