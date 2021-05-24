@@ -37,6 +37,12 @@ function Write-RsRestCatalogItem
         .PARAMETER WebSession
             Specify the session to be used when making calls to REST Endpoint.
 
+        .PARAMETER MaxFileSizeInMb
+            Specify the maximum file size for the PBIX report.
+
+        .PARAMETER MinLargeFileSizeInMb
+            Specify the smallest possible size for a large PBIX report.
+
         .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
 
@@ -96,7 +102,13 @@ function Write-RsRestCatalogItem
         $Credential,
 
         [Microsoft.PowerShell.Commands.WebRequestSession]
-        $WebSession
+        $WebSession,
+
+        [float]
+        $MaxFileSizeInMb = 2000,
+
+        [float]
+        $MinLargeFileSizeInMb = 25
     )
     Begin
     {
@@ -113,9 +125,6 @@ function Write-RsRestCatalogItem
             $powerBIReportsByPathApi = $ReportPortalUri + "api/$RestApiVersion/PowerBIReports(Path='{0}')/Model.Upload"
         }
         $catalogItemsUpdateUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})"
-
-        $maxFileSizeInMb = 2000
-        $minPortalLargeFileSizeInMb = 25
     }
     Process
     {
@@ -228,64 +237,71 @@ function Write-RsRestCatalogItem
                 $payload = ConvertFrom-Json $content
                 $payload.Path = $itemPath
             }
-            elseif ($itemType -eq "PowerBIReport")
+            else
             {
                 $fileBytes = [System.IO.File]::ReadAllBytes($EntirePath)
-                $fileSizeInMb = (Get-Item $EntirePath).length/1MB
-
-                if ($fileSizeInMb -ge $minPortalLargeFileSizeInMb)
+                if ($itemType -eq "PowerBIReport")
                 {
-                    $maxServerFileSizeInMb = Get-RsRestPublicServerSetting -Property "MaxFileSizeMb" -ReportPortalUri $ReportPortalUri -WebSession $WebSession
-                    if ($fileSizeInMb -gt $maxFileSizeInMb)
+                    $fileSizeInMb = (Get-Item $EntirePath).length/1MB
+
+                    Write-Verbose "File Size - $fileSizeInMb"
+
+                    if ($fileSizeInMb -ge $MinLargeFileSizeInMb)
                     {
-                        throw "This file is too large to be uploaded. Files larger than $maxFileSizeInMb MB are not currently supported: $item!"
+                        $maxServerFileSizeInMb = Get-RsRestPublicServerSetting -Property "MaxFileSizeMb" -ReportPortalUri $ReportPortalUri -WebSession $WebSession
+                        if ($fileSizeInMb -gt $MaxFileSizeInMb)
+                        {
+                            throw "This file is too large to be uploaded. Files larger than $MaxFileSizeInMb MB are not currently supported: $item!"
+                        }
+                        elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb) {
+                            throw "This file is too large to be uploaded. Files larger than $maxServerFileSizeInMb MB are not currently supported: $item!"
+                        }
+
+                        Write-Verbose "PowerBIReport $item is a large"
+
+                        $isLargePowerBIReport = $true
+                        $pbixPayload = [System.Text.Encoding]::GetEncoding('ISO-8859-1').GetString($fileBytes)
+                        $boundary = [System.Guid]::NewGuid().ToString()
+                        $LF = "`r`n"
+
+                        $bodyLines = (
+                            # Name
+                            "--$boundary",
+                            "Content-Disposition: form-data; name=`"Name`"$LF",
+                            $itemName,
+                            # ContentType
+                            "--$boundary",
+                            "Content-Disposition: form-data; name=`"ContentType`"$LF",
+                            "",
+                            # Content
+                            "--$boundary",
+                            "Content-Disposition: form-data; name=`"Content`"$LF",
+                            "undefined",
+                            # Path
+                            "--$boundary",
+                            "Content-Disposition: form-data; name=`"Path`"$LF",
+                            $itemPath,
+                            # @odata.type
+                            "--$boundary",
+                            "Content-Disposition: form-data; name=`"@odata.type`"$LF",
+                            "#Model.PowerBIReport",
+                            # File
+                            "--$boundary",
+                            "Content-Disposition: form-data; name=`"File`"; filename=`"$itemName`"",
+                            "Content-Type: application/octet-stream$LF",
+                            $pbixPayload,
+                            "--$boundary--"
+                        ) -join $LF
                     }
-                    elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb) {
-                        throw "This file is too large to be uploaded. Files larger than $maxServerFileSizeInMb MB are not currently supported: $item!"
+                    else
+                    {
+                        Write-Verbose "PowerBIReport $item is a small"
+                        $isLargePowerBIReport = $false
                     }
-
-                    Write-Verbose "PowerBIReport $item is a large"
-
-                    $isLargePowerBIReport = $true
-                    $pbixPayload = [System.Text.Encoding]::GetEncoding('ISO-8859-1').GetString($fileBytes)
-                    $boundary = [System.Guid]::NewGuid().ToString()
-                    $LF = "`r`n"
-
-                    $bodyLines = (
-                        # Name
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"Name`"$LF",
-                        $itemName,
-                        # ContentType
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"ContentType`"$LF",
-                        "",
-                        # Content
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"Content`"$LF",
-                        "undefined",
-                        # Path
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"Path`"$LF",
-                        $itemPath,
-                        # @odata.type
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"@odata.type`"$LF",
-                        "#Model.PowerBIReport",
-                        # File
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"File`"; filename=`"$itemName`"",
-                        "Content-Type: application/octet-stream$LF",
-                        $pbixPayload,
-                        "--$boundary--"
-                    ) -join $LF
                 }
-                else
+
+                if ($isLargePowerBIReport -ne $true)
                 {
-                    Write-Verbose "PowerBIReport $item is a small"
-
-                    $isLargePowerBIReport = $false
-
                     $payload = @{
                         "@odata.type" = "#Model.$itemType";
                         "Content" = [System.Convert]::ToBase64String($fileBytes);
@@ -294,18 +310,6 @@ function Write-RsRestCatalogItem
                         "Description" = $Description
                         "Path" = $itemPath;
                     }
-                }
-            }
-            else
-            {
-                $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
-                $payload = @{
-                    "@odata.type" = "#Model.$itemType";
-                    "Content" = [System.Convert]::ToBase64String($bytes);
-                    "ContentType"="";
-                    "Name" = $itemName;
-                    "Description" = $Description
-                    "Path" = $itemPath;
                 }
             }
 

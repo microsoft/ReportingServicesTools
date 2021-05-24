@@ -30,7 +30,6 @@ function VerifyCatalogItemExists()
 Describe "Write-RsRestCatalogItem" {
     $rsFolderPath = ""
     $localPath = (Get-Item -Path ".\").FullName + '\Tests\CatalogItems\testResources'
-    $localPathToLargeReport = (Get-Item -Path ".\").FullName + '\Tests\CatalogItems\Rest\Resources'
 
     BeforeEach {
         $folderName = 'SUT_WriteRsRestCatalogItem_' + [guid]::NewGuid()
@@ -74,9 +73,14 @@ Describe "Write-RsRestCatalogItem" {
         }
 
         It "Should upload a local large PBIX file" {
-            $itemPath = $localPathToLargeReport + '\LargePowerBIReport.pbix'
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
-            VerifyCatalogItemExists -itemName 'LargePowerBIReport' -itemType 'PowerBIReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+            $itemPath = $localPath + '\SimplePowerBIReport.pbix'
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -MinLargeFileSizeInMb '0.01' -Verbose
+            VerifyCatalogItemExists -itemName 'SimplePowerBIReport' -itemType 'PowerBIReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
+        }
+
+        It "Should upload a local large PBIX file larger than the maximum size" {
+            $itemPath = $localPath + '\SimplePowerBIReport.pbix'
+            { Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -MinLargeFileSizeInMb '0.001' -MaxFileSizeInMb '0.01' -Verbose } | Should Throw
         }
 
         It "Should upload a local XLS file" {
