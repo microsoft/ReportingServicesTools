@@ -26,7 +26,7 @@ function Write-RsRestCatalogItem
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
 
         .PARAMETER RestApiVersion
-           Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
+            Specify the version of REST Endpoint to use. Valid values are: "v1.0", "v2.0".
             NOTE:
                 - v1.0 of REST Endpoint is not supported by Microsoft and is for SSRS 2016.
                 - v2.0 of REST Endpoint is supported by Microsoft and is for SSRS 2017, PBIRS October 2017 and newer releases.
@@ -36,6 +36,12 @@ function Write-RsRestCatalogItem
 
         .PARAMETER WebSession
             Specify the session to be used when making calls to REST Endpoint.
+
+        .PARAMETER MaxFileSizeInMb
+            Specify the maximum file size for the PBIX report.
+
+        .PARAMETER MinLargeFileSizeInMb
+            Specify the smallest possible size for a large PBIX report.
 
         .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
@@ -96,7 +102,13 @@ function Write-RsRestCatalogItem
         $Credential,
 
         [Microsoft.PowerShell.Commands.WebRequestSession]
-        $WebSession
+        $WebSession,
+
+        [float]
+        $MaxFileSizeInMb = 2000,
+
+        [float]
+        $MinLargeFileSizeInMb = 25
     )
     Begin
     {
@@ -110,6 +122,7 @@ function Write-RsRestCatalogItem
         else
         {
             $catalogItemsByPathApi = $ReportPortalUri + "api/$RestApiVersion/CatalogItems(Path='{0}')"
+            $powerBIReportsByPathApi = $ReportPortalUri + "api/$RestApiVersion/PowerBIReports(Path='{0}')/Model.Upload"
         }
         $catalogItemsUpdateUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})"
     }
@@ -226,37 +239,103 @@ function Write-RsRestCatalogItem
             }
             else
             {
-                $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
-                $payload = @{
-                    "@odata.type" = "#Model.$itemType";
-                    "Content" = [System.Convert]::ToBase64String($bytes);
-                    "ContentType"="";
-                    "Name" = $itemName;
-                    "Description" = $Description
-                    "Path" = $itemPath;
+                $fileBytes = [System.IO.File]::ReadAllBytes($EntirePath)
+                $fileSizeInMb = (Get-Item $EntirePath).length/1MB
+
+                if ($itemType -eq "PowerBIReport" -and $fileSizeInMb -ge $MinLargeFileSizeInMb)
+                {
+                    $maxServerFileSizeInMb = Get-RsRestPublicServerSetting -Property "MaxFileSizeMb" -ReportPortalUri $ReportPortalUri -WebSession $WebSession
+                    if ($fileSizeInMb -gt $MaxFileSizeInMb)
+                    {
+                        throw "This file is too large to be uploaded. Files larger than $MaxFileSizeInMb MB are not currently supported: $item!"
+                    }
+                    elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb) {
+                        throw "This file is too large to be uploaded. Files larger than $maxServerFileSizeInMb MB are not currently supported: $item!"
+                    }
+
+                    Write-Verbose "PowerBIReport $item is a large"
+
+                    $isLargePowerBIReport = $true
+                    $pbixPayload = [System.Text.Encoding]::GetEncoding('ISO-8859-1').GetString($fileBytes)
+                    $boundary = [System.Guid]::NewGuid().ToString()
+                    $LF = "`r`n"
+
+                    $bodyLines = (
+                        # Name
+                        "--$boundary",
+                        "Content-Disposition: form-data; name=`"Name`"$LF",
+                        $itemName,
+                        # ContentType
+                        "--$boundary",
+                        "Content-Disposition: form-data; name=`"ContentType`"$LF",
+                        "",
+                        # Content
+                        "--$boundary",
+                        "Content-Disposition: form-data; name=`"Content`"$LF",
+                        "undefined",
+                        # Path
+                        "--$boundary",
+                        "Content-Disposition: form-data; name=`"Path`"$LF",
+                        $itemPath,
+                        # @odata.type
+                        "--$boundary",
+                        "Content-Disposition: form-data; name=`"@odata.type`"$LF",
+                        "#Model.PowerBIReport",
+                        # File
+                        "--$boundary",
+                        "Content-Disposition: form-data; name=`"File`"; filename=`"$itemName`"",
+                        "Content-Type: application/octet-stream$LF",
+                        $pbixPayload,
+                        "--$boundary--"
+                    ) -join $LF
+                }
+                else {
+                    Write-Verbose "$item is a small"
+
+                    $isLargePowerBIReport = $false
+                    $payload = @{
+                        "@odata.type" = "#Model.$itemType";
+                        "Content" = [System.Convert]::ToBase64String($fileBytes);
+                        "ContentType"="";
+                        "Name" = $itemName;
+                        "Description" = $Description
+                        "Path" = $itemPath;
+                    }
                 }
             }
 
             try
             {
-                Write-Verbose "Uploading $EntirePath to $RsFolder..."
-
-                $payloadJson = ConvertTo-Json $payload
-
-                if ($Credential -ne $null)
+                if ($itemType -eq "PowerBIReport" -and $isLargePowerBIReport -eq $true)
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Credential $Credential -Verbose:$false | Out-Null
+                    Write-Verbose "Uploading $EntirePath to $RsFolder via endpoint for large files..."
+                    $endpointUrl = [String]::Format($powerBIReportsByPathApi, $itemPath)
+                    $contentType = "multipart/form-data; boundary=$boundary"
+                    $requestBody = $bodyLines
                 }
                 else
                 {
-                    Invoke-WebRequest -Uri $catalogItemsUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -Verbose:$false | Out-Null
+                    Write-Verbose "Uploading $EntirePath to $RsFolder..."
+                    $endpointUrl = $catalogItemsUri
+                    $contentType = "application/json"
+                    $payloadJson = ConvertTo-Json $payload
+                    $requestBody = ([System.Text.Encoding]::UTF8.GetBytes($payloadJson))
+                }
+
+                if ($Credential -ne $null)
+                {
+                    Invoke-WebRequest -Uri $endpointUrl -Method Post -WebSession $WebSession -Body $requestBody -ContentType $contentType -Credential $Credential -Verbose:$false | Out-Null
+                }
+                else
+                {
+                    Invoke-WebRequest -Uri $endpointUrl -Method Post -WebSession $WebSession -Body $requestBody -ContentType $contentType -UseDefaultCredentials -Verbose:$false | Out-Null
                 }
 
                 Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
             }
             catch
             {
-                if ($_.Exception.Response -ne $null -and $_.Exception.Response.StatusCode -eq 409 -and $Overwrite)
+                if ($isLargePowerBIReport -ne $true -and $_.Exception.Response -ne $null -and $_.Exception.Response.StatusCode -eq 409 -and $Overwrite)
                 {
                     try
                     {
