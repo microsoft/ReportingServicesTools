@@ -27,9 +27,9 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer' + [System.DateTime]::Now.Ticks
         $credentialType = 'ServiceAccount'
 
-        It 'Should throw MethodInvocationException when asking for confirm' {
+        It 'Should throw exception when asking for confirm in noninteractive mode' {
             { Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Confirm -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext } |
-                Should -Throw "Read and Prompt functionality is not available"
+                Should -Throw
         }
         Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Force -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
@@ -44,9 +44,9 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer' + [System.DateTime]::Now.Ticks
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        It 'Should throw MethodInvocationException when asking for confirm' {
+        It 'Should throw exception when asking for confirm in noninteractive mode' {
             { Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Confirm -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext } |
-                Should -Throw "Read and Prompt functionality is not available"
+                Should -Throw
         }
         Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -Force -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
@@ -61,9 +61,9 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer'
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        It 'Should throw MethodInvocationException when asking for confirm' {
+        It 'Should throw exception when asking for confirm in noninteractive mode' {
             { Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Confirm -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext } |
-                Should -Throw "Read and Prompt functionality is not available"
+                Should -Throw
         }
         Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Force -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
@@ -77,9 +77,9 @@ Describe "Set-RsDatabase" {
         $databaseServerName = 'localhost'
         $databaseName = 'ReportServer'
         $credentialType = 'ServiceAccount'
-        It 'Should throw MethodInvocationException when asking for confirm' {
+        It 'Should throw exception when asking for confirm in noninteractive mode' {
             { Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Confirm -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext } |
-                Should -Throw "Read and Prompt functionality is not available"
+                Should -Throw
         }
         Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Force -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
