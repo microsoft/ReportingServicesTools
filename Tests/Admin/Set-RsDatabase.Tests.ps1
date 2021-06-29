@@ -26,7 +26,12 @@ Describe "Set-RsDatabase" {
         $databaseServerName = 'localhost'
         $databaseName = 'ReportServer' + [System.DateTime]::Now.Ticks
         $credentialType = 'ServiceAccount'
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
+
+        It 'Should throw MethodInvocationException when asking for confirm' {
+            { Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Confirm -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext } |
+                Should -Throw -ExceptionType ([MethodInvocationException])
+        }
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -Force -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServervNext
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
