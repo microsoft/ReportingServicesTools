@@ -26,7 +26,7 @@ or
 ```powershell
 Install-Module -Name ReportingServicesTools
 ```
-
+Note: Using Install-Module is the preferred installation method for most users.
 ## List of commands
 
 The following is a list of commands which are available for you to use once you follow the steps in the Installation
