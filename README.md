@@ -151,6 +151,11 @@ To execute the tests run (this will execute the CatalogItems test only which doe
 .\Test.ps1
 ```
 
+## Import Known Issue
+Workaround for newer versions of PowerShell (version 7.0+)
+```powershell
+Import-Module ReportingServicesTools -UseWindowsPowerShell
+```
 ## Style Guidelines
 
 If you have any scripts you would like to share, we request you to please format your scripts according to the guidelines created by the team behind the DSC Resource Kit. (https://github.com/PowerShell/DscResources/blob/master/StyleGuidelines.md) and the PowerShell verbs https://msdn.microsoft.com/en-us/library/ms714428(v=vs.85).aspx
