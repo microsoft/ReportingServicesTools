@@ -126,7 +126,7 @@ try
         
     }
     
-    if ($StartDateTime -ne $null -or $EndDate -ne $null)
+    if ($StartDateTime -ne $null -or $EndDate -ne $null -or $SubProperties -ne $null)
     {
       $null = $Proxy.SetSubscriptionProperties($SubProperties.subscriptionID, $SubProperties.DeliverySettings, $SubProperties.Description, $SubProperties.EventType, $XMLMatch.OuterXml, $SubProperties.Values) 
       Write-Verbose "subscription $($SubProperties.subscriptionId) for $($SubProperties.report) report successfully updated!"
