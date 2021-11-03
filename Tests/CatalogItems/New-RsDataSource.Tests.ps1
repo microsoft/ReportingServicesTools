@@ -11,7 +11,7 @@ Function Create-PSCredential
         )
        $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
        $ps_credential = New-Object System.Management.Automation.PSCredential ($UserName, $SecurePassword)
-       Return $ps_credential 
+       Return $ps_credential
 }
 
 Function Get-ExistingDataExtension
@@ -54,12 +54,30 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
+	Context "Create RsDataSource with Hidden parameter"{
+        # Declare datasource Name, Extension, CredentialRetrieval, ReportServerUri and DataSource path.
+        $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+        $extension = Get-ExistingDataExtension
+        $credentialRetrieval = 'None'
+        $reportServerUri = 'http://localhost/reportserver'
+        $dataSourcePath = '/' + $dataSourceName
+        New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -ReportServerUri $reportServerUri -Hidden
+        It "Should be a new data source" {
+            {Get-RsDataSource -Path $dataSourcePath } | Should not throw
+        }
+		It "Should be hidden" {
+            (Get-RsDataSource -Path $dataSourcePath).Hidden | Should -BeTrue
+		}
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
+    }
+
     Context "Create RsDataSource with Proxy parameter"{
         # Declare datasource Name, Extension, CredentialRetrieval, Proxy and DataSource path.
         $dataSourceName = 'SutDataSourceProxyParameter' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
         $credentialRetrieval = 'None'
-        $proxy = New-RsWebServiceProxy 
+        $proxy = New-RsWebServiceProxy
         $dataSourcePath = '/' + $dataSourceName
         New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -Proxy $proxy
         It "Should be a new data source" {
@@ -93,7 +111,7 @@ Describe "New-RsDataSource" {
         $dataSourceName = 'SutDataSourceProxyAndReportServerUriParameters' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
         $credentialRetrieval = 'None'
-        $proxy = New-RsWebServiceProxy 
+        $proxy = New-RsWebServiceProxy
         $dataSourcePath = '/' + $dataSourceName
         $reportServerUri = 'http://localhost/reportserver'
         New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -Proxy $proxy -ReportServerUri $reportServerUri
@@ -111,7 +129,7 @@ Describe "New-RsDataSource" {
         $credentialRetrieval = 'Integrated'
         $dataSourcePath = '/' + $dataSourceName
         It "Should throw an exception when datasource is failed to be create" {
-             { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw 
+             { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw
              { Get-RsDataSource -Path $dataSourcePath } | Should throw
         }
     }
@@ -123,7 +141,7 @@ Describe "New-RsDataSource" {
         $credentialRetrieval = 'Store'
         $dataSourcePath = '/' + $dataSourceName
         It "Should throw an exception when Store credential retrieval are given without providing credential" {
-            { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw 
+            { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw
             { Get-RsDataSource -Path $dataSourcePath } | Should throw
         }
     }
@@ -157,7 +175,7 @@ Describe "New-RsDataSource" {
     #      $password ='MyPassword'
     #      $userName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
     #      $dataSourceCredentials = Create-PSCredential -User $userName -Password $password
-    #      New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -DatasourceCredentials $dataSourceCredentials -ImpersonateUser  
+    #      New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -DatasourceCredentials $dataSourceCredentials -ImpersonateUser
     #      $dataSource = Get-RsDataSource -Path $dataSourcePath
     #      It "Should be a new data source" {
     #          $dataSource.Count | Should Be 1
@@ -215,7 +233,7 @@ Describe "New-RsDataSource" {
         New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrievalChange -Overwrite
         $dataSource = Get-RsDataSource -Path $dataSourcePath
         It "Should overwrite a datasource" {
-            $dataSource.CredentialRetrieval | Should be  $credentialRetrievalChange 
+            $dataSource.CredentialRetrieval | Should be  $credentialRetrievalChange
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
@@ -240,7 +258,7 @@ Describe "New-RsDataSource" {
             $descriptionProperty = $properties | Where { $_.Name -eq 'Description' }
             $descriptionProperty | Should Not BeNullOrEmpty
             $descriptionProperty.Value | Should Be $description
-            
+
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
