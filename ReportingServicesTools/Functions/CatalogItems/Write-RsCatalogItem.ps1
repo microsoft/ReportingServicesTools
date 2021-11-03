@@ -159,7 +159,7 @@ function Write-RsCatalogItem
                         {
                             throw "Data Source Definition not found in the specified file: $EntirePath!"
                         }
-    
+
                         $NewRsDataSourceParam = @{
                             Proxy = $Proxy
                             RsFolder = $RsFolder
@@ -169,11 +169,12 @@ function Write-RsCatalogItem
                             Disabled = ("false" -like $content.DataSourceDefinition.Enabled)
                             CredentialRetrieval = 'None'
                             Overwrite = $Overwrite
+                            Hidden = $Hidden
                         }
                     }
                     elseif ($item.Extension -eq '.rds')
                     {
-                        if ($content -eq $null -or 
+                        if ($content -eq $null -or
                             $content.RptDataSource -eq $null -or
                             $content.RptDataSource.Name -eq $null -or
                             $content.RptDataSource.ConnectionProperties -eq $null -or
@@ -203,6 +204,7 @@ function Write-RsCatalogItem
                             Disabled = $false
                             CredentialRetrieval = $credentialRetrieval
                             Overwrite = $Overwrite
+                            Hidden = $Hidden
                         }
 
                         if ($credentialRetrieval -eq "prompt")
@@ -257,7 +259,7 @@ function Write-RsCatalogItem
                         $hiddenProperty.Value = $Hidden
                         $additionalProperties.Add($hiddenProperty)
                     }
-                
+
                     $bytes = [System.IO.File]::ReadAllBytes($EntirePath)
                     $warnings = $null
                     try

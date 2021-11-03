@@ -11,7 +11,7 @@ Function Create-PSCredential
         )
        $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
        $ps_credential = New-Object System.Management.Automation.PSCredential ($UserName, $SecurePassword)
-       Return $ps_credential 
+       Return $ps_credential
 }
 
 Function Get-ExistingDataExtension
@@ -21,7 +21,7 @@ Function Get-ExistingDataExtension
 }
 
 Describe "New-RsDataSource" {
-    Context "Create RsDataSource with minimal parameters"{
+    Context "Create RsDataSource with minimal parameters" {
         # Declare datasource Name, Extension, CredentialRetrieval, and DataSource path.
         $dataSourceName = 'SutDataSourceMinParameters' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
@@ -39,7 +39,7 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-    Context "Create RsDataSource with ReportServerUri parameter"{
+    Context "Create RsDataSource with ReportServerUri parameter" {
         # Declare datasource Name, Extension, CredentialRetrieval, ReportServerUri and DataSource path.
         $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
@@ -54,12 +54,39 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-    Context "Create RsDataSource with Proxy parameter"{
+	Context "Create RsDataSource with Hidden parameter" {
+        # Declare datasource Name, Extension, CredentialRetrieval, ReportServerUri and DataSource path.
+        $dataSourceName = 'SutDataSourceReportServerUriParameter' + [guid]::NewGuid()
+        $extension = Get-ExistingDataExtension
+        $credentialRetrieval = 'None'
+        $reportServerUri = 'http://localhost/reportserver'
+        $dataSourcePath = '/' + $dataSourceName
+        New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -ReportServerUri $reportServerUri -Hidden
+        It "Should be a new data source" {
+            {Get-RsDataSource -Path $dataSourcePath } | Should not throw
+        }
+
+        It "Should be hidden" {
+            #Hidden property is not returned for a datasource.
+            #(Get-RsDataSource -Path $dataSourcePath).Hidden | Should -BeTrue
+
+            #Get the datasource as folder content
+            $item=Get-RsFolderContent -RsFolder '/' | Where-Object -Property Name -eq -Value $dataSourceName
+            $item.Name | Should -Be $dataSourceName
+            $item.Hidden | Should -BeTrue
+        }
+
+
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
+    }
+
+    Context "Create RsDataSource with Proxy parameter" {
         # Declare datasource Name, Extension, CredentialRetrieval, Proxy and DataSource path.
         $dataSourceName = 'SutDataSourceProxyParameter' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
         $credentialRetrieval = 'None'
-        $proxy = New-RsWebServiceProxy 
+        $proxy = New-RsWebServiceProxy
         $dataSourcePath = '/' + $dataSourceName
         New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -Proxy $proxy
         It "Should be a new data source" {
@@ -69,7 +96,7 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-    Context "Create RsDataSource with connection string parameter"{
+    Context "Create RsDataSource with connection string parameter" {
         # Declare datasource Name, Extension, CredentialRetrieval, Connection String and DataSource path.
         $dataSourceName = 'SutDataSourceConnectionStringParameter' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
@@ -88,12 +115,12 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-    Context "Create RsDataSource with Proxy and ReportServerUri parameters"{
+    Context "Create RsDataSource with Proxy and ReportServerUri parameters" {
         # Declare datasource Name, Extension, CredentialRetrieval, and DataSource path.
         $dataSourceName = 'SutDataSourceProxyAndReportServerUriParameters' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
         $credentialRetrieval = 'None'
-        $proxy = New-RsWebServiceProxy 
+        $proxy = New-RsWebServiceProxy
         $dataSourcePath = '/' + $dataSourceName
         $reportServerUri = 'http://localhost/reportserver'
         New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -Proxy $proxy -ReportServerUri $reportServerUri
@@ -104,14 +131,14 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-     Context "Create RsDataSource with unsupported RsDataSource Extension validation"{
+     Context "Create RsDataSource with unsupported RsDataSource Extension validation" {
         # Declare datasource Name, Extension, CredentialRetrieval, and DataSource path.
         $dataSourceName = 'SutDataSurceExtensionException' + [guid]::NewGuid()
         $extension = 'InvalidExtension'
         $credentialRetrieval = 'Integrated'
         $dataSourcePath = '/' + $dataSourceName
         It "Should throw an exception when datasource is failed to be create" {
-             { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw 
+             { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw
              { Get-RsDataSource -Path $dataSourcePath } | Should throw
         }
     }
@@ -123,7 +150,7 @@ Describe "New-RsDataSource" {
         $credentialRetrieval = 'Store'
         $dataSourcePath = '/' + $dataSourceName
         It "Should throw an exception when Store credential retrieval are given without providing credential" {
-            { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw 
+            { New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval } | Should throw
             { Get-RsDataSource -Path $dataSourcePath } | Should throw
         }
     }
@@ -157,7 +184,7 @@ Describe "New-RsDataSource" {
     #      $password ='MyPassword'
     #      $userName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
     #      $dataSourceCredentials = Create-PSCredential -User $userName -Password $password
-    #      New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -DatasourceCredentials $dataSourceCredentials -ImpersonateUser  
+    #      New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrieval -DatasourceCredentials $dataSourceCredentials -ImpersonateUser
     #      $dataSource = Get-RsDataSource -Path $dataSourcePath
     #      It "Should be a new data source" {
     #          $dataSource.Count | Should Be 1
@@ -167,7 +194,7 @@ Describe "New-RsDataSource" {
     #      Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     #  }
 
-    Context "Create RsDataSource with Windows Credentials Parameter"{
+    Context "Create RsDataSource with Windows Credentials Parameter" {
         # Declare datasource Name, Extension, CredentialRetrieval, and DataSource path.
         $dataSourceName = 'SutDataSurceWindowsCredentials' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
@@ -188,7 +215,7 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-    Context "Create RsDataSource with Prompt Credentials Retrieval"{
+    Context "Create RsDataSource with Prompt Credentials Retrieval" {
         # Declare datasource Name, Extension, CredentialRetrieval (Prompt), and DataSource path.
         $dataSourceName = 'SutDataSurcePrompt' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
@@ -203,7 +230,7 @@ Describe "New-RsDataSource" {
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-    Context "Create RsDataSource and Overwrite it"{
+    Context "Create RsDataSource and Overwrite it" {
         # Declare datasource name, extension, credential retrieval, and data source path.
         $dataSourceName = 'SutDataSourceOverwrite' + [guid]::NewGuid()
         $extension = 'SQL'
@@ -215,14 +242,14 @@ Describe "New-RsDataSource" {
         New-RsDataSource -RsFolder '/' -Name $dataSourceName -Extension $extension -CredentialRetrieval $credentialRetrievalChange -Overwrite
         $dataSource = Get-RsDataSource -Path $dataSourcePath
         It "Should overwrite a datasource" {
-            $dataSource.CredentialRetrieval | Should be  $credentialRetrievalChange 
+            $dataSource.CredentialRetrieval | Should be  $credentialRetrievalChange
             $dataSource.Count | Should Be 1
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false
     }
 
-    Context "Create RsDataSource with description"{
+    Context "Create RsDataSource with description" {
         # Declare datasource Name, Extension, CredentialRetrieval, and DataSource path.
         $dataSourceName = 'SutDataSourceDescription' + [guid]::NewGuid()
         $extension = Get-ExistingDataExtension
@@ -240,7 +267,7 @@ Describe "New-RsDataSource" {
             $descriptionProperty = $properties | Where { $_.Name -eq 'Description' }
             $descriptionProperty | Should Not BeNullOrEmpty
             $descriptionProperty.Value | Should Be $description
-            
+
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $dataSourcePath -Confirm:$false

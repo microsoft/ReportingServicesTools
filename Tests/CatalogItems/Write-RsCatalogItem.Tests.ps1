@@ -46,6 +46,7 @@ Describe "Write-RsCatalogItem" {
             $uploadedReport = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'Report'
             $uploadedReport.Name | Should Be 'emptyReport'
             $uploadedReport.Description | Should Be 'newDescription'
+            $uploadedReport.Hidden | Should -BeTrue
         }
 
         It "Should upload a local RsDataSource in Report Server" {
@@ -53,6 +54,7 @@ Describe "Write-RsCatalogItem" {
             Write-RsCatalogItem -Path $localDataSourcePath -RsFolder $folderPath -Hidden
             $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSource'
             $uploadedDataSource.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+            $uploadedDataSource.Hidden | Should -BeTrue
         }
 
         It "Should upload a local DataSet in Report Server" {
@@ -60,6 +62,7 @@ Describe "Write-RsCatalogItem" {
             Write-RsCatalogItem -Path $localDataSetPath -RsFolder $folderPath -Hidden
             $uploadedDataSet = (Get-RsFolderContent -RsFolder $folderPath ) | Where-Object TypeName -eq 'DataSet'
             $uploadedDataSet.Name | Should Be 'UnDataset'
+            $uploadedDataSet.Hidden | Should -BeTrue
         }
         # Removing folders used for testing
         Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
