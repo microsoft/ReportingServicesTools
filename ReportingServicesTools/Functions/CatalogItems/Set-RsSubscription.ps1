@@ -32,8 +32,10 @@ function Set-RsSubscription
             Used to change the EndDate of subscription. 
 
         .PARAMETER Owner
-            Used to change the owner of a subscription. 
+            Used to change the owner of a subscription.
             
+        .PARAMETER SubProperties
+            Subscription object returned from Get-RsSubscription
           
         .EXAMPLE
             Get-RsSubscription -path '/Finance/ImportantReports' | Set-RsSubscription -EndDate 9/9/2099
@@ -126,10 +128,10 @@ try
         
     }
     
-    if ($StartDateTime -ne $null -or $EndDate -ne $null)
+    if ($StartDateTime -ne $null -or $EndDate -ne $null -or $SubProperties -ne $null)
     {
       $null = $Proxy.SetSubscriptionProperties($SubProperties.subscriptionID, $SubProperties.DeliverySettings, $SubProperties.Description, $SubProperties.EventType, $XMLMatch.OuterXml, $SubProperties.Values) 
-      Write-Verbose "subscription $($SubProperties.subscriptionId) for $($SubProperties.report) report successfully updated!"
+      Write-Verbose "Subscription $($SubProperties.subscriptionId) for $($SubProperties.report) report successfully updated!"
     }
     }
     Catch
