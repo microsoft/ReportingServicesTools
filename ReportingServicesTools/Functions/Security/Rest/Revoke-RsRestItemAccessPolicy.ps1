@@ -120,6 +120,7 @@ function Revoke-RsRestItemAccessPolicy
             }
             
             $response.Policies = @([PSCustomObject]$response.Policies | WHERE {$_.groupusername -ne $Identity})
+            $response.InheritParentPolicy=$false
 
             $payloadJson = $response | ConvertTo-Json -Depth 15
             Write-Verbose "$payloadJson"
