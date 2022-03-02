@@ -74,6 +74,23 @@ before_test:
     Start-Service PowerBIReportServer
     Start-Service SQLSERVERAGENT
     Write-Host "Configuration completed" (Get-Date).DateTime
+    
+    # Enable additional file formats
+    $newSettings = New-Object PSCustomObject -Property @{"PropertyValues" = @( @{"@odata.type"="#Model.Property"; "Name" = "AllowedResourceExtensionsForUpload"; "Value" = "*,*.xml,*.xsd,*.xsl,*.png,*.gif,*.jpg,*.tif,*.jpeg,*.tiff,*.bmp,*.pdf,*.svg,*.rtf,*.txt,*.doc,*.docx,*.pps,*.ppt,*.pptx,*.xlsx"})}
+    $stringNewRequest =  $newSettings | ConvertTo-JSON -Depth 5
+    $isAllowedFileFormatUpdated = $true
+    for ($i=0 ; $i -le 10 -and $isAllowedFileFormatUpdated -eq $false ;i++){
+        try{
+            $isAllowedFileFormatUpdated = $true;
+            Invoke-RestMethod -Uri "http://localhost/reports/api/v1.0/ReportServerInfo/Model.UpdateSettings" -Method POST -UseDefaultCredentials -ContentType 'application/json' -Body $stringNewRequest
+            Write-Host "Enable additional file formats completed" (Get-Date).DateTime
+        }
+        catch{
+            $isAllowedFileFormatUpdated = $false
+            Start-Sleep -Seconds 1
+        }
+    }
+    if ($isAllowedFileFormatUpdated -eq $false) {throw (New-Object System.Exception("Failed to update the AllowedResourceExtensionsForUpload")) }
 
 test_script:
 - ps: |
@@ -91,23 +108,6 @@ test_script:
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))   
     # Fail if thre are issues
     if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
-    
-    # Enable additional file formats
-    $newSettings = New-Object PSCustomObject -Property @{"PropertyValues" = @( @{"@odata.type"="#Model.Property"; "Name" = "AllowedResourceExtensionsForUpload"; "Value" = "*,*.xml,*.xsd,*.xsl,*.png,*.gif,*.jpg,*.tif,*.jpeg,*.tiff,*.bmp,*.pdf,*.svg,*.rtf,*.txt,*.doc,*.docx,*.pps,*.ppt,*.pptx,*.xlsx"})}
-    $stringNewRequest =  $newSettings | ConvertTo-JSON -Depth 5
-    $isAllowedFileFormatUpdated = $true
-    for ($i=0 ; $i -le 10 -and $isAllowedFileFormatUpdated -eq $false ;i++){
-        try{
-            $isAllowedFileFormatUpdated = $true;
-            Invoke-RestMethod -Uri "http://localhost/reports/api/v1.0/ReportServerInfo/Model.UpdateSettings" -Method POST -UseDefaultCredentials -ContentType 'application/json' -Body $stringNewRequest
-        }
-        catch{
-            $isAllowedFileFormatUpdated = $false
-            Start-Sleep -Seconds 1
-        }
-    }
-    if ($isAllowedFileFormatUpdated -eq $false) {throw (New-Object System.Exception("Failed to update the AllowedResourceExtensionsForUpload")) }
-    
     
     # Integration test section
     Write-Host "Starting execution of Pester Tests"
