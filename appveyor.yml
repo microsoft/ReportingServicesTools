@@ -96,7 +96,7 @@ test_script:
     $newSettings = New-Object PSCustomObject -Property @{"PropertyValues" = @( @{"@odata.type"="#Model.Property"; "Name" = "AllowedResourceExtensionsForUpload"; "Value" = "*,*.xml,*.xsd,*.xsl,*.png,*.gif,*.jpg,*.tif,*.jpeg,*.tiff,*.bmp,*.pdf,*.svg,*.rtf,*.txt,*.doc,*.docx,*.pps,*.ppt,*.pptx,*.xlsx"})}
     $stringNewRequest =  $newSettings | ConvertTo-JSON -Depth 5
     $isAllowedFileFormatUpdated = $false
-    for ($i=0 ; $i -le 10 -and $isAllowedFileFormatUpdated -eq $false ;i++){
+    for ($i=0 ; $i -le 10 -and $isAllowedFileFormatUpdated -eq $false ;$i++){
         try{
             $isAllowedFileFormatUpdated = $true;
             Invoke-RestMethod -Uri "http://localhost/reports/api/v1.0/ReportServerInfo/Model.UpdateSettings" -Method POST -UseDefaultCredentials -ContentType 'application/json' -Body $stringNewRequest
