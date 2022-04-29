@@ -103,6 +103,7 @@ test_script:
             Write-Host "Enable additional file formats completed" (Get-Date).DateTime
         }
         catch{
+            write-host $_.Exception
             $isAllowedFileFormatUpdated = $false
             Start-Sleep -Seconds 1
         }
