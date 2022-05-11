@@ -114,11 +114,11 @@ function Out-RsRestCatalogItem
                 $url = [string]::Format($catalogItemsByPathApi, $item)
                 if ($Credential -ne $null)
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -Verbose:$false
+                    $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -UseBasicParsing -Verbose:$false
                 }
                 else
                 {
-                    $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -Verbose:$false
+                    $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -UseBasicParsing -Verbose:$false
                 }
             }
             catch
