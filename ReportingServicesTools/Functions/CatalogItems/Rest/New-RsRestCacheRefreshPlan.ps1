@@ -135,11 +135,11 @@ function New-RsRestCacheRefreshPlan
 
                 if ($Credential -ne $null)
                 {
-                    $response = Invoke-WebRequest -Uri $refreshplansUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Credential $Credential -Verbose:$false
+                    $response = Invoke-WebRequest -Uri $refreshplansUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Credential $Credential -UseBasicParsing -Verbose:$false
                 }
                 else
                 {
-                    $response = Invoke-WebRequest -Uri $refreshplansUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -Verbose:$false
+                    $response = Invoke-WebRequest -Uri $refreshplansUri -Method Post -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -UseBasicParsing -Verbose:$false
                 }
 
                 Write-Verbose "Schedule payload for $RsItem was created successfully!"
