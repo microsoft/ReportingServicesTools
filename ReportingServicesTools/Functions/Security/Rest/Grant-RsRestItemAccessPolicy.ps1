@@ -147,8 +147,14 @@ function Grant-RsRestItemAccessPolicy
 
             $payloadJson = $response | ConvertTo-Json -Depth 15
             Write-Verbose "$payloadJson"
-            $response = Invoke-RestMethod -Uri $PolicyUri -Method Put -WebSession $WebSession -UseDefaultCredentials -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Verbose:$false
-
+            if ($Credential -ne $null)
+            {
+                $response = Invoke-RestMethod -Uri $PolicyUri -Method Put -WebSession $WebSession -Credential $Credential -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json"  -Verbose:$false
+            }
+            else
+            {
+                $response = Invoke-RestMethod -Uri $PolicyUri -Method Put -WebSession $WebSession -UseDefaultCredentials -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Verbose:$false
+            }
             return $response
         }
         catch
