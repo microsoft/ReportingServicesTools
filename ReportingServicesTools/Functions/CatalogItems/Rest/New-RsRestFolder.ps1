@@ -29,7 +29,7 @@ function New-RsRestFolder
             Specify the session to be used when making calls to REST Endpoint.
 
         .EXAMPLE
-            New-RsRestFolder -RsFolder MyNewFolder -RsFolder /
+            New-RsRestFolder -FolderName MyNewFolder -RsFolder /
 
             Description
             -----------
