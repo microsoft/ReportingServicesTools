@@ -73,7 +73,7 @@ function Test-RsRestItemDataSource
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
 		if ($Credential.Username -ne $WebSession.Credentials.Username) {
 			Write-Verbose "Using credentials from WebSession"
-			$Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", (ConvertTo-SecureString $WebSession.Credentials.Password -AsPlainText -Force)
+			$Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", $WebSession.Credentials.SecurePassword 
 		}
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
     }
