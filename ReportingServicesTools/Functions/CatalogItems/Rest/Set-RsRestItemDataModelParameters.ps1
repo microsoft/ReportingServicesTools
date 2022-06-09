@@ -66,7 +66,7 @@ function Set-RsRestItemDataModelParameter
     Begin
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
-        if ($Credential.Username -ne $WebSession.Credentials.Username) {
+        if ($null -ne $WebSession.Credentials -and $null -eq $Credential) {
             Write-Verbose "Using credentials from WebSession"
             $Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", $WebSession.Credentials.SecurePassword 
         }
