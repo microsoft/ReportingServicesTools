@@ -75,7 +75,8 @@ function Restore-RSEncryptionKey
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
 
-        $KeyPath = Resolve-Path $KeyPath
+       
+        $KeyPath = Join-Path -Path (Resolve-Path -Path (Split-Path -Parent $KeyPath)).ProviderPath -ChildPath (Split-Path -Leaf $KeyPath)
 
         $reportServerService = 'ReportServer'
 
