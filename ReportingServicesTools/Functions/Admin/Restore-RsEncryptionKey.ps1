@@ -74,9 +74,8 @@ function Restore-RSEncryptionKey
     if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Restore encryptionkey from file $KeyPath"))
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
-
        
-        $KeyPath = Join-Path -Path (Resolve-Path -Path (Split-Path -Parent $KeyPath)).ProviderPath -ChildPath (Split-Path -Leaf $KeyPath)
+        $KeyPath = (Resolve-Path $KeyPath).ProviderPath
 
         $reportServerService = 'ReportServer'
 
