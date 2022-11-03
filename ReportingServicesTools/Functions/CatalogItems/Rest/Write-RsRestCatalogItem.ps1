@@ -17,10 +17,10 @@ function Write-RsRestCatalogItem
             Folder on reportserver to upload the item to.
 
         .PARAMETER Description
-            Specify the description to be added to the report.
+            Specify the description to be added to the report. PowerBIReport files larger than MinLargeFileSizeInMb are not affected by this parameter.
 
         .PARAMETER Overwrite
-            Overwrite the old entry, if an existing catalog item with same name exists at the specified destination.
+            Overwrite the old entry, if an existing catalog item with same name exists at the specified destination. PowerBIReport files larger than MinLargeFileSizeInMb are not affected by this parameter.
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services Instance.
@@ -42,6 +42,9 @@ function Write-RsRestCatalogItem
 
         .PARAMETER MinLargeFileSizeInMb
             Specify the smallest possible size for a large PBIX report.
+
+        .PARAMETER Hidden
+            Specify the item as hidden on the Report Server. PowerBIReport files larger than MinLargeFileSizeInMb are not affected by this parameter.
 
         .EXAMPLE
             Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports'
@@ -70,6 +73,13 @@ function Write-RsRestCatalogItem
             Description
             -----------
             Uploads the report 'monthlyreport.rdl' to folder '/monthlyreports' using v2.0 REST Endpoint to Report Server located at http://myserver/reports.
+
+        .EXAMPLE
+            Write-RsRestCatalogItem -Path 'c:\reports\monthlyreport.rdl' -RsFolder '/monthlyreports' -Hidden
+
+            Description
+            -----------
+            Uploads the report 'monthlyreport.rdl' as a hidden report to folder '/monthlyreports' using v2.0 REST Endpoint to Report Server located at http://localhost/reports/.
     #>
     [CmdletBinding()]
     param(
@@ -108,14 +118,18 @@ function Write-RsRestCatalogItem
         $MaxFileSizeInMb = 2000,
 
         [float]
-        $MinLargeFileSizeInMb = 25
+        $MinLargeFileSizeInMb = 25,
+
+        [switch]
+        $Hidden
     )
     Begin
     {
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
-        if ($null -ne $WebSession.Credentials -and $null -eq $Credential) {
+        if ($null -ne $WebSession.Credentials -and $null -eq $Credential)
+        {
             Write-Verbose "Using credentials from WebSession"
-            $Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", $WebSession.Credentials.SecurePassword 
+            $Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", $WebSession.Credentials.SecurePassword
         }
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $catalogItemsUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems"
@@ -222,7 +236,7 @@ function Write-RsRestCatalogItem
                     "CredentialRetrieval" = $credentialRetrieval;
                     "CredentialsByUser" = $null;
                     "CredentialsInServer" = $null;
-                    "Hidden" = $false;
+                    "Hidden" = $Hidden.IsPresent;
                     "IsConnectionStringOverridden" = $true;
                     "IsEnabled" = $enabled;
                 }
@@ -240,6 +254,10 @@ function Write-RsRestCatalogItem
                 $content = [System.IO.File]::ReadAllText($EntirePath)
                 $payload = ConvertFrom-Json $content
                 $payload.Path = $itemPath
+                if ($Hidden.IsPresent -eq $true)
+                {
+                    $payload.Hidden = $Hidden.IsPresent
+                }
             }
             else
             {
@@ -253,38 +271,21 @@ function Write-RsRestCatalogItem
                     {
                         throw "This file is too large to be uploaded. Files larger than $MaxFileSizeInMb MB are not currently supported: $item!"
                     }
-                    elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb) {
+                    elseif ($maxServerFileSizeInMb -gt 0 -and $fileSizeInMb -gt $maxServerFileSizeInMb)
+                    {
                         throw "This file is too large to be uploaded. Files larger than $maxServerFileSizeInMb MB are not currently supported: $item!"
                     }
 
-                    Write-Verbose "PowerBIReport $item is a large"
+                    Write-Verbose "PowerBIReport $item is large. Properties Overwrite, Description, and Hidden are being ignored during upload"
 
                     $isLargePowerBIReport = $true
                     $pbixPayload = [System.Text.Encoding]::GetEncoding('ISO-8859-1').GetString($fileBytes)
                     $boundary = [System.Guid]::NewGuid().ToString()
                     $LF = "`r`n"
 
+                    # endpoint handles a file and nothing else
+                    # https://app.swaggerhub.com/apis-docs/microsoft-rs/pbirs/2.0#/PowerBIReports/UploadPowerBIReport
                     $bodyLines = (
-                        # Name
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"Name`"$LF",
-                        $itemName,
-                        # ContentType
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"ContentType`"$LF",
-                        "",
-                        # Content
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"Content`"$LF",
-                        "undefined",
-                        # Path
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"Path`"$LF",
-                        $itemPath,
-                        # @odata.type
-                        "--$boundary",
-                        "Content-Disposition: form-data; name=`"@odata.type`"$LF",
-                        "#Model.PowerBIReport",
                         # File
                         "--$boundary",
                         "Content-Disposition: form-data; name=`"File`"; filename=`"$itemName`"",
@@ -293,8 +294,9 @@ function Write-RsRestCatalogItem
                         "--$boundary--"
                     ) -join $LF
                 }
-                else {
-                    Write-Verbose "$item is a small"
+                else
+                {
+                    Write-Verbose "$item is small"
 
                     $isLargePowerBIReport = $false
                     $payload = @{
@@ -302,30 +304,31 @@ function Write-RsRestCatalogItem
                         "Content" = [System.Convert]::ToBase64String($fileBytes);
                         "ContentType"="";
                         "Name" = $itemName;
-                        "Description" = $Description
+                        "Description" = $Description;
                         "Path" = $itemPath;
+                        "Hidden" = $Hidden.IsPresent;
                     }
                 }
             }
 
+            if ($itemType -eq "PowerBIReport" -and $isLargePowerBIReport -eq $true)
+            {
+                Write-Verbose "Uploading $EntirePath to $RsFolder via endpoint for large files..."
+                $endpointUrl = [String]::Format($powerBIReportsByPathApi, $itemPath)
+                $contentType = "multipart/form-data; boundary=$boundary"
+                $requestBody = $bodyLines
+            }
+            else
+            {
+                Write-Verbose "Uploading $EntirePath to $RsFolder..."
+                $endpointUrl = $catalogItemsUri
+                $contentType = "application/json"
+                $payloadJson = ConvertTo-Json $payload
+                $requestBody = ([System.Text.Encoding]::UTF8.GetBytes($payloadJson))
+            }
+
             try
             {
-                if ($itemType -eq "PowerBIReport" -and $isLargePowerBIReport -eq $true)
-                {
-                    Write-Verbose "Uploading $EntirePath to $RsFolder via endpoint for large files..."
-                    $endpointUrl = [String]::Format($powerBIReportsByPathApi, $itemPath)
-                    $contentType = "multipart/form-data; boundary=$boundary"
-                    $requestBody = $bodyLines
-                }
-                else
-                {
-                    Write-Verbose "Uploading $EntirePath to $RsFolder..."
-                    $endpointUrl = $catalogItemsUri
-                    $contentType = "application/json"
-                    $payloadJson = ConvertTo-Json $payload
-                    $requestBody = ([System.Text.Encoding]::UTF8.GetBytes($payloadJson))
-                }
-
                 if ($Credential -ne $null)
                 {
                     Invoke-WebRequest -Uri $endpointUrl -Method Post -WebSession $WebSession -Body $requestBody -ContentType $contentType -Credential $Credential -UseBasicParsing -Verbose:$false | Out-Null
@@ -362,11 +365,11 @@ function Write-RsRestCatalogItem
                         $uri = [String]::Format($catalogItemsUpdateUri, $itemId)
                         if ($Credential -ne $null)
                         {
-                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -Credential $Credential -UseBasicParsing -Verbose:$false | Out-Null
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $requestBody -ContentType "application/json" -Credential $Credential -UseBasicParsing -Verbose:$false | Out-Null
                         }
                         else
                         {
-                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body ([System.Text.Encoding]::UTF8.GetBytes($payloadJson)) -ContentType "application/json" -UseDefaultCredentials -UseBasicParsing -Verbose:$false | Out-Null
+                            Invoke-WebRequest -Uri $uri -Method Put -WebSession $WebSession -Body $requestBody -ContentType "application/json" -UseDefaultCredentials -UseBasicParsing -Verbose:$false | Out-Null
                         }
                         Write-Verbose "$EntirePath was uploaded to $RsFolder successfully!"
                     }
