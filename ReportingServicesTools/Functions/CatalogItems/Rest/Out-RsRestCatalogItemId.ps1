@@ -83,6 +83,13 @@ function Out-RsRestCatalogItemId
 
     Process
     {
+        #exlude Linked Reports
+        if ($RsItemInfo.Type -eq 'LinkedReport')
+        {
+            Write-Verbose "$($RsItemInfo.Path) is a LinkedReport and is ignored."
+            return
+        }
+
         if ($RsItemInfo.Type -ne 'MobileReport')
         {
             $itemId = $RsItemInfo.Id
