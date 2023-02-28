@@ -108,7 +108,11 @@ test_script:
             Start-Sleep -Seconds 1
         }
     }
-    if ($isAllowedFileFormatUpdated -eq $false) {throw (New-Object System.Exception("Failed to update the AllowedResourceExtensionsForUpload")) }
+    if ($isAllowedFileFormatUpdated -eq $false) {
+      Write-Host "Dumping Server Logs"
+      gci "C:\Program Files\Microsoft Power BI Report Server\PBIRS\LogFiles\*" -Include *.log | Get-Content
+      throw (New-Object System.Exception("Failed to update the AllowedResourceExtensionsForUpload")) 
+    }
     
     # Integration test section
     Write-Host "Starting execution of Pester Tests"
