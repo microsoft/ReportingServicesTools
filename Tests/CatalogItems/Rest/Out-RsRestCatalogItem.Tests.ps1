@@ -44,7 +44,10 @@ Describe "Out-RsRestCatalogItem" {
 
     AfterEach {
         Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath -Confirm:$false
-        Remove-Item -Path $localFolderPath -Recurse
+        if ($localFolderPath -ne "")
+        {
+            Remove-Item -Path $localFolderPath -Recurse
+        }
     }
 
     Context "ReportPortalUri parameter" {
