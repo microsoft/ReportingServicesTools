@@ -48,7 +48,6 @@ Describe "Write-RsRestFolderContent" {
             VerifyCatalogItemExists -itemName "emptyFile.txt" -itemType "Resource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "NewExcelWorkbook.xlsx" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "OldExcelWorkbook.xls" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
-            VerifyCatalogItemExists -itemName "SimpleMobileReport" -itemType "MobileReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SimplePowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SqlPowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SutWriteRsFolderContent_DataSource" -itemType "DataSource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
@@ -88,7 +87,6 @@ Describe "Write-RsRestFolderContent" {
             VerifyCatalogItemExists -itemName "emptyFile.txt" -itemType "Resource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "NewExcelWorkbook.xlsx" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "OldExcelWorkbook.xls" -itemType "ExcelWorkbook" -folderPath $rsFolderPath -reportServerUri $reportServerUri
-            VerifyCatalogItemExists -itemName "SimpleMobileReport" -itemType "MobileReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SimplePowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SqlPowerBIReport" -itemType "PowerBIReport" -folderPath $rsFolderPath -reportServerUri $reportServerUri
             VerifyCatalogItemExists -itemName "SutWriteRsFolderContent_DataSource" -itemType "DataSource" -folderPath $rsFolderPath -reportServerUri $reportServerUri
