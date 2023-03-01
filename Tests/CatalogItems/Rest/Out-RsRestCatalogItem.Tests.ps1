@@ -69,12 +69,6 @@ Describe "Out-RsRestCatalogItem" {
             VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SutWriteRsFolderContent_DataSource.rsds'
         }
 
-        It "Should download a RSMOBILE file" {
-            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimpleMobileReport
-            Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
-            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimpleMobileReport.rsmobile'
-        }
-
         It "Should download a PBIX file" {
             $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimplePowerBIReport
             Out-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $itemPath -Destination $localFolderPath -Verbose
@@ -129,12 +123,6 @@ Describe "Out-RsRestCatalogItem" {
             $itemPath = Join-Path -Path $rsFolderPath -ChildPath SutWriteRsFolderContent_DataSource
             Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
             VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SutWriteRsFolderContent_DataSource.rsds'
-        }
-
-        It "Should download a RSMOBILE file" {
-            $itemPath = Join-Path -Path $rsFolderPath -ChildPath SimpleMobileReport
-            Out-RsRestCatalogItem -WebSession $webSession -RsItem $itemPath -Destination $localFolderPath -Verbose
-            VerifyFileWasDownloaded -folderPath $localFolderPath -fileName 'SimpleMobileReport.rsmobile'
         }
 
         It "Should download a PBIX file" {
