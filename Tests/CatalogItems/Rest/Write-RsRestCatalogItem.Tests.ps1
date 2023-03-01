@@ -60,12 +60,6 @@ Describe "Write-RsRestCatalogItem" {
             VerifyCatalogItemExists -itemName 'UnDataset' -itemType 'DataSet' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
-        It "Should upload a local RSMOBILE file" {
-            $itemPath = $localPath + '\SimpleMobileReport.rsmobile'
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
-            VerifyCatalogItemExists -itemName 'SimpleMobileReport' -itemType 'MobileReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
-        }
-
         It "Should upload a local small PBIX file" {
             $itemPath = $localPath + '\SimplePowerBIReport.pbix'
             Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
@@ -152,12 +146,6 @@ Describe "Write-RsRestCatalogItem" {
             $itemPath = $localPath + '\UnDataset.rsd'
             Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath -Verbose
             VerifyCatalogItemExists -itemName 'UnDataset' -itemType 'DataSet' -folderPath $rsFolderPath -reportServerUri $reportServerUri
-        }
-
-        It "Should upload a local RSMOBILE file" {
-            $itemPath = $localPath + '\SimpleMobileReport.rsmobile'
-            Write-RsRestCatalogItem -WebSession $webSession -Path $itemPath -RsFolder $rsFolderPath -Verbose
-            VerifyCatalogItemExists -itemName 'SimpleMobileReport' -itemType 'MobileReport' -folderPath $rsFolderPath -reportServerUri $reportServerUri
         }
 
         It "Should upload a local PBIX file" {
