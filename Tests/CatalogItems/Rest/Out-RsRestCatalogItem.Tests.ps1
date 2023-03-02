@@ -44,7 +44,7 @@ Describe "Out-RsRestCatalogItem" {
 
     AfterEach {
         Remove-RsCatalogItem -ReportServerUri $reportServerUri -RsFolder $rsFolderPath -Confirm:$false
-        if ($localFolderPath -ne $null -and $localFolderPath .Length -ne 0 -and (Test-Path $localFolderPath))
+        if ($localFolderPath -ne $null -and $localFolderPath.Length -ne 0 -and (Test-Path $localFolderPath))
         {
             Remove-Item -Path $localFolderPath  -Recurse
         }
