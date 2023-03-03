@@ -61,7 +61,7 @@ Describe "New-RsRestCacheRefreshPlan" {
         }
         
         It "Should add a CacheRefreshPlan plan for a PBIX report" {
-            New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -StartDateTime "2021-01-07T06:00:00-08:00" -Recurrence @{
+            New-RsRestCacheRefreshPlan -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -StartDateTime "2021-01-07T06:00:00" -Recurrence @{
                 "DailyRecurrence" = @{
                     "DaysInterval" = "1";
                 }
