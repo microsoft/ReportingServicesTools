@@ -103,7 +103,6 @@ function New-RsFolder {
     }
 
     try {
-        # HOTFIX: Not part of git source code but this section of code was modified to allow virtual folders and not throw an exception if folder already exists
         Write-Verbose "Creating folder $($FolderName)..."
         $checkRsFolder = $RsFolder
         if ($checkRsFolder[-1] -ne '/') {
