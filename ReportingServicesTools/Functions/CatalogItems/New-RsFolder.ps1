@@ -1,8 +1,7 @@
 ﻿# Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
-function New-RsFolder
-{
+function New-RsFolder {
     <#
         .SYNOPSIS
             This script creates a new folder in the Report Server
@@ -59,7 +58,7 @@ function New-RsFolder
     param
     (
         [Parameter(Mandatory = $True)]
-        [Alias('ItemPath','Path')]
+        [Alias('ItemPath', 'Path')]
         [string]
         $RsFolder,
 
@@ -89,30 +88,36 @@ function New-RsFolder
     $namespace = $proxy.GetType().Namespace
     $propertyDataType = "$namespace.Property"
     $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
-    if ($Description)
-    {
+    if ($Description) {
         $descriptionProperty = New-Object $propertyDataType
         $descriptionProperty.Name = 'Description'
         $descriptionProperty.Value = $Description
         $additionalProperties.Add($descriptionProperty)
     }
 
-    if ($Hidden)
-    {
+    if ($Hidden) {
         $hiddenProperty = New-Object $propertyDataType
         $hiddenProperty.Name = 'Hidden'
         $hiddenProperty.Value = $Hidden
         $additionalProperties.Add($hiddenProperty)
     }
 
-    try
-    {
+    try {
+        # HOTFIX: Not part of git source code but this section of code was modified to allow virtual folders and not throw an exception if folder already exists
         Write-Verbose "Creating folder $($FolderName)..."
-        $Proxy.CreateFolder($FolderName, $RsFolder, $additionalProperties) | Out-Null
-        Write-Verbose "Folder $($FolderName) created successfully!"
+        $checkRsFolder = $RsFolder
+        if ($checkRsFolder[-1] -ne '/') {
+            $checkRsFolder += '/'
+        }
+        if ($Proxy.GetItemType("$($checkRsFolder)$FolderName") -ne "Folder") {
+            $Proxy.CreateFolder($FolderName, $RsFolder, $additionalProperties) | Out-Null
+            Write-Verbose "Folder $($FolderName) created successfully!"
+        }
+        else {
+            Write-Verbose "Folder $($FolderName) exists!"
+        }
     }
-    catch
-    {
+    catch {
         throw (New-Object System.Exception("Exception occurred while creating folder! $($_.Exception.Message)", $_.Exception))
     }
 }
