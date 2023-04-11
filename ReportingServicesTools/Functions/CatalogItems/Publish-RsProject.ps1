@@ -11,7 +11,7 @@ function Publish-RsProject
             Specify the location of the SSRS project file whose deployment profiles should be fetched.
 
         .EXAMPLE
-            Get-RsDeploymentConfig -ProjectFile 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' |
+            Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' |
             Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/' |
             Publish-RsProject
 
