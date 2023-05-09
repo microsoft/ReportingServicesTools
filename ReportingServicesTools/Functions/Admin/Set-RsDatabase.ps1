@@ -38,6 +38,17 @@ function Set-RsDatabase
         .PARAMETER DatabaseServerName
             Specify the database server name. (e.g. localhost, MyMachine\Sql2016, etc.)
 
+        .PARAMETER Encrypt
+            Specify the encryption type to use when connecting to SQL Server.
+            Accepted values: Mandatory, Optional, Strict.
+            When not specified, the default value is Mandatory.
+
+        .PARAMETER TrustServerCertificate
+            Specify this switch to bypass the server certificate validation.
+
+        .PARAMETER HostNameInCertificate
+            Specify the host name to be used in validating the SQL Server TLS/SSL certificate.
+
         .PARAMETER IsRemoteDatabaseServer
             Specify this switch if the database server is on a different machine than the machine Reporting Services is running on.
 
@@ -85,6 +96,16 @@ function Set-RsDatabase
         [Parameter(Mandatory = $True)]
         [string]
         $DatabaseServerName,
+
+        [ValidateSet("Mandatory", "Optional", "Strict")]
+        [string]
+        $Encrypt,
+
+        [switch]
+        $TrustServerCertificate,
+
+        [string]
+        $HostNameInCertificate,
 
         [switch]
         $IsRemoteDatabaseServer,
@@ -202,14 +223,31 @@ function Set-RsDatabase
             Write-Verbose "Executing database creation script..."
             try
             {
-                if ($isSQLAdminAccount)
-                {
-                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop -Username $adminUsername -Password $adminPassword
+                $parameters = @{
+                    ServerInstance = $DatabaseServerName
+                    Query = $SQLScript
+                    QueryTimeout = $QueryTimeout
+                    ErrorAction = "Stop"
                 }
-                else
-                {
-                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop
+
+                if ($isSQLAdminAccount) {
+                    $parameters.add("Username", $adminUsername)
+                    $parameters.add("Password", $adminPassword)
                 }
+
+                if ($PSBoundParameters.ContainsKey("Encrypt")) {
+                    $parameters.add("Encrypt", $Encrypt)
+                }
+
+                if ($TrustServerCertificate) {
+                    $parameters.add("TrustServerCertificate", $true)
+                }
+
+                if ($PSBoundParameters.ContainsKey("HostNameInCertificate")) {
+                    $parameters.add("HostNameInCertificate", $HostNameInCertificate)
+                }
+
+                Invoke-Sqlcmd @parameters
             }
             catch
             {
@@ -240,14 +278,31 @@ function Set-RsDatabase
         Write-Verbose "Executing database rights script..."
         try
         {
-            if ($isSQLAdminAccount)
-            {
-                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop -Username $adminUsername -Password $adminPassword
+            $parameters = @{
+                ServerInstance = $DatabaseServerName
+                Query = $SQLScript
+                QueryTimeout = $QueryTimeout
+                ErrorAction = "Stop"
             }
-            else
-            {
-                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop
+
+            if ($isSQLAdminAccount) {
+                $parameters.add("Username", $adminUsername)
+                $parameters.add("Password", $adminPassword)
             }
+
+            if ($PSBoundParameters.ContainsKey("Encrypt")) {
+                $parameters.add("Encrypt", $Encrypt)
+            }
+
+            if ($TrustServerCertificate) {
+                $parameters.add("TrustServerCertificate", $true)
+            }
+
+            if ($PSBoundParameters.ContainsKey("HostNameInCertificate")) {
+                $parameters.add("HostNameInCertificate", $HostNameInCertificate)
+            }
+
+            Invoke-Sqlcmd @parameters
         }
         catch
         {
