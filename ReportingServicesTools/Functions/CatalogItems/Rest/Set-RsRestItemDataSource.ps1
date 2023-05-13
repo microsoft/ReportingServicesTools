@@ -100,7 +100,7 @@ function Set-RsRestItemDataSource
             Description
             -----------
             Updates data sources to the specified $dataSources object. This example is only applicable to Paginated Reports.
-        
+
         .LINK
             https://docs.microsoft.com/en-us/power-bi/report-server/connect-data-source-apis-pre-oct-2020
     #>
@@ -140,7 +140,7 @@ function Set-RsRestItemDataSource
         $WebSession = New-RsRestSessionHelper -BoundParameters $PSBoundParameters
         if ($null -ne $WebSession.Credentials -and $null -eq $Credential) {
             Write-Verbose "Using credentials from WebSession"
-            $Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", $WebSession.Credentials.SecurePassword 
+            $Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", $WebSession.Credentials.SecurePassword
         }
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
         $dataSourcesUri = $ReportPortalUri + "api/$RestApiVersion/{0}(Path='{1}')/DataSources"
@@ -177,33 +177,35 @@ function Set-RsRestItemDataSource
                 }
                 elseif ($ds.DataSourceSubType -eq $null)
                 {
-                    # DataSourceType, ConnectionString and CredentialRetrieval must always be specified!
-                    if ($ds.DataSourceType -eq $null -or
-                        $ds.ConnectionString -eq $null -or
-                        $ds.CredentialRetrieval -eq $null -or
-                        !($ds.CredentialRetrieval -LIKE 'Integrated' -or
-                        $ds.CredentialRetrieval -LIKE 'Store' -or
-                        $ds.CredentialRetrieval -LIKE 'Prompt' -or
-                        $ds.CredentialRetrieval -LIKE 'None'))
-                    {
-                        throw "Invalid data source specified: $ds!"
-                    }
-                    elseif ($ds.DataModelDataSource -ne $null)
-                    {
-                        # since this is an embedded data source for Paginated Report/Shared data set,
-                        # you should not set any value to DataModelDataSource
-                        throw "You cannot specify DataModelDataSource for this datasource: $ds!"
-                    }
+                    if (!$ds.IsReference) {
+                        # DataSourceType, ConnectionString and CredentialRetrieval must always be specified!
+                        if ($ds.DataSourceType -eq $null -or
+                            $ds.ConnectionString -eq $null -or
+                            $ds.CredentialRetrieval -eq $null -or
+                            !($ds.CredentialRetrieval -LIKE 'Integrated' -or
+                            $ds.CredentialRetrieval -LIKE 'Store' -or
+                            $ds.CredentialRetrieval -LIKE 'Prompt' -or
+                            $ds.CredentialRetrieval -LIKE 'None'))
+                        {
+                            throw "Invalid data source specified: $ds!"
+                        }
+                        elseif ($ds.DataModelDataSource -ne $null)
+                        {
+                            # since this is an embedded data source for Paginated Report/Shared data set,
+                            # you should not set any value to DataModelDataSource
+                            throw "You cannot specify DataModelDataSource for this datasource: $ds!"
+                        }
 
-                    if ($ds.CredentialRetrieval -LIKE 'Store' -and $ds.CredentialsInServer -eq $null)
-                    {
-                        # CredentialsInServer must be specified for Store
-                        throw "CredentialsInServer must be specified when CredentialRetrieval is set to Store: $ds!"
-                    }
-                    elseif ($ds.CredentialRetrieval -LIKE 'Prompt' -and $ds.CredentialsByUser -eq $null)
-                    {
-                        # CredentialsByUser must be specified for Prompt
-                        throw "CredentialsByUser must be specified when CredentialRetrieval is set to Prompt: $ds!"
+                        if ($ds.CredentialRetrieval -LIKE 'Store' -and $ds.CredentialsInServer -eq $null)
+                        {
+                            # CredentialsInServer must be specified for Store
+                            throw "CredentialsInServer must be specified when CredentialRetrieval is set to Store: $ds!"
+                        }
+                        elseif ($ds.CredentialRetrieval -LIKE 'Prompt' -and $ds.CredentialsByUser -eq $null)
+                        {
+                            # CredentialsByUser must be specified for Prompt
+                            throw "CredentialsByUser must be specified when CredentialRetrieval is set to Prompt: $ds!"
+                        }
                     }
                 }
                 else
