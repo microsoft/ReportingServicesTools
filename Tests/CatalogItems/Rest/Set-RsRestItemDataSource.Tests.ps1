@@ -238,7 +238,12 @@ Describe "Set-RsRestItemDataSource" {
             $fetchedDataSources[0].Path | Should -Be "$rsFolderPath/DSmaster"
             $fetchedDataSources[1].Path | Should -Be "$rsFolderPath/DSmodel"
             $fetchedDataSources[0].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
-            $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"        }
+            $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
+            # remove test items
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport -Confirm:$false
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/DSmaster" -Confirm:$false
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/DSmodel" -Confirm:$false
+        }
     }
 
     Context "ReportPortalUri parameter - Power BI Reports" {
@@ -433,6 +438,11 @@ Describe "Set-RsRestItemDataSource" {
             $fetchedDataSources[1].Path | Should -Be "$rsFolderPath/DSmodel"
             $fetchedDataSources[0].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
             $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
+
+            # remove test items
+            Remove-RsRestCatalogItem -WebSession $rsSession -RsItem $datasourcesReport -Confirm:$false
+            Remove-RsRestCatalogItem -WebSession $rsSession -RsItem "$rsFolderPath/DSmaster" -Confirm:$false
+            Remove-RsRestCatalogItem -WebSession $rsSession -RsItem "$rsFolderPath/DSmodel" -Confirm:$false
         }
     }
 
