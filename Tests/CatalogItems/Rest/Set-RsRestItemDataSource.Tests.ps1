@@ -212,6 +212,33 @@ Describe "Set-RsRestItemDataSource" {
             $fetchedDataSources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport
             $fetchedDataSources[0].CredentialRetrieval | Should Be "None"
         }
+
+        It "Updates linked datasource" {
+            # uploading datasourceReport.rdl
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\datasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\datasources\dsMaster.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\datasources\dsModel.rsds" -RsFolder $rsFolderPath
+            $datasourcesReport =  "$rsFolderPath/datasourcesReportLinkedDS"
+
+            $datasources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport
+            $datasources.Count | Should -Be 2
+            $datasources[0].IsReference | Should -BeTrue
+            $datasources[1].IsReference | Should -BeTrue
+            $datasources[0].Id | Should -Be "00000000-0000-0000-0000-000000000000"
+            $datasources[1].Id | Should -Be "00000000-0000-0000-0000-000000000000"
+
+            # now set the second to a valid path
+            $datasources[0].Path = "$rsFolderPath/DSmaster"
+            $datasources[1].Path = "$rsFolderPath/DSmodel"
+
+            Set-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport -RsItemType Report -DataSources $datasources -Verbose
+
+            $fetchedDataSources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport
+            $fetchedDataSources | Should -HaveCount 2
+            $fetchedDataSources[0].Path | Should -Be "$rsFolderPath/DSmaster"
+            $fetchedDataSources[1].Path | Should -Be "$rsFolderPath/DSmodel"
+            $fetchedDataSources[0].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
+            $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"        }
     }
 
     Context "ReportPortalUri parameter - Power BI Reports" {
@@ -379,9 +406,37 @@ Describe "Set-RsRestItemDataSource" {
             $fetchedDataSources = Get-RsRestItemDataSource -WebSession $rsSession -RsItem $datasourcesReport
             $fetchedDataSources[0].CredentialRetrieval | Should Be "None"
         }
+
+        It "Updates linked datasource" {
+            # uploading datasourceReport.rdl
+            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\datasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\datasources\dsMaster.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\datasources\dsModel.rsds" -RsFolder $rsFolderPath
+            $datasourcesReport =  "$rsFolderPath/datasourcesReportLinkedDS"
+
+            $datasources = Get-RsRestItemDataSource -WebSession $rsSession -RsItem $datasourcesReport
+            $datasources.Count | Should -Be 2
+            $datasources[0].IsReference | Should -BeTrue
+            $datasources[1].IsReference | Should -BeTrue
+            $datasources[0].Id | Should -Be "00000000-0000-0000-0000-000000000000"
+            $datasources[1].Id | Should -Be "00000000-0000-0000-0000-000000000000"
+
+            # now set the second to a valid path
+            $datasources[0].Path = "$rsFolderPath/DSmaster"
+            $datasources[1].Path = "$rsFolderPath/DSmodel"
+
+            Set-RsRestItemDataSource -WebSession $rsSession -RsItem $datasourcesReport -RsItemType Report -DataSources $datasources -Verbose
+
+            $fetchedDataSources = Get-RsRestItemDataSource -WebSession $rsSession -RsItem $datasourcesReport
+            $fetchedDataSources | Should -HaveCount 2
+            $fetchedDataSources[0].Path | Should -Be "$rsFolderPath/DSmaster"
+            $fetchedDataSources[1].Path | Should -Be "$rsFolderPath/DSmodel"
+            $fetchedDataSources[0].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
+            $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
+        }
     }
 
-    Context "ReportPortalUri parameter - Power BI Reports" {
+    Context "WebSession parameter - Power BI Reports" {
         $sqlPowerBIReport = ""
 
         BeforeEach {

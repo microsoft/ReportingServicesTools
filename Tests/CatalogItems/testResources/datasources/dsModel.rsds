@@ -1,0 +1,8 @@
+<DataSourceDefinition>
+    <Extension>SQL</Extension>
+    <ConnectString>Data Source=localhost;Initial Catalog=model</ConnectString>
+    <UseOriginalConnectString>False</UseOriginalConnectString>
+    <OriginalConnectStringExpressionBased>False</OriginalConnectStringExpressionBased>
+    <CredentialRetrieval>Integrated</CredentialRetrieval>
+    <Enabled>True</Enabled>
+</DataSourceDefinition>
