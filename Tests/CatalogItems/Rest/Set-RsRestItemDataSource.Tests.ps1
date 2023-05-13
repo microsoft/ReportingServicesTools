@@ -215,9 +215,9 @@ Describe "Set-RsRestItemDataSource" {
 
         It "Updates linked datasource" {
             # uploading datasourceReport.rdl
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\datasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\datasources\dsMaster.rsds" -RsFolder $rsFolderPath
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\datasources\dsModel.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\linkedDatasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\linkedDatasources\dsMaster.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\linkedDatasources\dsModel.rsds" -RsFolder $rsFolderPath
             $datasourcesReport =  "$rsFolderPath/datasourcesReportLinkedDS"
 
             $datasources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport
@@ -238,7 +238,12 @@ Describe "Set-RsRestItemDataSource" {
             $fetchedDataSources[0].Path | Should -Be "$rsFolderPath/DSmaster"
             $fetchedDataSources[1].Path | Should -Be "$rsFolderPath/DSmodel"
             $fetchedDataSources[0].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
-            $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"        }
+            $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
+            # remove test items
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport -Confirm:$false
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/DSmaster" -Confirm:$false
+            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/DSmodel" -Confirm:$false
+        }
     }
 
     Context "ReportPortalUri parameter - Power BI Reports" {
@@ -409,9 +414,9 @@ Describe "Set-RsRestItemDataSource" {
 
         It "Updates linked datasource" {
             # uploading datasourceReport.rdl
-            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\datasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
-            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\datasources\dsMaster.rsds" -RsFolder $rsFolderPath
-            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\datasources\dsModel.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\linkedDatasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\linkedDatasources\dsMaster.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $rsSession -Path "$localPath\linkedDatasources\dsModel.rsds" -RsFolder $rsFolderPath
             $datasourcesReport =  "$rsFolderPath/datasourcesReportLinkedDS"
 
             $datasources = Get-RsRestItemDataSource -WebSession $rsSession -RsItem $datasourcesReport
@@ -433,6 +438,11 @@ Describe "Set-RsRestItemDataSource" {
             $fetchedDataSources[1].Path | Should -Be "$rsFolderPath/DSmodel"
             $fetchedDataSources[0].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
             $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
+
+            # remove test items
+            Remove-RsRestCatalogItem -WebSession $rsSession -RsItem $datasourcesReport -Confirm:$false
+            Remove-RsRestCatalogItem -WebSession $rsSession -RsItem "$rsFolderPath/DSmaster" -Confirm:$false
+            Remove-RsRestCatalogItem -WebSession $rsSession -RsItem "$rsFolderPath/DSmodel" -Confirm:$false
         }
     }
 
