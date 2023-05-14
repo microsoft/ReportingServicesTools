@@ -82,20 +82,21 @@ Describe "Write-RsFolderContent" {
         Write-RsFolderContent -Path $localReportPath -RsFolder $folderPath -Recurse
         It "Should upload a local subFolder with Recurse Parameter" {
             $uploadedFolders = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Folder' | Sort-Object -Property Name -Descending
-            $uploadedFolders.Count | Should Be 3
+            $uploadedFolders.Count | Should Be 4
             $uploadedFolders[0].Name | Should Be 'testResources2'
-            $uploadedFolders[1].Name | Should Be 'imagesResources'
-            $uploadedFolders[2].Name | Should Be 'datasources'
+            $uploadedFolders[1].Name | Should Be 'linkedDatasources'
+            $uploadedFolders[2].Name | Should Be 'imagesResources'
+            $uploadedFolders[3].Name | Should Be 'datasources'
         }
 
         It "Should upload a report that is in a folder and a second report that is in a subfolder" {
             $uploadedReports = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'Report'
-            $uploadedReports.Count | Should Be 4
+            $uploadedReports.Count | Should Be 5
         }
 
-        It "Should upload a local RsDataSource in Report Server" {
+        It "Should upload local RsDataSources in Report Server" {
             $uploadedDataSource = (Get-RsFolderContent -RsFolder $folderPath -Recurse ) | Where-Object TypeName -eq 'DataSource'
-            $uploadedDataSource.Name | Should Be 'SutWriteRsFolderContent_DataSource'
+            $uploadedDataSource | ForEach-Object { $_.Name | Should BeIn 'SutWriteRsFolderContent_DataSource', 'dsMaster','dsModel' }
         }
 
         It "Should upload a local DataSet in Report Server" {
