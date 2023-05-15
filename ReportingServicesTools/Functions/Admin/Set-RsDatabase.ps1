@@ -41,13 +41,16 @@ function Set-RsDatabase
         .PARAMETER Encrypt
             Specify the encryption type to use when connecting to SQL Server.
             Accepted values: Mandatory, Optional, Strict.
-            When not specified, the default value is Mandatory.
+            If supported, but not specified, the default value is Mandatory.
+            Using this parameter requires PowerShell SQLServer module version 22 or higher.
 
         .PARAMETER TrustServerCertificate
             Specify this switch to bypass the server certificate validation.
+            Using this parameter requires PowerShell SQLServer module version 22 or higher.
 
         .PARAMETER HostNameInCertificate
             Specify the host name to be used in validating the SQL Server TLS/SSL certificate.
+            Using this parameter requires PowerShell SQLServer module version 22 or higher.
 
         .PARAMETER IsRemoteDatabaseServer
             Specify this switch if the database server is on a different machine than the machine Reporting Services is running on.
@@ -154,6 +157,14 @@ function Set-RsDatabase
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
 
+        $supportSQLServerV22Parameters = (Get-InstalledModule -Name "SQLServer" -MinimumVersion 22.0 -ErrorAction SilentlyContinue) -ne $null
+        $containsSQLServerV22Parameters = $PSBoundParameters.ContainsKey("Encrypt") -or $TrustServerCertificate -or $PSBoundParameters.ContainsKey("HostNameInCertificate")
+
+        if ($containsSQLServerV22Parameters -and -not $supportSQLServerV22Parameters)
+        {
+            throw "The current version of Invoke-Sqlcmd cmdlet used in this script doesn't support -Encrypt, -TrustServerCertificate and -HostNameInCertificate parameters. Consider installing SQLServer module version 22 or higher and restarting PowerShell to use the script with these parameters."
+        }
+
         #region Validating authentication and normalizing credentials
         $username = ''
         $password = $null
@@ -230,24 +241,38 @@ function Set-RsDatabase
                     ErrorAction = "Stop"
                 }
 
-                if ($isSQLAdminAccount) {
+                if ($isSQLAdminAccount)
+                {
                     $parameters.add("Username", $adminUsername)
                     $parameters.add("Password", $adminPassword)
                 }
 
-                if ($PSBoundParameters.ContainsKey("Encrypt")) {
-                    $parameters.add("Encrypt", $Encrypt)
+                if ($containsSQLServerV22Parameters)
+                {
+                    if ($PSBoundParameters.ContainsKey("Encrypt"))
+                    {
+                        $parameters.add("Encrypt", $Encrypt)
+                    }
+        
+                    if ($TrustServerCertificate)
+                    {
+                        $parameters.add("TrustServerCertificate", $true)
+                    }
+        
+                    if ($PSBoundParameters.ContainsKey("HostNameInCertificate"))
+                    {
+                        $parameters.add("HostNameInCertificate", $HostNameInCertificate)
+                    }
                 }
 
-                if ($TrustServerCertificate) {
-                    $parameters.add("TrustServerCertificate", $true)
+                if ($supportSQLServerV22Parameters)
+                {
+                    SQLServer\Invoke-Sqlcmd @parameters
                 }
-
-                if ($PSBoundParameters.ContainsKey("HostNameInCertificate")) {
-                    $parameters.add("HostNameInCertificate", $HostNameInCertificate)
+                else
+                {
+                    Invoke-Sqlcmd @parameters
                 }
-
-                Invoke-Sqlcmd @parameters
             }
             catch
             {
@@ -285,24 +310,38 @@ function Set-RsDatabase
                 ErrorAction = "Stop"
             }
 
-            if ($isSQLAdminAccount) {
+            if ($isSQLAdminAccount)
+            {
                 $parameters.add("Username", $adminUsername)
                 $parameters.add("Password", $adminPassword)
             }
 
-            if ($PSBoundParameters.ContainsKey("Encrypt")) {
-                $parameters.add("Encrypt", $Encrypt)
+            if ($containsSQLServerV22Parameters)
+            {
+                if ($PSBoundParameters.ContainsKey("Encrypt"))
+                {
+                    $parameters.add("Encrypt", $Encrypt)
+                }
+    
+                if ($TrustServerCertificate)
+                {
+                    $parameters.add("TrustServerCertificate", $true)
+                }
+    
+                if ($PSBoundParameters.ContainsKey("HostNameInCertificate"))
+                {
+                    $parameters.add("HostNameInCertificate", $HostNameInCertificate)
+                }
             }
 
-            if ($TrustServerCertificate) {
-                $parameters.add("TrustServerCertificate", $true)
+            if ($supportSQLServerV22Parameters)
+            {
+                SQLServer\Invoke-Sqlcmd @parameters
             }
-
-            if ($PSBoundParameters.ContainsKey("HostNameInCertificate")) {
-                $parameters.add("HostNameInCertificate", $HostNameInCertificate)
+            else
+            {
+                Invoke-Sqlcmd @parameters
             }
-
-            Invoke-Sqlcmd @parameters
         }
         catch
         {
