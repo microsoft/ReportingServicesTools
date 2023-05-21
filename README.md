@@ -1,12 +1,12 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/github/microsoft/reportingservicestools?branch=master&svg=true)](https://ci.appveyor.com/project/jtarquino/reportingservicestools) [![ReportingServicesTools](https://img.shields.io/powershellgallery/v/ReportingServicesTools.svg?style=flat-square&label=ReportingServicesTools)](https://www.powershellgallery.com/packages/ReportingServicesTools/)
 # Reporting Services PowerShell
-SQL Server Reporting Services PowerShell utilities 
+SQL Server Reporting Services PowerShell utilities
 
 ## Synopsis
 
-This project contains PowerShell scripts that allow you to perform various operations with SQL Server Reporting Services and Power BI Report Server. In order to use the scripts included in this project successfully, please download/clone the entire project as there are dependencies between the scripts. 
+This project contains PowerShell scripts that allow you to perform various operations with SQL Server Reporting Services and Power BI Report Server. In order to use the scripts included in this project successfully, please download/clone the entire project as there are dependencies between the scripts.
 
-All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services or Power BI Report Server instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.   
+All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services or Power BI Report Server instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.
 
 ## PowerShell Version
 Please ensure you're running PowerShell version 3.0+
@@ -45,6 +45,7 @@ The following is a list of commands which are available for you to use once you 
 |Get-RsCatalogItemRole|This command retrieves access to catalog items for users or groups.|
 |Get-RsRestCacheRefreshPlan|This function fetches a CacheRefreshPlan from a Power BI report.|
 |Get-RsRestCacheRefreshPlanHistory|This function fetches the history of CacheRefreshPlan(s) from a Power BI report.|
+|Get-RsRestDataSource|This function fetches the a datasource item from a folder.|
 |Get-RsRestFolderContent|This function fetches data sources related to a catalog item from the Report Server.|
 |Get-RsRestItem|This function fetches a catalog item from the Report Server using the REST API.|
 |Get-RsRestItemAccessPolicy|This function retrieves access policies to SQL Server Reporting Services Instance or Power BI Report Server Instance from users/groups.|
@@ -116,11 +117,11 @@ Some of the commands listed above allow you to optionally specify the version of
 
 ## Motivation
 
-The motivation behind this project was to help users perform SQL Server Reporting Services operations via the command line. 
+The motivation behind this project was to help users perform SQL Server Reporting Services operations via the command line.
 
 ## API Reference
 
-All of the APIs used by this project are publicly available. There are 2 types of APIs used in this repository: SOAP and WMI. You can find more details about the SOAP API at https://msdn.microsoft.com/en-us/library/ms154052.aspx and the WMI API at https://msdn.microsoft.com/en-us/library/ms152836.aspx. In general, you will use SOAP API for operations you would perform using Report Server and Web Portal whereas you will use WMI API for operations you would perform using Reporting Services Configuration Manager. 
+All of the APIs used by this project are publicly available. There are 2 types of APIs used in this repository: SOAP and WMI. You can find more details about the SOAP API at https://msdn.microsoft.com/en-us/library/ms154052.aspx and the WMI API at https://msdn.microsoft.com/en-us/library/ms152836.aspx. In general, you will use SOAP API for operations you would perform using Report Server and Web Portal whereas you will use WMI API for operations you would perform using Reporting Services Configuration Manager.
 
 ## Local testing and development
 
