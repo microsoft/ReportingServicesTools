@@ -5,61 +5,61 @@
 @{
     # Script module or binary module file associated with this manifest.
     RootModule = 'ReportingServicesTools.psm1'
-    
+
     # Version number of this module.
     ModuleVersion = '0.0.6.6'
-    
+
     # ID used to uniquely identify this module
     GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789'
-    
+
     # Author of this module
     Author = 'Microsoft Corporation'
-    
+
     # Company or vendor of this module
     CompanyName = 'Microsoft Corporation'
-    
+
     # Copyright statement for this module
     Copyright = '2016 Microsoft Corporation'
-    
+
     # Description of the functionality provided by this module
     Description = 'Provides extra functionality for SSRS (SQL Server Reporting Services) and Power BI Report Server.  Includes the ability to deploy SSRS Reports, Datasets, and DataSources; as well as Power BI Reports.  For more information about the capabilities of this module, please visit the Project Site: https://github.com/Microsoft/ReportingServicesTools/'
-    
+
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '3.0'
-    
+
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName = ''
-    
+
     # Minimum version of the Windows PowerShell host required by this module
     PowerShellHostVersion = ''
-    
+
     # Minimum version of the .NET Framework required by this module
     DotNetFrameworkVersion = ''
-    
+
     # Minimum version of the common language runtime (CLR) required by this module
     CLRVersion = ''
-    
+
     # Processor architecture (None, X86, Amd64, IA64) required by this module
     ProcessorArchitecture = ''
-    
+
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules = @()
-    
+
     # Assemblies that must be loaded prior to importing this module
     RequiredAssemblies = @()
-    
+
     # Script files () that are run in the caller's environment prior to importing this module
     ScriptsToProcess = @()
-    
+
     # Type files (xml) to be loaded when importing this module
     TypesToProcess = @()
-    
+
     # Format files (xml) to be loaded when importing this module
     FormatsToProcess = @()
-    
+
     # Modules to import as nested modules of the module specified in ModuleToProcess
     NestedModules = @()
-    
+
     # Functions to export from this module
     FunctionsToExport = @(
         'Backup-RsEncryptionKey',
@@ -75,6 +75,7 @@
         'Get-RsItemReference',
         'Get-RsRestCacheRefreshPlan',
         'Get-RsRestCacheRefreshPlanHistory',
+        'Get-RsRestDataSource',
         'Get-RsRestItemDataSource',
         'Get-RsRestItemDataModelParameter',
         'Get-RsRestItem',
@@ -132,13 +133,13 @@
         'Write-RsRestCatalogItem',
         'Write-RsRestFolderContent'
     )
-    
+
     # Cmdlets to export from this module
     CmdletsToExport = ''
-    
+
     # Variables to export from this module
     VariablesToExport = ''
-    
+
     # Aliases to export from this module
     # Aliases are stored in ReportingServicesTools.psm1
     AliasesToExport = @(
@@ -159,13 +160,13 @@
         'Set-RsEmailSettingsAsNTLMAuth',
         'Set-RsSharedDataSource'
     )
-    
+
     # List of all modules packaged with this module
     ModuleList = @()
-    
+
     # List of all files packaged with this module
     FileList = ''
-    
+
     PrivateData = @{
         # PSData is module packaging and gallery metadata embedded in PrivateData
         # It's for rebuilding PowerShellGet (and PoshCode) NuGet-style packages
