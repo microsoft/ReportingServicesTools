@@ -210,6 +210,37 @@ function Set-RsDatabase
         }
         #endregion Validating admin authentication and normalizing credentials
 
+        #region Composing general parameters for Invoke-Sqlcmd cmdlet
+        $generalParameters = @{
+            ServerInstance = $DatabaseServerName
+            QueryTimeout = $QueryTimeout
+            ErrorAction = "Stop"
+        }
+
+        if ($isSQLAdminAccount)
+        {
+            $generalParameters.add("Username", $adminUsername)
+            $generalParameters.add("Password", $adminPassword)
+        }
+
+        if ($containsSQLServerV22Parameters)
+        {
+            if ($PSBoundParameters.ContainsKey("Encrypt"))
+            {
+                $generalParameters.add("Encrypt", $Encrypt)
+            }
+
+            if ($TrustServerCertificate)
+            {
+                $generalParameters.add("TrustServerCertificate", $true)
+            }
+
+            if ($PSBoundParameters.ContainsKey("HostNameInCertificate"))
+            {
+                $generalParameters.add("HostNameInCertificate", $HostNameInCertificate)
+            }
+        }
+        #endregion Composing general parameters for Invoke-Sqlcmd cmdlet
 
         #region Create Database if necessary
         if (-not $IsExistingDatabase)
@@ -234,44 +265,13 @@ function Set-RsDatabase
             Write-Verbose "Executing database creation script..."
             try
             {
-                $parameters = @{
-                    ServerInstance = $DatabaseServerName
-                    Query = $SQLScript
-                    QueryTimeout = $QueryTimeout
-                    ErrorAction = "Stop"
-                }
-
-                if ($isSQLAdminAccount)
-                {
-                    $parameters.add("Username", $adminUsername)
-                    $parameters.add("Password", $adminPassword)
-                }
-
-                if ($containsSQLServerV22Parameters)
-                {
-                    if ($PSBoundParameters.ContainsKey("Encrypt"))
-                    {
-                        $parameters.add("Encrypt", $Encrypt)
-                    }
-        
-                    if ($TrustServerCertificate)
-                    {
-                        $parameters.add("TrustServerCertificate", $true)
-                    }
-        
-                    if ($PSBoundParameters.ContainsKey("HostNameInCertificate"))
-                    {
-                        $parameters.add("HostNameInCertificate", $HostNameInCertificate)
-                    }
-                }
-
                 if ($supportSQLServerV22Parameters)
                 {
-                    SQLServer\Invoke-Sqlcmd @parameters
+                    SQLServer\Invoke-Sqlcmd @generalParameters -Query $SQLScript
                 }
                 else
                 {
-                    Invoke-Sqlcmd @parameters
+                    Invoke-Sqlcmd @generalParameters -Query $SQLScript
                 }
             }
             catch
@@ -303,44 +303,13 @@ function Set-RsDatabase
         Write-Verbose "Executing database rights script..."
         try
         {
-            $parameters = @{
-                ServerInstance = $DatabaseServerName
-                Query = $SQLScript
-                QueryTimeout = $QueryTimeout
-                ErrorAction = "Stop"
-            }
-
-            if ($isSQLAdminAccount)
-            {
-                $parameters.add("Username", $adminUsername)
-                $parameters.add("Password", $adminPassword)
-            }
-
-            if ($containsSQLServerV22Parameters)
-            {
-                if ($PSBoundParameters.ContainsKey("Encrypt"))
-                {
-                    $parameters.add("Encrypt", $Encrypt)
-                }
-    
-                if ($TrustServerCertificate)
-                {
-                    $parameters.add("TrustServerCertificate", $true)
-                }
-    
-                if ($PSBoundParameters.ContainsKey("HostNameInCertificate"))
-                {
-                    $parameters.add("HostNameInCertificate", $HostNameInCertificate)
-                }
-            }
-
             if ($supportSQLServerV22Parameters)
             {
-                SQLServer\Invoke-Sqlcmd @parameters
+                SQLServer\Invoke-Sqlcmd @generalParameters -Query $SQLScript
             }
             else
             {
-                Invoke-Sqlcmd @parameters
+                Invoke-Sqlcmd @generalParameters -Query $SQLScript
             }
         }
         catch
