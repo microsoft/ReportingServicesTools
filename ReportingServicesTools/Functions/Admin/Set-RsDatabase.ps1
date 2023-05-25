@@ -41,7 +41,7 @@ function Set-RsDatabase
         .PARAMETER Encrypt
             Specify the encryption type to use when connecting to SQL Server.
             Accepted values: Mandatory, Optional, Strict.
-            If supported, but not specified, the default value is Mandatory.
+            IMPORTANT: If supported by the Invoke-Sqlcmd cmdlet version in use, but not specified, the default value is Mandatory.
             Using this parameter requires PowerShell SQLServer module version 22 or higher.
 
         .PARAMETER TrustServerCertificate
