@@ -17,20 +17,6 @@ function Set-RsDatabaseCredentials
             Specify the credentials to use when connecting to the SQL Server.
             Note: This parameter will be ignored whenever DatabaseCredentialType is set to ServiceAccount!
 
-        .PARAMETER Encrypt
-            Specify the encryption type to use when connecting to SQL Server.
-            Accepted values: Mandatory, Optional, Strict.
-            If supported, but not specified, the default value is Mandatory.
-            Using this parameter requires PowerShell SQLServer module version 22 or higher.
-
-        .PARAMETER TrustServerCertificate
-            Specify this switch to bypass the server certificate validation.
-            Using this parameter requires PowerShell SQLServer module version 22 or higher.
-
-        .PARAMETER HostNameInCertificate
-            Specify the host name to be used in validating the SQL Server TLS/SSL certificate.
-            Using this parameter requires PowerShell SQLServer module version 22 or higher.
-
         .PARAMETER IsRemoteDatabaseServer
             Specify this parameter when the database server is on a different machine than the machine Reporting Services is on.
 
@@ -81,16 +67,6 @@ function Set-RsDatabaseCredentials
         [System.Management.Automation.PSCredential]
         $DatabaseCredential,
 
-        [ValidateSet("Mandatory", "Optional", "Strict")]
-        [string]
-        $Encrypt,
-
-        [switch]
-        $TrustServerCertificate,
-
-        [string]
-        $HostNameInCertificate,
-
         [switch]
         $IsRemoteDatabaseServer,
 
@@ -115,14 +91,6 @@ function Set-RsDatabaseCredentials
     if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Configure to use $DatabaseCredentialType authentication"))
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
-
-        $supportSQLServerV22Parameters = (Get-InstalledModule -Name "SQLServer" -MinimumVersion 22.0 -ErrorAction SilentlyContinue) -ne $null
-        $containsSQLServerV22Parameters = $PSBoundParameters.ContainsKey("Encrypt") -or $TrustServerCertificate -or $PSBoundParameters.ContainsKey("HostNameInCertificate")
-
-        if ($containsSQLServerV22Parameters -and -not $supportSQLServerV22Parameters)
-        {
-            throw "The current version of Invoke-Sqlcmd cmdlet used in this script doesn't support -Encrypt, -TrustServerCertificate and -HostNameInCertificate parameters. Consider installing SQLServer module version 22 or higher and restarting PowerShell to use the script with these parameters."
-        }
 
         #region Validating authentication and normalizing credentials
         $username = ''
@@ -167,39 +135,7 @@ function Set-RsDatabaseCredentials
         Write-Verbose "Executing database rights script..."
         try
         {
-            $parameters = @{
-                ServerInstance = $DatabaseServerName
-                Query = $SQLScript
-                QueryTimeout = $QueryTimeout
-                ErrorAction = "Stop"
-            }
-
-            if ($containsSQLServerV22Parameters)
-            {
-                if ($PSBoundParameters.ContainsKey("Encrypt"))
-                {
-                    $parameters.add("Encrypt", $Encrypt)
-                }
-    
-                if ($TrustServerCertificate)
-                {
-                    $parameters.add("TrustServerCertificate", $true)
-                }
-    
-                if ($PSBoundParameters.ContainsKey("HostNameInCertificate"))
-                {
-                    $parameters.add("HostNameInCertificate", $HostNameInCertificate)
-                }
-            }
-
-            if ($supportSQLServerV22Parameters)
-            {
-                SQLServer\Invoke-Sqlcmd @parameters
-            }
-            else
-            {
-                Invoke-Sqlcmd @parameters
-            }
+            Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLscript -QueryTimeout $QueryTimeout -ErrorAction Stop
         }
         catch
         {

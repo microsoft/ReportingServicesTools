@@ -38,20 +38,6 @@ function Set-RsDatabase
         .PARAMETER DatabaseServerName
             Specify the database server name. (e.g. localhost, MyMachine\Sql2016, etc.)
 
-        .PARAMETER Encrypt
-            Specify the encryption type to use when connecting to SQL Server.
-            Accepted values: Mandatory, Optional, Strict.
-            IMPORTANT: If supported by the Invoke-Sqlcmd cmdlet version in use, but not specified, the default value is Mandatory.
-            Using this parameter requires PowerShell SQLServer module version 22 or higher.
-
-        .PARAMETER TrustServerCertificate
-            Specify this switch to bypass the server certificate validation.
-            Using this parameter requires PowerShell SQLServer module version 22 or higher.
-
-        .PARAMETER HostNameInCertificate
-            Specify the host name to be used in validating the SQL Server TLS/SSL certificate.
-            Using this parameter requires PowerShell SQLServer module version 22 or higher.
-
         .PARAMETER IsRemoteDatabaseServer
             Specify this switch if the database server is on a different machine than the machine Reporting Services is running on.
 
@@ -100,16 +86,6 @@ function Set-RsDatabase
         [string]
         $DatabaseServerName,
 
-        [ValidateSet("Mandatory", "Optional", "Strict")]
-        [string]
-        $Encrypt,
-
-        [switch]
-        $TrustServerCertificate,
-
-        [string]
-        $HostNameInCertificate,
-
         [switch]
         $IsRemoteDatabaseServer,
 
@@ -157,14 +133,6 @@ function Set-RsDatabase
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
 
-        $supportSQLServerV22Parameters = (Get-InstalledModule -Name "SQLServer" -MinimumVersion 22.0 -ErrorAction SilentlyContinue) -ne $null
-        $containsSQLServerV22Parameters = $PSBoundParameters.ContainsKey("Encrypt") -or $TrustServerCertificate -or $PSBoundParameters.ContainsKey("HostNameInCertificate")
-
-        if ($containsSQLServerV22Parameters -and -not $supportSQLServerV22Parameters)
-        {
-            throw "The current version of Invoke-Sqlcmd cmdlet used in this script doesn't support -Encrypt, -TrustServerCertificate and -HostNameInCertificate parameters. Consider installing SQLServer module version 22 or higher and restarting PowerShell to use the script with these parameters."
-        }
-
         #region Validating authentication and normalizing credentials
         $username = ''
         $password = $null
@@ -210,37 +178,6 @@ function Set-RsDatabase
         }
         #endregion Validating admin authentication and normalizing credentials
 
-        #region Composing general parameters for Invoke-Sqlcmd cmdlet
-        $generalParameters = @{
-            ServerInstance = $DatabaseServerName
-            QueryTimeout = $QueryTimeout
-            ErrorAction = "Stop"
-        }
-
-        if ($isSQLAdminAccount)
-        {
-            $generalParameters.add("Username", $adminUsername)
-            $generalParameters.add("Password", $adminPassword)
-        }
-
-        if ($containsSQLServerV22Parameters)
-        {
-            if ($PSBoundParameters.ContainsKey("Encrypt"))
-            {
-                $generalParameters.add("Encrypt", $Encrypt)
-            }
-
-            if ($TrustServerCertificate)
-            {
-                $generalParameters.add("TrustServerCertificate", $true)
-            }
-
-            if ($PSBoundParameters.ContainsKey("HostNameInCertificate"))
-            {
-                $generalParameters.add("HostNameInCertificate", $HostNameInCertificate)
-            }
-        }
-        #endregion Composing general parameters for Invoke-Sqlcmd cmdlet
 
         #region Create Database if necessary
         if (-not $IsExistingDatabase)
@@ -265,13 +202,13 @@ function Set-RsDatabase
             Write-Verbose "Executing database creation script..."
             try
             {
-                if ($supportSQLServerV22Parameters)
+                if ($isSQLAdminAccount)
                 {
-                    SQLServer\Invoke-Sqlcmd @generalParameters -Query $SQLScript
+                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop -Username $adminUsername -Password $adminPassword
                 }
                 else
                 {
-                    Invoke-Sqlcmd @generalParameters -Query $SQLScript
+                    Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop
                 }
             }
             catch
@@ -303,13 +240,13 @@ function Set-RsDatabase
         Write-Verbose "Executing database rights script..."
         try
         {
-            if ($supportSQLServerV22Parameters)
+            if ($isSQLAdminAccount)
             {
-                SQLServer\Invoke-Sqlcmd @generalParameters -Query $SQLScript
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop -Username $adminUsername -Password $adminPassword
             }
             else
             {
-                Invoke-Sqlcmd @generalParameters -Query $SQLScript
+                Invoke-Sqlcmd -ServerInstance $DatabaseServerName -Query $SQLScript -QueryTimeout $QueryTimeout -ErrorAction Stop
             }
         }
         catch
