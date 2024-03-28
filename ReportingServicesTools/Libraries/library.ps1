@@ -112,9 +112,14 @@ namespace Microsoft.ReportingServicesTools
         SQLServer2017 = 14,
 
         /// <summary>
+        /// SQL Server 2019
+        /// </summary>
+        SQLServer2017 = 15,
+
+        /// <summary>
         /// SQL Server vNext
         /// </summary>
-        SQLServervNext = 15
+        SQLServervNext = 16
     }
 }
 "@
