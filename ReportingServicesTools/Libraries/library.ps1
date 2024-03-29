@@ -119,12 +119,7 @@ namespace Microsoft.ReportingServicesTools
         /// <summary>
         /// SQL Server 2022
         /// </summary>
-        SQLServer2022 = 16,
-
-        /// <summary>
-        /// SQL Server vNext
-        /// </summary>
-        SQLServervNext = 17
+        SQLServer2022 = 16
     }
 }
 "@
