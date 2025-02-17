@@ -6,7 +6,9 @@ SQL Server Reporting Services PowerShell utilities
 
 This project contains PowerShell scripts that allow you to perform various operations with SQL Server Reporting Services and Power BI Report Server. In order to use the scripts included in this project successfully, please download/clone the entire project as there are dependencies between the scripts.
 
-All of our scripts were written with the assumption that you will be executing them against SQL Server 2016 Reporting Services default instance (i.e. mssqlserver). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the name and/or version of your SQL Server Reporting Services or Power BI Report Server instance name. Sometimes the version of your SQL Server instance is also required. If you do not provide one, we will assume that you want to execute this against the default instance.
+All of our scripts were written with the assumption that you will be executing them against Power BI Report Server (PBIRS). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the SQL Server Reporting Services (SSRS) version instead of PBIRS. Sometimes the instance name is also required. If you do not provide one, we will assume that you want to execute this against the default instance.
+
+Note: SSRS 2017 and later, as well as PBIRS do no support instance names.
 
 ## PowerShell Version
 Please ensure you're running PowerShell version 3.0+
@@ -114,6 +116,8 @@ Some of the commands listed above allow you to optionally specify the version of
 |SQL Server 2016|13|
 |SQL Server 2017|14|
 |SQL Server 2019|15|
+|SQL Server 2022|16|
+|Power BI Report Server|15|
 
 ## Motivation
 
