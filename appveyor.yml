@@ -67,7 +67,7 @@ before_test:
 
     Import-Module .\ReportingServicesTools\ReportingServicesTools.psd1 
     Write-Host "Configuring PBI RS" (Get-Date).DateTime
-    Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount
+    Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount -Confirm:$false
     Write-Host "Setting URL Reservation" (Get-Date).DateTime
     Set-PbiRsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer
     Write-Host "Initializing RS" (Get-Date).DateTime
