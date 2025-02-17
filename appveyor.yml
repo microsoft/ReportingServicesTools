@@ -29,7 +29,7 @@ before_test:
     [Environment]::SetEnvironmentVariable("RsUser", "$($env:ComputerName)\rsuser1")
     $url = "$($env:downloadUrl)/SQLServer2017-x64-ENU.exe"
     $urlBox = "$($env:downloadUrl)/SQLServer2017-x64-ENU.box"
-    $pbiRsUrl = "$($env:pbirsDownloadUrl)/PowerBIReportServer.exe"
+    $pbiRsUrl = "https://aka.ms/pbireportserverexe"
     #arguments sqlserver needs for the installation 
     $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`" /SECURITYMODE=SQL /SAPWD=`"$($env:SqlSaPwd)`""
     $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2017"
