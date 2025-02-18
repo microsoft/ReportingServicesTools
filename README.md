@@ -8,7 +8,7 @@ This project contains PowerShell scripts that allow you to perform various opera
 
 All of our scripts were written with the assumption that you will be executing them against Power BI Report Server (PBIRS). However, we understand this may not be the case for you. So for each script, you will see that we have provided a way for you to specify the SQL Server Reporting Services (SSRS) version instead of PBIRS. Sometimes the instance name is also required. If you do not provide one, we will assume that you want to execute this against the default instance.
 
-Note: SSRS 2017 and later, as well as PBIRS do no support instance names.
+Note: SSRS 2017 and later, as well as PBIRS do not support changing the instance names from 'SSRS' and 'PBIRS' respectively.
 
 ## PowerShell Version
 Please ensure you're running PowerShell version 3.0+

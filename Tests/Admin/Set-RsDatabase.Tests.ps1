@@ -52,7 +52,7 @@ Describe "Set-RsDatabase" {
         $databaseName = 'ReportServer'
         $credentialType = 'SQL'
         $credential = Get-SaCredentials
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2022
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -DatabaseCredential $credential -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
@@ -64,7 +64,7 @@ Describe "Set-RsDatabase" {
         $databaseServerName = 'localhost'
         $databaseName = 'ReportServer'
         $credentialType = 'ServiceAccount'
-        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion SQLServer2022
+        Set-RsDatabase -DatabaseServerName $databaseServerName -DatabaseName $databaseName -DatabaseCredentialType $credentialType -IsExistingDatabase -Confirm:$false -Verbose -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer
         
         It "Should update database and credentials" {
             Get-DatabaseName | Should be $databaseName
