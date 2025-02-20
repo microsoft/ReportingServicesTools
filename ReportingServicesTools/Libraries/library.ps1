@@ -16,12 +16,12 @@ namespace Microsoft.ReportingServicesTools
         /// <summary>
         /// The name of the Database instance of the Report Server
         /// </summary>
-        public static string Instance = "MSSQLSERVER";
+        public static string Instance = "PBIRS";
 
         /// <summary>
         /// The version of the Report Server
         /// </summary>
-        public static SqlServerVersion Version = SqlServerVersion.SQLServer2016;
+        public static SqlServerVersion Version = SqlServerVersion.PowerBIReportServer;
 
         /// <summary>
         /// The credentials to use when connecting to the reporting services.
@@ -119,10 +119,15 @@ namespace Microsoft.ReportingServicesTools
         /// <summary>
         /// SQL Server 2022
         /// </summary>
-        SQLServer2022 = 16
+        SQLServer2022 = 16,
+
+        /// <summary>
+        /// Power BI Report Server
+        /// </summary>
+        PowerBIReportServer = 15
     }
 }
 "@
 
 Try { Add-Type -TypeDefinition $source -ErrorAction Stop }
-catch { }
+catch { Write-Error "Error: $_" }

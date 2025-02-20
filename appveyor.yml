@@ -29,7 +29,7 @@ before_test:
     [Environment]::SetEnvironmentVariable("RsUser", "$($env:ComputerName)\rsuser1")
     $url = "$($env:downloadUrl)/SQLServer2017-x64-ENU.exe"
     $urlBox = "$($env:downloadUrl)/SQLServer2017-x64-ENU.box"
-    $pbiRsUrl = "$($env:pbirsDownloadUrl)/PowerBIReportServer.exe"
+    $pbiRsUrl = "https://aka.ms/pbireportserverexe"
     #arguments sqlserver needs for the installation 
     $silentArgs = "/IACCEPTSQLSERVERLICENSETERMS /Q /ACTION=install /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /FEATURES=SQLEngine /SQLSYSADMINACCOUNTS=`"BUILTIN\Administrators`" /SECURITYMODE=SQL /SAPWD=`"$($env:SqlSaPwd)`""
     $tempDir = Join-Path (Get-Item $env:TEMP).FullName "sql2017"
@@ -67,12 +67,17 @@ before_test:
 
     Import-Module .\ReportingServicesTools\ReportingServicesTools.psd1 
     Write-Host "Configuring PBI RS" (Get-Date).DateTime
-    Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion SQLServer2019 -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount -Confirm:$false
-    Set-PbiRsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion SQLServer2019
-    try {Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion SQLServer2019} catch {}
+    Set-RsDatabase -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer -DatabaseServerName localhost -DatabaseName ReportServer -DatabaseCredentialType ServiceAccount -Confirm:$false
+    Write-Host "Setting URL Reservation" (Get-Date).DateTime
+    Set-PbiRsUrlReservation -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer
+    Write-Host "Initializing RS" (Get-Date).DateTime
+    try {Initialize-Rs -ReportServerInstance PBIRS -ReportServerVersion PowerBIReportServer} catch {}
+    Write-Host "Restarting Services" (Get-Date).DateTime
     Stop-Service PowerBIReportServer
     Start-Service PowerBIReportServer
     Start-Service SQLSERVERAGENT
+    # Wait for a while to avoid error (503) Server Unavailable after service is restarted
+    Start-Sleep -Seconds 60
     Write-Host "Configuration completed" (Get-Date).DateTime
     
 test_script:
