@@ -76,6 +76,7 @@ before_test:
     Stop-Service PowerBIReportServer
     Start-Service PowerBIReportServer
     Start-Service SQLSERVERAGENT
+    Start-Sleep -Seconds 60
     Write-Host "Configuration completed" (Get-Date).DateTime
     
 test_script:
