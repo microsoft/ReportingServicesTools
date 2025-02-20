@@ -76,6 +76,7 @@ before_test:
     Stop-Service PowerBIReportServer
     Start-Service PowerBIReportServer
     Start-Service SQLSERVERAGENT
+    # Wait for a while to avoid error (503) Server Unavailable after service is restarted
     Start-Sleep -Seconds 60
     Write-Host "Configuration completed" (Get-Date).DateTime
     
