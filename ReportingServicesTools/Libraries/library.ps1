@@ -119,7 +119,7 @@ namespace Microsoft.ReportingServicesTools
         /// <summary>
         /// SQL Server 2022
         /// </summary>
-        SQLServer2022 = 16
+        SQLServer2022 = 16,
 
         /// <summary>
         /// Power BI Report Server
@@ -130,4 +130,4 @@ namespace Microsoft.ReportingServicesTools
 "@
 
 Try { Add-Type -TypeDefinition $source -ErrorAction Stop }
-catch { }
+catch { Write-Error "Error: $_" }
