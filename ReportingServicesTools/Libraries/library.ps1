@@ -130,4 +130,4 @@ namespace Microsoft.ReportingServicesTools
 "@
 
 Try { Add-Type -TypeDefinition $source -ErrorAction Stop }
-catch { }
+catch { Write-Error "Error: $_" }
