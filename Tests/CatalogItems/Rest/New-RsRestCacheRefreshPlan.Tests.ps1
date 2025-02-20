@@ -68,7 +68,7 @@ Describe "New-RsRestCacheRefreshPlan" {
             } -Verbose
             
             $plan = Get-RsCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-            $plan[0].Schedule.Definition.StartDateTime | Should Be @('2021-01-07T06:00:00-00:00')
+            $plan[0].Schedule.Definition.StartDateTime | Should Be @('2021-01-07T06:00:00Z')
         }
     }
 }
