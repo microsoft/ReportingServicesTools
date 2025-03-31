@@ -20,6 +20,9 @@ function Set-RsEmailSettings
         .PARAMETER SmtpServer
             Specify the SMTP Server address.
         
+        .PARAMETER SMTPUseSSL
+            Specify the the use of SSL.
+        
         .PARAMETER SenderAddress
             Specify sender email address for the email.
         
@@ -85,6 +88,10 @@ function Set-RsEmailSettings
         [string]
         $SmtpServer,
         
+        [Parameter(Mandatory = $False)]
+        [bool]
+        $SMTPUseSSL = $true,
+
         [Parameter(Mandatory = $True)]
         [string]
         $SenderAddress,
@@ -148,7 +155,7 @@ function Set-RsEmailSettings
     
     try
     {
-        $result = $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $UserName, $Password, $Authentication.Value__, $true)
+        $result = $rsWmiObject.SetAuthenticatedEmailConfiguration($true, $SmtpServer, $SenderAddress, $UserName, $Password, $Authentication.Value__, $SMTPUseSSL)
     }
     catch
     {
