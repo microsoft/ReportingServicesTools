@@ -135,15 +135,15 @@ function Out-RsRestCatalogItemId
 
         try
         {
-            Write-Verbose "Downloading item content from server..."
+            Write-Verbose "Downloading item content from server and writing to $destinationFilePath......"
             $url = [string]::Format($catalogItemContentApi, $itemId)
             if ($Credential -ne $null)
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -UseBasicParsing -Verbose:$false
+                $response = Invoke-WebRequest -Uri $url -Method Get -Credential $Credential -UseBasicParsing -Verbose:$false -OutFile $destinationFilePath
             }
             else
             {
-                $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -UseBasicParsing -Verbose:$false
+                $response = Invoke-WebRequest -Uri $url -Method Get -UseDefaultCredentials -UseBasicParsing -Verbose:$false -OutFile $destinationFilePath
             }
         }
         catch
@@ -151,8 +151,6 @@ function Out-RsRestCatalogItemId
             throw (New-Object System.Exception("Error while downloading $($RsItemInfo.Name)! Exception: $($_.Exception.Message)", $_.Exception))
         }
 
-        Write-Verbose "Writing content to $destinationFilePath..."
-        [System.IO.File]::WriteAllBytes($destinationFilePath, $response.Content)
         Write-Verbose "$($RsItemInfo.Path) was downloaded to $destinationFilePath successfully!"
     }
 }
