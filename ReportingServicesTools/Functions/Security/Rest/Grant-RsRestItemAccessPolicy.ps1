@@ -17,7 +17,7 @@ function Grant-RsRestItemAccessPolicy
             Specify the user or group name to grant access to.
 
         .PARAMETER Role
-            Specify the name of the role you want to grant on the catalog item.
+            Specify the name of the role or an array with the roles you want to grant on the catalog item
 
         .PARAMETER ReportPortalUri
             Specify the Report Portal URL to your SQL Server Reporting Services  or Power BI Report Server Instance.
@@ -54,6 +54,13 @@ function Grant-RsRestItemAccessPolicy
             Description
             -----------
             This command will grant Browser access to members of the 'Report_Developers' domain group to catalog items found under the '/Finance' folder.  It will do this by establishing a connection to the Report Server located at https://UATPBIRS/reports using current user's credentials. 
+
+        .EXAMPLE
+            Grant-RsRestItemAccessPolicy -Identity 'CONTOSO\Report_Developers' -Role @('Browser','Content Manager') -RsItem '/Finance' -ReportPortalUri https://UATPBIRS/reports
+            Description
+            -----------
+            This command will grant Browser and Content Manager access to members of the 'Report_Developers' domain group to catalog items found under the '/Finance' folder.  It will do this by establishing a connection to the Report Server located at https://UATPBIRS/reports using current user's credentials. 
+
     #>
 
     [CmdletBinding()]
@@ -70,7 +77,7 @@ function Grant-RsRestItemAccessPolicy
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true)]
         [Alias('RoleName')]
         [ValidateSet("Browser","Content Manager","My Reports","Publisher","Report Builder")]
-        [string]
+        [string[]]
         $Role,
 
         [string]
@@ -138,13 +145,20 @@ function Grant-RsRestItemAccessPolicy
                 }
             }
             
-            $o=[PSCustomObject]@{
-                GroupUserName=$Identity
-                Roles=@([PSCustomObject]@{
-                    Name=$Role
-                    Description=''
-                })
-            }
+			#removing identity from privilege array if found as we set new privileges below
+			if( $response.Policies.GroupUserName -contains $Identity ) {
+				Write-Verbose "Identity already exists, removing all privileges...";
+				$Policies = $response.Policies | ? { $_.GroupUserName -ne $Identity }
+				$response.Policies = $Policies;
+			} else {
+				Write-Verbose "Identity does not exist yet...";
+			}			
+
+			Write-Verbose "Creating Privileges Object for Identity...";
+			$o = [PSCustomObject]@{GroupUserName=$Identity;Roles=@()};
+			foreach($arole in $Role) {
+				$o.Roles += @{Name=$arole;Description=''}
+			}
             
             $response.Policies=$response.Policies+$o
             $response.InheritParentPolicy=$false
