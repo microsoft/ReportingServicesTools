@@ -39,18 +39,36 @@ function Set-RsDatabase
             Specify the database server name. (e.g. localhost, MyMachine\Sql2016, etc.)
 
         .PARAMETER Encrypt
-            Specify the encryption type to use when connecting to SQL Server.
+            Specify the encryption type for the setup connection made by Invoke-Sqlcmd, not the report server runtime connection.
             Accepted values: Mandatory, Optional, Strict.
             IMPORTANT: If supported by the Invoke-Sqlcmd cmdlet version in use, but not specified, the default value is Mandatory.
             Using this parameter requires PowerShell SQLServer module version 22 or higher.
 
         .PARAMETER TrustServerCertificate
-            Specify this switch to bypass the server certificate validation.
+            Specify this switch to bypass certificate validation for the setup connection made by Invoke-Sqlcmd only.
+            This does not configure TrustServerCertificate on the report server runtime connection.
             Using this parameter requires PowerShell SQLServer module version 22 or higher.
 
         .PARAMETER HostNameInCertificate
-            Specify the host name to be used in validating the SQL Server TLS/SSL certificate.
+            Specify the host name for certificate validation on the setup connection made by Invoke-Sqlcmd only.
             Using this parameter requires PowerShell SQLServer module version 22 or higher.
+
+        .PARAMETER DatabaseEncryptMode
+            Specify encryption for the report server runtime catalog connection: Optional, Mandatory, or Strict.
+            Requires a WMI provider with Encrypt support; Strict also requires EncryptMode support.
+            Omit this parameter to retain the existing cmdlet behavior.
+
+        .PARAMETER DatabaseMultiSubnetFailover
+            Enable MultiSubnetFailover for the report server runtime catalog connection.
+            Use -DatabaseMultiSubnetFailover:$false to disable it. Omit it to leave the stored value unchanged.
+            Requires a WMI provider with MultiSubnetFailover support.
+
+        .PARAMETER DatabaseTrustServerCertificate
+            Set TrustServerCertificate for the report server runtime catalog connection.
+            Specify $true to trust the server certificate or $false to clear the setting.
+            Omit it to preserve the stored setting. Requires a WMI provider with TrustServerCertificate support.
+            Use $true only when you accept bypassing server certificate validation.
+            With Encrypt=Strict, the SQL client ignores TrustServerCertificate.
 
         .PARAMETER IsRemoteDatabaseServer
             Specify this switch if the database server is on a different machine than the machine Reporting Services is running on.
@@ -79,7 +97,8 @@ function Set-RsDatabase
             Note: This parameter will be ignored whenever AdminDatabaseCredentialType is set to Service Account!
 
         .PARAMETER QueryTimeout
-            Specify how many seconds the query will be running before exit by timeout. Default value is 30.
+            Specify the setup SQL query timeout in seconds. Default value is 30.
+            This does not change the report server runtime database query timeout.
 
         .EXAMPLE
             Set-RsDatabase -DatabaseServerName localhost -Name ReportServer -DatabaseCredentialType ServiceAccount
@@ -92,6 +111,19 @@ function Set-RsDatabase
             Description
             -----------
             This command will configure Reporting Services to connect to an existing RS database (ExistingReportServer) using Windows credentials ($myCredentials).
+
+        .EXAMPLE
+            Set-RsDatabase -DatabaseServerName SqlListener -Name ReportServer -IsExistingDatabase -DatabaseCredentialType ServiceAccount -Encrypt Mandatory -TrustServerCertificate -DatabaseEncryptMode Mandatory -DatabaseMultiSubnetFailover
+            Description
+            -----------
+            This command uses certificate trust for setup only and configures runtime encryption and multi-subnet failover.
+            It preserves the existing runtime certificate-trust setting.
+
+        .EXAMPLE
+            Set-RsDatabase -DatabaseServerName SqlListener -Name ReportServer -IsExistingDatabase -DatabaseCredentialType ServiceAccount -DatabaseTrustServerCertificate $true
+            Description
+            -----------
+            This command enables certificate trust for the report server runtime connection.
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
@@ -150,12 +182,23 @@ function Set-RsDatabase
         $Credential,
 
         [int]
-        $QueryTimeout = 30
+        $QueryTimeout = 30,
+
+        [ValidateSet("Mandatory", "Optional", "Strict")]
+        [string]
+        $DatabaseEncryptMode,
+
+        [switch]
+        $DatabaseMultiSubnetFailover,
+
+        [bool]
+        $DatabaseTrustServerCertificate
     )
 
     if ($PSCmdlet.ShouldProcess((Get-ShouldProcessTargetWmi -BoundParameters $PSBoundParameters), "Configure to use $DatabaseServerName as database, using $DatabaseCredentialType runtime authentication and $AdminDatabaseCredentialType setup authentication"))
     {
         $rsWmiObject = New-RsConfigurationSettingObjectHelper -BoundParameters $PSBoundParameters
+        $databaseConnectionParameters = Get-RsDatabaseConnectionParameters -WmiObject $rsWmiObject -BoundParameters $PSBoundParameters
 
         $supportSQLServerV22Parameters = (Get-InstalledModule -Name "SQLServer" -MinimumVersion 22.0 -ErrorAction SilentlyContinue) -ne $null
         $containsSQLServerV22Parameters = $PSBoundParameters.ContainsKey("Encrypt") -or $TrustServerCertificate -or $PSBoundParameters.ContainsKey("HostNameInCertificate")
@@ -323,7 +366,19 @@ function Set-RsDatabase
         #region Update Reporting Services database configuration
         # Step 5 - Update Reporting Services to connect to new database now
         Write-Verbose "Updating Reporting Services to connect to new database..."
-        $result = $rsWmiObject.SetDatabaseConnection($DatabaseServerName, $Name, $DatabaseCredentialType.Value__, $username, $password)
+        if ($null -eq $databaseConnectionParameters)
+        {
+            $result = $rsWmiObject.SetDatabaseConnection($DatabaseServerName, $Name, $DatabaseCredentialType.Value__, $username, $password)
+        }
+        else
+        {
+            $databaseConnectionParameters['Server'] = $DatabaseServerName
+            $databaseConnectionParameters['DatabaseName'] = $Name
+            $databaseConnectionParameters['CredentialsType'] = $DatabaseCredentialType.Value__
+            $databaseConnectionParameters['UserName'] = $username
+            $databaseConnectionParameters['Password'] = $password
+            $result = $rsWmiObject.InvokeMethod('SetDatabaseConnection', $databaseConnectionParameters, $null)
+        }
         if ($result.HRESULT -ne 0)
         {
             Write-Verbose "Updating Reporting Services to connect to new database... Failed!"
