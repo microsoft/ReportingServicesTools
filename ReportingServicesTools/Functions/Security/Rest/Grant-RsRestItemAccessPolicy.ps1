@@ -149,7 +149,10 @@ function Grant-RsRestItemAccessPolicy
             $response.Policies=$response.Policies+$o
             $response.InheritParentPolicy=$false
 
-            $payloadJson = $response | ConvertTo-Json -Depth 15
+            $payloadJson = @{
+                InheritParentPolicy = $false
+                Policies = @($response.Policies)
+            } | ConvertTo-Json -Depth 15
             Write-Verbose "$payloadJson"
             if ($Credential -ne $null)
             {
