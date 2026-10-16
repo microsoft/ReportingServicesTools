@@ -14,6 +14,7 @@ function Copy-RsSubscription
 
         .PARAMETER RsItem
             Specify the path to the destination report. Can't be used with -RsFolder parameter.
+            Every input subscription is copied to this same report.
 
         .PARAMETER RsFolder
             Specify the folder where the destination reports exists. Can't be used with -RsItem parameter.
@@ -127,37 +128,43 @@ function Copy-RsSubscription
         {
             foreach ($sub in $Subscription)
             {
-                if ($RsFolder)
+                if ($PSCmdlet.ParameterSetName -eq 'Folder')
                 {
-                    $RsItem = "$RsFolder/$($sub.Report)"
+                    $destinationFolder = $RsFolder
+                    $destinationItem = "$($RsFolder.TrimEnd('/'))/$($sub.Report)"
                 }
                 else 
                 {
-                    $RsFolder = (Split-Path $RsItem -Parent).Replace("\", "/")
+                    $destinationItem = $RsItem
+                    $destinationFolder = $RsItem.Substring(0, $RsItem.LastIndexOf('/'))
+                    if ([string]::IsNullOrEmpty($destinationFolder))
+                    {
+                        $destinationFolder = '/'
+                    }
                 }
 
                 Write-Verbose "Validating if target report exists..."
-                if (((Get-RsFolderContent -Proxy $Proxy -RsFolder $RsFolder | Where-Object Path -eq $RsItem).Count) -eq 0)
+                if (((Get-RsFolderContent -Proxy $Proxy -RsFolder $destinationFolder | Where-Object Path -eq $destinationItem).Count) -eq 0)
                 {
-                    Write-Warning "Can't find the report $RsItem. Skipping."
+                    Write-Warning "Can't find the report $destinationItem. Skipping."
                     Continue
                 }
 
-                if ($PSCmdlet.ShouldProcess($RsItem, "Creating new subscription"))
+                if ($PSCmdlet.ShouldProcess($destinationItem, "Creating new subscription"))
                 {
                     Write-Verbose "Creating Subscription..."
                     if ($sub.IsDataDriven)
                     {
-                        $subscriptionId = $Proxy.CreateDataDrivenSubscription($RsItem, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                        $subscriptionId = $Proxy.CreateDataDrivenSubscription($destinationItem, $sub.DeliverySettings, $sub.DataRetrievalPlan, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                     }
                     else
                     {
-                        $subscriptionId = $Proxy.CreateSubscription($RsItem, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
+                        $subscriptionId = $Proxy.CreateSubscription($destinationItem, $sub.DeliverySettings, $sub.Description, $sub.EventType, $sub.MatchData, $sub.Values)
                     }
 
                     [pscustomobject]@{
                         NewSubscriptionId = $subscriptionId
-                        DestinationReport = $RsItem
+                        DestinationReport = $destinationItem
                         OriginalReport    = $sub.Path
                     }
                     Write-Verbose "Subscription created successfully! Generated subscriptionId: $subscriptionId"

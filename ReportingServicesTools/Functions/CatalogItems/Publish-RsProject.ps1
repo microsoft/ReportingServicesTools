@@ -10,6 +10,14 @@ function Publish-RsProject
         .PARAMETER ProjectFolder
             Specify the location of the SSRS project file whose deployment profiles should be fetched.
 
+        .PARAMETER OverwriteDatasets
+            Replace existing shared datasets when True. When False, leave existing datasets and their references unchanged.
+            Accepts True or False from project configuration. Defaults to True for compatibility.
+
+        .PARAMETER OverwriteDataSources
+            Replace existing shared data sources when True. When False, leave existing data sources unchanged.
+            Accepts True or False from project configuration. Defaults to False for compatibility.
+
         .EXAMPLE
             Get-RsDeploymentConfig -RsProjectFile 'C:\Users\Aaron\source\repos\Finance\Financial Reports\SSRS_FR\SSRS_FR.rptproj' |
             Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/PBIRSportal/' |
@@ -64,10 +72,12 @@ function Publish-RsProject
         [string]$TargetReportPartFolder,
         
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
-        [string]$OverwriteDatasets,
+        [ValidateSet('True', 'False')]
+        [string]$OverwriteDatasets = 'True',
         
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
-        [string]$OverwriteDataSources,
+        [ValidateSet('True', 'False')]
+        [string]$OverwriteDataSources = 'False',
         
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [string]$FullPath,
@@ -75,6 +85,38 @@ function Publish-RsProject
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string]$ReportPortal
         )
+
+    if (-not $PSCmdlet.ShouldProcess($ReportPortal, "Deploy project from $RsProjectFolder"))
+    {
+        return
+    }
+
+    function Test-DeploymentItemExists
+    {
+        param ([string]$ItemPath)
+
+        try
+        {
+            $null = Get-RsRestItem -ReportPortalUri $ReportPortal -RsItem $ItemPath -ErrorAction Stop
+            return $true
+        }
+        catch
+        {
+            $exception = $_.Exception
+            while ($null -ne $exception)
+            {
+                if ($null -ne $exception.Response -and $exception.Response.StatusCode -eq 404)
+                {
+                    return $false
+                }
+                $exception = $exception.InnerException
+            }
+            throw
+        }
+    }
+
+    $replaceDatasets = $OverwriteDatasets -eq 'True'
+    $replaceDataSources = $OverwriteDataSources -eq 'True'
 
     Write-Host "`$RsProjectFolder = '$RsProjectFolder' being used is
     This deployment is going to happen using the following settings...
@@ -103,12 +145,19 @@ function Publish-RsProject
     "
     foreach($RDS in dir -Path $RsProjectFolder -Filter *.rds)
     {
-        try{ Write-Verbose "Checking for $TargetDatasourceFolder/$($_.BaseName)"
-            Get-RsRestItem -ReportPortalUri $ReportPortal -RsItem "$TargetDatasourceFolder/$($RDS.BaseName)" | ft -AutoSize
+        [xml]$sourceDefinition = Get-Content -LiteralPath $RDS.FullName -ErrorAction Stop
+        $sourceName = [string]$sourceDefinition.RptDataSource.Name
+        if ([string]::IsNullOrEmpty($sourceName))
+        {
+            throw "Data source name not found in '$($RDS.FullName)'."
         }
-        catch{ Write-Verbose 'Did not find Data Source'
-            Write-RsRestCatalogItem -Path "$RsProjectFolder\$($RDS.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasourceFolder
+        $sourcePath = "$($TargetDatasourceFolder.TrimEnd('/'))/$sourceName"
+        if (-not $replaceDataSources -and (Test-DeploymentItemExists -ItemPath $sourcePath))
+        {
+            Write-Verbose "Leaving existing data source $sourcePath unchanged."
+            continue
         }
+        Write-RsRestCatalogItem -Path "$RsProjectFolder\$($RDS.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasourceFolder -Overwrite:$replaceDataSources -ErrorAction Stop
     }
 
     <# Deploy Data Sets & set their Data Source References. #>
@@ -117,6 +166,13 @@ function Publish-RsProject
     "
     dir -Path $RsProjectFolder  -Filter *.rsd | 
     foreach{
+        $datasetPath = "$($TargetDatasetFolder.TrimEnd('/'))/$($_.BaseName)"
+        if (-not $replaceDatasets -and (Test-DeploymentItemExists -ItemPath $datasetPath))
+        {
+            Write-Verbose "Leaving existing dataset $datasetPath unchanged."
+            return
+        }
+
         [XML]$dsetref = Get-Content "$RsProjectFolder\$($_.Name)"
         $DataSetQuery = $dsetref.SharedDataSet.DataSet.Query
 
@@ -127,8 +183,8 @@ function Publish-RsProject
             DataSetParameters   = $dsetref.SharedDataSet.DataSet.Query.DataSetParameters
         }
 
-        Write-RsRestCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder -Overwrite
-        Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path "$TargetDatasetFolder/$($_.BaseName)" -DataSourceName DataSetDataSource -DataSourcePath "$($TargetDatasourceFolder)/$($DSetConfig.DataSourceReference)"
+        Write-RsRestCatalogItem -Path "$RsProjectFolder\$($_.Name)" -ReportPortalUri $ReportPortal -RsFolder $TargetDatasetFolder -Overwrite:$replaceDatasets -ErrorAction Stop
+        Set-RsDataSourceReference -ReportServerUri $TargetServerURL -Path $datasetPath -DataSourceName DataSetDataSource -DataSourcePath "$($TargetDatasourceFolder.TrimEnd('/'))/$($DSetConfig.DataSourceReference)"
     }
 
     <# Deploy the Reports #>
