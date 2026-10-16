@@ -86,7 +86,6 @@ function Get-RsRestItemAccessPolicy
             $Credential = New-Object System.Management.Automation.PSCredential "$($WebSession.Credentials.UserName)@$($WebSession.Credentials.Domain)", $WebSession.Credentials.SecurePassword 
         }
         $ReportPortalUri = Get-RsPortalUriHelper -WebSession $WebSession
-        $PolicyUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})/Policies"
     }
     Process
     {
@@ -103,7 +102,8 @@ function Get-RsRestItemAccessPolicy
             }
 
             Write-Verbose "Fetching Policies for $RsItem..."
-            $PolicyUri = [String]::Format($PolicyUri, $Item.Id)
+            $policyCollection = if ($Item.Type -eq 'Folder') { 'Folders' } else { 'CatalogItems' }
+            $PolicyUri = $ReportPortalUri + "api/$RestApiVersion/$policyCollection($($Item.Id))/Policies"
             if ($Credential -ne $null)
             {
                 $response = Invoke-RestMethod -Uri $PolicyUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
@@ -155,8 +155,8 @@ function Get-RsRestItemAccessPolicy
     
                 foreach($ChildItem in $ChildItems)
                 {
-                    $PolicyUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})/Policies"
-                    $PolicyUri = [String]::Format($PolicyUri, $ChildItem.Id)
+                    $policyCollection = if ($ChildItem.Type -eq 'Folder') { 'Folders' } else { 'CatalogItems' }
+                    $PolicyUri = $ReportPortalUri + "api/$RestApiVersion/$policyCollection($($ChildItem.Id))/Policies"
             
                     if ($Credential -ne $null)
                     {
