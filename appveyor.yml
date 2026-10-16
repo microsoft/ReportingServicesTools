@@ -1,5 +1,7 @@
 # See http://www.appveyor.com/docs/appveyor-yml for many more options
 
+image: Visual Studio 2022
+
 environment:
   galleryPublishingKey:
     secure: 0PgkUpRd+qAfL0WFe5pFmOE/KasEJY19wogMfkRzk1NFqFqfDGLIU+CPbd1ZoR+1  
@@ -15,7 +17,14 @@ skip_commits:
 install:
 - ps: |
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.206 -Force -ErrorAction Stop
+    $PSVersionTable
+    Get-Module -ListAvailable PackageManagement, PowerShellGet | Select-Object Name, Version
+    $nuget = Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue |
+        Where-Object { $_.Version -ge [version]'2.8.5.206' }
+    if (-not $nuget)
+    {
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.206 -Force -ErrorAction Stop
+    }
 - ps: Install-Module -Name PSScriptAnalyzer -Force
 - ps: Install-Module -Name Pester -RequiredVersion 4.10.1
 
