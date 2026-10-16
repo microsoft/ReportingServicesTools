@@ -174,6 +174,31 @@ InModuleScope ReportingServicesTools {
                 $script:methodParameters['EncryptMode'] | Should Be 'Optional'
             }
 
+            It 'Preserves WMI minus-one true when only failover changes on an older provider' {
+                $script:methodParameters.Properties.Remove('EncryptMode')
+                $script:wmi.DatabaseEncrypt = '-1'
+                $script:wmi.DatabaseEncryptMode = $null
+                & $commandName @script:arguments -DatabaseMultiSubnetFailover:$false
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters['MultiSubnetFailover'] | Should Be $false
+            }
+
+            It 'Preserves WMI zero false when only failover changes on an older provider' {
+                $script:methodParameters.Properties.Remove('EncryptMode')
+                $script:wmi.DatabaseEncrypt = '0'
+                $script:wmi.DatabaseEncryptMode = $null
+                & $commandName @script:arguments -DatabaseMultiSubnetFailover
+                $script:methodParameters['Encrypt'] | Should Be $false
+            }
+
+            It 'Preserves WMI minus-one true when only runtime certificate trust changes' {
+                $script:wmi.DatabaseEncrypt = '-1'
+                $script:wmi.DatabaseEncryptMode = 'True'
+                & $commandName @script:arguments -DatabaseTrustServerCertificate $true
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters['EncryptMode'] | Should Be 'True'
+            }
+
             It 'Supports Mandatory on providers with only the boolean Encrypt input' {
                 $script:methodParameters.Properties.Remove('EncryptMode')
                 & $commandName @script:arguments -DatabaseEncryptMode Mandatory

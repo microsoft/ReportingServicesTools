@@ -48,7 +48,7 @@ function Get-RsDatabaseConnectionParameters
     else
     {
         # Changing failover or certificate trust must not reset encryption, including Strict.
-        $parameters['Encrypt'] = @('True', 'Yes', 'Mandatory', 'Strict') -contains [string]$WmiObject.DatabaseEncrypt
+        $parameters['Encrypt'] = @('True', '-1', 'Yes', 'Mandatory', 'Strict') -contains [string]$WmiObject.DatabaseEncrypt
         if ($null -ne $parameters.Properties['EncryptMode'] -and -not [string]::IsNullOrEmpty($WmiObject.DatabaseEncryptMode))
         {
             $parameters['EncryptMode'] = $WmiObject.DatabaseEncryptMode
