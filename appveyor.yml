@@ -13,7 +13,9 @@ skip_commits:
   message: /updated readme.*/
 
 install:
-- ps: Install-PackageProvider -Name NuGet -Force
+- ps: |
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.206 -Force -ErrorAction Stop
 - ps: Install-Module -Name PSScriptAnalyzer -Force
 - ps: Install-Module -Name Pester -RequiredVersion 4.10.1
 
