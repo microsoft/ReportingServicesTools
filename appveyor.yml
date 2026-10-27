@@ -25,8 +25,31 @@ install:
     {
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.206 -Force -ErrorAction Stop
     }
-- ps: Install-Module -Name PSScriptAnalyzer -Force
-- ps: Install-Module -Name Pester -RequiredVersion 4.10.1
+- ps: |
+    # PowerShell Gallery downloads intermittently fail; retry, then stop the build if a module is still missing.
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $modules = @(
+        @{ Name = 'PSScriptAnalyzer'; Force = $true },
+        @{ Name = 'Pester'; RequiredVersion = '4.10.1' }
+    )
+    foreach ($module in $modules)
+    {
+        for ($attempt = 1; ; $attempt++)
+        {
+            try
+            {
+                Install-Module @module -ErrorAction Stop
+                break
+            }
+            catch
+            {
+                if ($attempt -ge 5) { throw }
+                Write-Warning "Install-Module $($module.Name) attempt $attempt failed: $_"
+                Start-Sleep -Seconds (15 * $attempt)
+            }
+        }
+    }
+    Get-Module -ListAvailable PSScriptAnalyzer, Pester | Select-Object Name, Version
 
 build: false
 
