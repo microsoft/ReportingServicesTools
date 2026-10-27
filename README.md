@@ -142,9 +142,9 @@ Set-RsDatabase -DatabaseServerName SqlListener -Name ReportServer `
     -DatabaseTrustServerCertificate $true
 ```
 
-`DatabaseEncryptMode` accepts `Optional`, `Mandatory`, or `Strict`. The connected WMI provider must expose `Encrypt`; `Strict` also requires the `EncryptMode` input. `Optional` and `Mandatory` map to the older boolean `Encrypt` input when `EncryptMode` is unavailable. An unsupported runtime option causes an error before any setup SQL runs.
+`DatabaseEncryptMode` accepts `Optional`, `Mandatory`, `Strict`, `True`, or `False`; `True` equals `Mandatory` and `False` equals `Optional`. The connected WMI provider must expose `Encrypt`; `Strict` also requires the `EncryptMode` input. `Optional` and `Mandatory` map to the older boolean `Encrypt` input when `EncryptMode` is unavailable. An unsupported runtime option causes an error before any setup SQL runs.
 
-`DatabaseMultiSubnetFailover` requires the WMI `MultiSubnetFailover` input. Pass `-DatabaseMultiSubnetFailover:$false` to disable it. Omitting it leaves the stored failover setting unchanged. Changing failover alone preserves the current runtime encryption mode. Omitting all runtime option parameters retains the existing cmdlet behavior and legacy five-argument WMI call; it does not add new defaults.
+`DatabaseMultiSubnetFailover` requires the WMI `MultiSubnetFailover` input. Pass `-DatabaseMultiSubnetFailover:$false` to disable it. Omitting it leaves the stored failover setting unchanged. Changing failover alone preserves the current runtime encryption mode. Omitting all runtime option parameters preserves the stored runtime encryption, failover and certificate-trust settings; it does not add new defaults. Providers without the WMI `Encrypt` input keep the legacy five-argument call.
 
 `DatabaseTrustServerCertificate` accepts `$true` or `$false`: `$true` writes `TrustServerCertificate=True` for the report server runtime connection, and `$false` clears it. Omit the parameter to preserve the stored value. This option requires a WMI provider that exposes the `TrustServerCertificate` input; the cmdlets fail before running setup SQL when the provider does not support it. When `DatabaseEncryptMode` is `Strict`, the SQL client ignores certificate trust.
 
