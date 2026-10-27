@@ -1,5 +1,7 @@
 # See http://www.appveyor.com/docs/appveyor-yml for many more options
 
+image: Visual Studio 2022
+
 environment:
   galleryPublishingKey:
     secure: 0PgkUpRd+qAfL0WFe5pFmOE/KasEJY19wogMfkRzk1NFqFqfDGLIU+CPbd1ZoR+1  
@@ -13,9 +15,41 @@ skip_commits:
   message: /updated readme.*/
 
 install:
-- ps: Install-PackageProvider -Name NuGet -Force
-- ps: Install-Module -Name PSScriptAnalyzer -Force
-- ps: Install-Module -Name Pester -RequiredVersion 4.10.1
+- ps: |
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $PSVersionTable
+    Get-Module -ListAvailable PackageManagement, PowerShellGet | Select-Object Name, Version
+    $nuget = Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue |
+        Where-Object { $_.Version -ge [version]'2.8.5.206' }
+    if (-not $nuget)
+    {
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.206 -Force -ErrorAction Stop
+    }
+- ps: |
+    # PowerShell Gallery downloads intermittently fail; retry, then stop the build if a module is still missing.
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $modules = @(
+        @{ Name = 'PSScriptAnalyzer'; Force = $true },
+        @{ Name = 'Pester'; RequiredVersion = '4.10.1' }
+    )
+    foreach ($module in $modules)
+    {
+        for ($attempt = 1; ; $attempt++)
+        {
+            try
+            {
+                Install-Module @module -ErrorAction Stop
+                break
+            }
+            catch
+            {
+                if ($attempt -ge 5) { throw }
+                Write-Warning "Install-Module $($module.Name) attempt $attempt failed: $_"
+                Start-Sleep -Seconds (15 * $attempt)
+            }
+        }
+    }
+    Get-Module -ListAvailable PSScriptAnalyzer, Pester | Select-Object Name, Version
 
 build: false
 
@@ -123,18 +157,50 @@ test_script:
     Write-Host "Starting execution of Pester Tests"
     # Activate verbose on Powershell
     $VerbosePreference = "continue" 
-    # Executing integration tests
-    $resultsIT = Invoke-Pester -Path ".\Tests" -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru 
-    Write-Host "Completed execution of Pester Tests"
-    # Upload integration tests results
-    $wcIT = New-Object 'System.Net.WebClient'
-    $wcIT.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResultsIT.xml))
-
-    Write-Host "Dumping Server Logs"
-    gci "C:\Program Files\Microsoft Power BI Report Server\PBIRS\LogFiles\*" -Include *.log | Get-Content
-        
-    # Fail if thre are issues on integration tests
-    if($resultsIT.FailedCount -gt 0){throw "Integration Test found $($resultsIT.FailedCount) issues"}
+    # Report each file before the runner's time limit can discard the results.
+    function Get-CiTestFile($Path)
+    {
+        foreach ($directory in (Get-ChildItem -Path $Path -Directory | Sort-Object Name))
+        {
+            Get-CiTestFile -Path $directory.FullName
+        }
+        Get-ChildItem -Path $Path -Filter "*.Tests.ps1" -File | Sort-Object Name
+    }
+    $testFiles = @(Get-CiTestFile -Path ".\Tests")
+    if ($testFiles.Count -eq 0) { throw "No Pester test files found" }
+    $failedCount = 0
+    try
+    {
+        foreach ($testFile in $testFiles)
+        {
+            $testTimer = [System.Diagnostics.Stopwatch]::StartNew()
+            $resultsIT = Invoke-Pester -Path $testFile.FullName -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru -ErrorAction Stop
+            $testTimer.Stop()
+            Write-Host "Pester file $($testFile.FullName) completed in $($testTimer.Elapsed.TotalSeconds) seconds"
+            $wcIT = New-Object 'System.Net.WebClient'
+            try
+            {
+                $wcIT.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResultsIT.xml)) | Out-Null
+            }
+            finally
+            {
+                $wcIT.Dispose()
+            }
+            if ($resultsIT.FailedCount -gt 0 -and $failedCount -eq 0)
+            {
+                Write-Host "Dumping Server Logs after first failing test file: $($testFile.FullName)"
+                Get-ChildItem "C:\Program Files\Microsoft Power BI Report Server\PBIRS\LogFiles\*" -Include *.log -ErrorAction Continue | Get-Content -ErrorAction Continue
+            }
+            $failedCount += $resultsIT.FailedCount
+        }
+        Write-Host "Completed execution of Pester Tests"
+        if ($failedCount -gt 0) { throw "Pester found $failedCount issues" }
+    }
+    finally
+    {
+        Write-Host "Dumping Server Logs"
+        Get-ChildItem "C:\Program Files\Microsoft Power BI Report Server\PBIRS\LogFiles\*" -Include *.log -ErrorAction Continue | Get-Content -ErrorAction Continue
+    }
     
 deploy_script:
 - ps: |

@@ -3,6 +3,7 @@
 
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
+. "$PSScriptRoot\..\..\Common\Wait-RsTestRefreshHistory.ps1"
 
 function VerifyCatalogItemExists()
 {
@@ -61,23 +62,15 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
             $plan | Should Not BeNullOrEmpty
             $plan.LastStatus | Should Not Be 'New Scheduled Refresh Plan'
 
-            $timer= get-date
-            while ((@($someHistory).count -lt 1)) {
-                $someHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-                if(((get-date)-$timer).seconds -ge 15) {
-                    break
-                }
-            }            
+            $someHistory = @(Wait-RsTestRefreshHistory -ExpectedCount 1 -GetHistory {
+                Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            })
             @($someHistory).count | Should be 1
             
             Start-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-            $timer= get-date
-            while ((@($moreHistory).count -lt 2)) {
-                $moreHistory = Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
-                if(((get-date)-$timer).seconds -ge 15) {
-                    break
-                }
-            }
+            $moreHistory = @(Wait-RsTestRefreshHistory -ExpectedCount 2 -GetHistory {
+                Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            })
             @($moreHistory).count | Should be 2
         }
     }
