@@ -123,6 +123,39 @@ Some of the commands listed above allow you to optionally specify the version of
 
 The motivation behind this project was to help users perform SQL Server Reporting Services operations via the command line.
 
+## Report server database connection options
+
+`Set-RsDatabase` and `Set-RsDatabaseCredentials` use two separate SQL connections:
+
+|Parameters|Connection affected|
+|----------|-------------------|
+|`Encrypt`, `TrustServerCertificate`, `HostNameInCertificate`|The setup connection used by `Invoke-Sqlcmd` to create the database or grant access. These parameters require SQLServer module version 22 or later.|
+|`DatabaseEncryptMode`, `DatabaseMultiSubnetFailover`, `DatabaseTrustServerCertificate`|The report server runtime connection to its catalog database, configured through WMI. These parameters do not require SQLServer module version 22.|
+
+For example, configure runtime encryption, certificate trust, and multi-subnet failover independently of setup:
+
+```powershell
+Set-RsDatabase -DatabaseServerName SqlListener -Name ReportServer `
+    -IsExistingDatabase -DatabaseCredentialType ServiceAccount `
+    -Encrypt Mandatory -TrustServerCertificate `
+    -DatabaseEncryptMode Mandatory -DatabaseMultiSubnetFailover `
+    -DatabaseTrustServerCertificate $true
+```
+
+`DatabaseEncryptMode` accepts `Optional`, `Mandatory`, `Strict`, `True`, or `False`; `True` equals `Mandatory` and `False` equals `Optional`. The connected WMI provider must expose `Encrypt`; `Strict` also requires the `EncryptMode` input. `Optional` and `Mandatory` map to the older boolean `Encrypt` input when `EncryptMode` is unavailable. An unsupported runtime option causes an error before any setup SQL runs.
+
+`DatabaseMultiSubnetFailover` requires the WMI `MultiSubnetFailover` input. Pass `-DatabaseMultiSubnetFailover:$false` to disable it. Omitting it leaves the stored failover setting unchanged. Changing failover alone preserves the current runtime encryption mode. Omitting all runtime option parameters preserves the stored runtime encryption, failover and certificate-trust settings; it does not add new defaults. Providers without the WMI `Encrypt` input keep the legacy five-argument call.
+
+`DatabaseTrustServerCertificate` accepts `$true` or `$false`: `$true` writes `TrustServerCertificate=True` for the report server runtime connection, and `$false` clears it. Omit the parameter to preserve the stored value. This option requires a WMI provider that exposes the `TrustServerCertificate` input; the cmdlets fail before running setup SQL when the provider does not support it. When `DatabaseEncryptMode` is `Strict`, the SQL client ignores certificate trust.
+
+**Server-build requirement:** Runtime certificate trust requires a report server build whose `SetDatabaseConnection` WMI method exposes the new optional Boolean `TrustServerCertificate` input. Updating this PowerShell module alone does not add that server API. Older providers reject an explicit `$true` or `$false`; omission continues to work without that input.
+
+**Security:** Enabling runtime certificate trust bypasses SQL Server certificate validation except with Strict encryption. Prefer a valid, trusted certificate matching the SQL Server or listener name; enable trust only when you accept that validation bypass. No new parameter enables certificate trust by default.
+
+**Setup certificate trust:** `-TrustServerCertificate` remains the separate `Invoke-Sqlcmd` setup connection switch. It does not set or clear runtime certificate trust. Use `-DatabaseTrustServerCertificate` for the report server catalog connection.
+
+The WMI provider also supports `SetDatabaseLogonTimeout` and `SetDatabaseQueryTimeout`. These separate runtime settings are not exposed by these cmdlets; their existing `QueryTimeout` parameter controls setup SQL execution only.
+
 ## API Reference
 
 All of the APIs used by this project are publicly available. There are 2 types of APIs used in this repository: SOAP and WMI. You can find more details about the SOAP API at https://msdn.microsoft.com/en-us/library/ms154052.aspx and the WMI API at https://msdn.microsoft.com/en-us/library/ms152836.aspx. In general, you will use SOAP API for operations you would perform using Report Server and Web Portal whereas you will use WMI API for operations you would perform using Reporting Services Configuration Manager.
@@ -154,6 +187,13 @@ Install-Module -Name Pester -RequiredVersion 4.10.1
 To execute the tests run (this will execute the CatalogItems test only which doesn't change the local Reporting Services Installation)
 ```powershell
 .\Test.ps1
+```
+
+The database connection option unit tests use mocks and do not require SQL Server or a report server:
+
+```powershell
+Import-Module Pester -RequiredVersion 4.10.1
+Invoke-Pester -Script .\Tests\Unit\DatabaseConnectionOptions.Tests.ps1
 ```
 
 ## Import Known Issue
