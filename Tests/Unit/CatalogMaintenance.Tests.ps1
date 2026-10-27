@@ -270,6 +270,16 @@ InModuleScope ReportingServicesTools {
             $script:payloads[1].IsEnabled | Should Be $false
         }
 
+        It 'Accepts Report Server True/False casing' {
+            foreach ($value in @('True', 'False')) {
+                $path = Join-Path $TestDrive "$value-cased.rsds"
+                Set-Content -LiteralPath $path -Value "<DataSourceDefinition><Extension>SQL</Extension><ConnectString>Data Source=fixture</ConnectString><Enabled>$value</Enabled></DataSourceDefinition>"
+                Write-RsRestCatalogItem -Path $path -RsFolder / -WebSession $script:session -ErrorAction Stop
+            }
+            $script:payloads[0].IsEnabled | Should Be $true
+            $script:payloads[1].IsEnabled | Should Be $false
+        }
+
         It 'Rejects an invalid Enabled value before sending an upload' {
             $path = Join-Path $TestDrive 'invalid.rsds'
             Set-Content -LiteralPath $path -Value '<DataSourceDefinition><Extension>SQL</Extension><ConnectString>Data Source=fixture</ConnectString><Enabled>invalid</Enabled></DataSourceDefinition>'
