@@ -33,9 +33,10 @@ function Set-RsDatabaseCredentials
             Using this parameter requires PowerShell SQLServer module version 22 or higher.
 
         .PARAMETER DatabaseEncryptMode
-            Specify encryption for the report server runtime catalog connection: Optional, Mandatory, or Strict.
+            Specify encryption for the report server runtime catalog connection: Optional, Mandatory, Strict, True, or False.
+            True is equivalent to Mandatory and False is equivalent to Optional.
             Requires a WMI provider with Encrypt support; Strict also requires EncryptMode support.
-            Omit this parameter to retain the existing cmdlet behavior.
+            Omit this parameter to preserve the stored runtime encryption setting.
 
         .PARAMETER DatabaseMultiSubnetFailover
             Enable MultiSubnetFailover for the report server runtime catalog connection.
@@ -143,7 +144,7 @@ function Set-RsDatabaseCredentials
         [int]
         $QueryTimeout = 30,
 
-        [ValidateSet("Mandatory", "Optional", "Strict")]
+        [ValidateSet("Mandatory", "Optional", "Strict", "True", "False")]
         [string]
         $DatabaseEncryptMode,
 
