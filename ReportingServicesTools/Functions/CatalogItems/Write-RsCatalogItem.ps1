@@ -10,7 +10,9 @@ function Write-RsCatalogItem
 
         .DESCRIPTION
             Uploads an item from disk to a report server.
-            Currently, we are only supporting Report, DataSource, DataSet and jpg/png for uploads
+            Currently, we are only supporting Report, DataSource, DataSet, jpg/png/gif/bmp/pdf and xls/xlsx for uploads.
+            Images, PDF and Excel files are uploaded as resources. The report server's AllowedResourceExtensionsForUpload
+            setting must allow the file extension; by default, Excel files are not allowed.
 
         .PARAMETER Path
             Path to item to upload on disk.
@@ -118,15 +120,20 @@ function Write-RsCatalogItem
                     $itemType -ne "Report" -and
                     $itemType -ne "DataSource" -and
                     $itemType -ne "DataSet" -and
-                    $itemType -ne "Resource"
+                    $itemType -ne "Resource" -and
+                    $itemType -ne "ExcelWorkbook"
                 ) -or
                 (
                     $itemType -eq "Resource" -and
-                    $item.Extension -notin ('.png', '.jpg', '.jpeg')
+                    $item.Extension -notin ('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.pdf')
+                ) -or
+                (
+                    $itemType -eq "ExcelWorkbook" -and
+                    $item.Extension -notin ('.xls', '.xlsx')
                 )
             )
             {
-                throw "Invalid item specified! You can only upload Report, DataSource, DataSet and jpg/png files using this command!"
+                throw "Invalid item specified! You can only upload Report, DataSource, DataSet, jpg/png/gif/bmp/pdf and xls/xlsx files using this command!"
             }
 
             if ($RsFolder -eq "/")
@@ -228,18 +235,23 @@ function Write-RsCatalogItem
                     $additionalProperties = New-Object System.Collections.Generic.List[$propertyDataType]
                     $property = New-Object $propertyDataType
 
-                    if ($itemType -eq 'Resource')
+                    if ($itemType -in ('Resource', 'ExcelWorkbook'))
                     {
                         #If it is a resource we need to save the extension so the file can be recognized
                         $itemName = $item.Name
+                        # The SOAP endpoint stores Excel workbooks as resources.
+                        $itemType = 'Resource'
                         $property.Name = 'MimeType'
-                        if ($item.Extension -eq ".png")
+                        $property.Value = switch ($item.Extension)
                         {
-                            $property.Value = 'image/png'
-                        }
-                        else
-                        {
-                            $property.Value = 'image/jpeg'
+                            '.png' { 'image/png' }
+                            '.jpg' { 'image/jpeg' }
+                            '.jpeg' { 'image/jpeg' }
+                            '.gif' { 'image/gif' }
+                            '.bmp' { 'image/bmp' }
+                            '.pdf' { 'application/pdf' }
+                            '.xls' { 'application/vnd.ms-excel' }
+                            '.xlsx' { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
                         }
                         $errorMessageItemType = 'resource'
                     }
