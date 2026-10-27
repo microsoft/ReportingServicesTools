@@ -28,6 +28,33 @@ Describe "Write-RsFolderContent" {
         Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
     }
 
+    Context "Write-RsFolderContent with additional resource types" {
+        $folderName = 'SutWriteRsFolderContentAdditionalResources' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $folderName
+        $folderPath = '/' + $folderName
+        $localResourceFolder = Join-Path ([System.IO.Path]::GetTempPath()) ('SutWriteRsFolderContentAdditionalResources' + [guid]::NewGuid())
+        New-Item -Path $localResourceFolder -ItemType Directory | Out-Null
+        [System.IO.File]::WriteAllBytes((Join-Path $localResourceFolder 'Pixel.gif'), [System.Convert]::FromBase64String('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'))
+        [System.IO.File]::WriteAllBytes((Join-Path $localResourceFolder 'Pixel.bmp'), [System.Convert]::FromBase64String('Qk06AAAAAAAAADYAAAAoAAAAAQAAAAEAAAABABgAAAAAAAQAAAATCwAAEwsAAAAAAAAAAAAA////AA=='))
+        [System.IO.File]::WriteAllText((Join-Path $localResourceFolder 'Document.pdf'), "%PDF-1.4`n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj`n2 0 obj<</Type/Pages/Kids[]/Count 0>>endobj`ntrailer<</Root 1 0 R>>`n%%EOF`n")
+        Copy-Item -Path ((Get-Item -Path ".\").FullName + '\Tests\CatalogItems\testResources\NewExcelWorkbook.xlsx') -Destination $localResourceFolder
+        Write-RsFolderContent -Path $localResourceFolder -RsFolder $folderPath
+        $uploadedResources = @(Get-RsFolderContent -RsFolder $folderPath | Where-Object TypeName -eq 'Resource')
+
+        It "Should upload gif, bmp and pdf resources" {
+            $uploadedResources.Count | Should Be 3
+            ($uploadedResources.Name | Sort-Object) -join ',' | Should Be 'Document.pdf,Pixel.bmp,Pixel.gif'
+        }
+
+        It "Should skip Excel workbooks" {
+            $uploadedResources | Where-Object Name -eq 'NewExcelWorkbook.xlsx' | Should BeNullOrEmpty
+        }
+
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $folderPath -Confirm:$false
+        Remove-Item -Path $localResourceFolder -Recurse -Force
+    }
+
     Context "Write-RsFolderContent with ReportServerUri parameter" {
         $folderName = 'SutWriteRsFolderContentReportServerUri' + [guid]::NewGuid()
         New-RsFolder -Path / -FolderName $folderName

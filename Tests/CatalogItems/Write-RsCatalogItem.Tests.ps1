@@ -202,4 +202,43 @@ Describe "Write-RsCatalogItem" {
         Remove-RsCatalogItem -RsFolder $jpgFolderPath -Confirm:$false
         Remove-RsCatalogItem -RsFolder $pngFolderPath -Confirm:$false
     }
+
+    Context "Write-RsCatalogItem with additional resource types"{
+        $resourceFolderName = 'SutWriteCatalogItem_AdditionalResources' + [guid]::NewGuid()
+        New-RsFolder -Path / -FolderName $resourceFolderName
+        $resourceFolderPath = '/' + $resourceFolderName
+        $localResourceFolder = Join-Path ([System.IO.Path]::GetTempPath()) ('SutWriteCatalogItem_AdditionalResources' + [guid]::NewGuid())
+        New-Item -Path $localResourceFolder -ItemType Directory | Out-Null
+        [System.IO.File]::WriteAllBytes((Join-Path $localResourceFolder 'Pixel.gif'), [System.Convert]::FromBase64String('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'))
+        [System.IO.File]::WriteAllBytes((Join-Path $localResourceFolder 'Pixel.bmp'), [System.Convert]::FromBase64String('Qk06AAAAAAAAADYAAAAoAAAAAQAAAAEAAAABABgAAAAAAAQAAAATCwAAEwsAAAAAAAAAAAAA////AA=='))
+        [System.IO.File]::WriteAllText((Join-Path $localResourceFolder 'Document.pdf'), "%PDF-1.4`n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj`n2 0 obj<</Type/Pages/Kids[]/Count 0>>endobj`ntrailer<</Root 1 0 R>>`n%%EOF`n")
+        $testResourcesPath = (Get-Item -Path ".\").FullName + '\Tests\CatalogItems\testResources'
+
+        $expectedResources = @(
+            @{ Path = (Join-Path $localResourceFolder 'Pixel.gif'); Name = 'Pixel.gif'; MimeType = @('image/gif') },
+            @{ Path = (Join-Path $localResourceFolder 'Pixel.bmp'); Name = 'Pixel.bmp'; MimeType = @('image/bmp') },
+            # Some report server versions store PDF resources as application/octet-stream regardless of the MIME type sent.
+            @{ Path = (Join-Path $localResourceFolder 'Document.pdf'); Name = 'Document.pdf'; MimeType = @('application/pdf', 'application/octet-stream') },
+            @{ Path = (Join-Path $testResourcesPath 'NewExcelWorkbook.xlsx'); Name = 'NewExcelWorkbook.xlsx'; MimeType = @('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') },
+            @{ Path = (Join-Path $testResourcesPath 'OldExcelWorkbook.xls'); Name = 'OldExcelWorkbook.xls'; MimeType = @('application/vnd.ms-excel') }
+        )
+        foreach ($expectedResource in $expectedResources)
+        {
+            Write-RsCatalogItem -Path $expectedResource.Path -RsFolder $resourceFolderPath
+        }
+        $uploadedResources = Get-RsFolderContent -RsFolder $resourceFolderPath | Where-Object TypeName -eq 'Resource'
+
+        foreach ($expectedResource in $expectedResources)
+        {
+            It "Should upload $($expectedResource.Name) as a resource with MIME type $($expectedResource.MimeType -join ' or ')" {
+                $uploadedResource = $uploadedResources | Where-Object Name -eq $expectedResource.Name
+                $uploadedResource.Name | Should Be $expectedResource.Name
+                ($uploadedResource.ItemMetadata | Where-Object Name -eq 'MIMEType').Value | Should -BeIn $expectedResource.MimeType
+            }
+        }
+
+        # Removing folders used for testing
+        Remove-RsCatalogItem -RsFolder $resourceFolderPath -Confirm:$false
+        Remove-Item -Path $localResourceFolder -Recurse -Force
+    }
 }

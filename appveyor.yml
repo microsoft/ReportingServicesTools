@@ -132,7 +132,7 @@ test_script:
     if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
     
     # Enable additional file formats
-    $newSettings = New-Object PSCustomObject -Property @{"PropertyValues" = @( @{"@odata.type"="#Model.Property"; "Name" = "AllowedResourceExtensionsForUpload"; "Value" = "*,*.xml,*.xsd,*.xsl,*.png,*.gif,*.jpg,*.tif,*.jpeg,*.tiff,*.bmp,*.pdf,*.svg,*.rtf,*.txt,*.doc,*.docx,*.pps,*.ppt,*.pptx,*.xlsx"})}
+    $newSettings = New-Object PSCustomObject -Property @{"PropertyValues" = @( @{"@odata.type"="#Model.Property"; "Name" = "AllowedResourceExtensionsForUpload"; "Value" = "*,*.xml,*.xsd,*.xsl,*.png,*.gif,*.jpg,*.tif,*.jpeg,*.tiff,*.bmp,*.pdf,*.svg,*.rtf,*.txt,*.doc,*.docx,*.pps,*.ppt,*.pptx,*.xls,*.xlsx"})}
     $stringNewRequest =  $newSettings | ConvertTo-JSON -Depth 5
     $isAllowedFileFormatUpdated = $false
     for ($i=0 ; $i -le 10 -and $isAllowedFileFormatUpdated -eq $false ;$i++){

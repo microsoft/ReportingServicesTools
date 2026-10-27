@@ -10,7 +10,8 @@ function Write-RsFolderContent
 
         .DESCRIPTION
             Uploads all items in a folder on disk to a report server.
-            Currently, we are only supporting Report, DataSource, DataSet and jpg/png for uploads
+            Currently, we are only supporting Report, DataSource, DataSet and jpg/png/gif/bmp/pdf for uploads.
+            Excel files are skipped; use Write-RsCatalogItem to upload them when the report server allows them.
 
         .PARAMETER Recurse
             A description of the Recurse parameter.
@@ -131,7 +132,10 @@ function Write-RsFolderContent
                 $item.Extension -eq ".rds" -or
                 $item.Extension -eq ".jpg" -or
                 $item.Extension -eq ".jpeg" -or
-                $item.Extension -eq ".png" )
+                $item.Extension -eq ".png" -or
+                $item.Extension -eq ".gif" -or
+                $item.Extension -eq ".bmp" -or
+                $item.Extension -eq ".pdf" )
             {
                 $relativePath = Clear-Substring -string $item.FullName -substring $sourceFolder.FullName.TrimEnd("\") -position front
                 $relativePath = Clear-Substring -string $relativePath -substring ("\" + $item.Name) -position back
