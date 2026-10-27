@@ -70,12 +70,100 @@ InModuleScope ReportingServicesTools {
                 }
             }
 
-            It 'Retains the legacy call when runtime options are omitted' {
+            It 'Preserves Strict encryption when runtime options are omitted' {
+                & $commandName @script:arguments
+                $script:wmi.Calls.Count | Should Be 1
+                $script:wmi.Calls[0].Kind | Should Be 'Named'
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters['EncryptMode'] | Should Be 'Strict'
+                $script:methodParameters.ContainsKey('MultiSubnetFailover') | Should Be $false
+                $script:methodParameters.ContainsKey('TrustServerCertificate') | Should Be $false
+            }
+
+            It 'Preserves Mandatory encryption when runtime options are omitted' {
+                $script:wmi.DatabaseEncryptMode = 'Mandatory'
+                & $commandName @script:arguments
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters['EncryptMode'] | Should Be 'Mandatory'
+            }
+
+            It 'Preserves Optional encryption when runtime options are omitted' {
+                $script:wmi.DatabaseEncrypt = 'False'
+                $script:wmi.DatabaseEncryptMode = 'Optional'
+                & $commandName @script:arguments
+                $script:methodParameters['Encrypt'] | Should Be $false
+                $script:methodParameters['EncryptMode'] | Should Be 'Optional'
+            }
+
+            It 'Preserves boolean encryption on Encrypt-only providers when runtime options are omitted' {
+                $script:methodParameters.Properties.Remove('EncryptMode')
+                $script:wmi.DatabaseEncrypt = '-1'
+                $script:wmi.DatabaseEncryptMode = $null
+                & $commandName @script:arguments
+                $script:wmi.Calls[0].Kind | Should Be 'Named'
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters.ContainsKey('EncryptMode') | Should Be $false
+            }
+
+            It 'Does not resend an unrecognized stored encryption mode' {
+                $script:wmi.DatabaseEncryptMode = 'Unexpected'
+                & $commandName @script:arguments
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters.ContainsKey('EncryptMode') | Should Be $false
+            }
+
+            It 'Retains the legacy call on providers without Encrypt when runtime options are omitted' {
+                $script:methodParameters.Properties.Remove('Encrypt')
                 & $commandName @script:arguments
                 $script:wmi.Calls.Count | Should Be 1
                 $script:wmi.Calls[0].Kind | Should Be 'Legacy'
                 $script:wmi.Calls[0].Arguments.Count | Should Be 5
                 $script:methodParameters.Count | Should Be 0
+            }
+
+            It 'Treats a throwing WMI property lookup as an unsupported input' {
+                $script:methodParameters = @{}
+                if (-not ('RsTestThrowingPropertyCollection' -as [type]))
+                {
+                    Add-Type -ReferencedAssemblies System.Management -TypeDefinition @'
+public class RsTestThrowingPropertyCollection
+{
+    private readonly string[] names;
+    public RsTestThrowingPropertyCollection(string[] names) { this.names = names; }
+    public object this[string name]
+    {
+        get
+        {
+            if (System.Array.IndexOf(names, name) < 0) { throw new System.Management.ManagementException("Not found"); }
+            return name;
+        }
+    }
+}
+'@
+                }
+                $properties = [RsTestThrowingPropertyCollection]::new([string[]]@('Encrypt', 'EncryptMode', 'MultiSubnetFailover'))
+                $script:methodParameters | Add-Member NoteProperty Properties $properties
+                { & $commandName @script:arguments -DatabaseTrustServerCertificate $true } | Should Throw 'does not support DatabaseTrustServerCertificate'
+                $script:wmi.Calls.Count | Should Be 0
+            }
+
+            It 'Maps DatabaseEncryptMode True to Mandatory' {
+                & $commandName @script:arguments -DatabaseEncryptMode True
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters['EncryptMode'] | Should Be 'True'
+            }
+
+            It 'Maps DatabaseEncryptMode False to Optional' {
+                & $commandName @script:arguments -DatabaseEncryptMode False
+                $script:methodParameters['Encrypt'] | Should Be $false
+                $script:methodParameters['EncryptMode'] | Should Be 'False'
+            }
+
+            It 'Maps True to boolean Encrypt on Encrypt-only providers' {
+                $script:methodParameters.Properties.Remove('EncryptMode')
+                & $commandName @script:arguments -DatabaseEncryptMode True
+                $script:methodParameters['Encrypt'] | Should Be $true
+                $script:methodParameters.ContainsKey('EncryptMode') | Should Be $false
             }
 
             It 'Sets Mandatory runtime encryption without requiring SQLServer v22' {
@@ -292,7 +380,7 @@ InModuleScope ReportingServicesTools {
 
             It 'Does not treat setup certificate trust as a runtime option' {
                 { & $commandName @script:arguments -TrustServerCertificate } | Should Throw 'Consider installing SQLServer module version 22'
-                $script:methodParameters.Count | Should Be 0
+                $script:methodParameters.ContainsKey('TrustServerCertificate') | Should Be $false
                 $script:wmi.Calls.Count | Should Be 0
                 Assert-MockCalled Invoke-Sqlcmd -Times 0 -Scope It
             }
