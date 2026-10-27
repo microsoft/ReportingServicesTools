@@ -113,8 +113,7 @@ function Grant-RsRestItemAccessPolicy
 
             if($Item.Type -in 'Report', 'PowerBIReport'){
                 Write-Verbose "Fetching Policies for $Item..."
-                $PolicyUri = $ReportPortalUri + "api/$RestApiVersion/CatalogItems({0})/Policies"
-                $PolicyUri = [String]::Format($PolicyUri, $Item.Id)
+                $PolicyUri = Get-RsRestPolicyUri -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Item $Item
                 if ($Credential -ne $null)
                 {
                     $response = Invoke-RestMethod -Uri $PolicyUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
@@ -126,8 +125,7 @@ function Grant-RsRestItemAccessPolicy
             }
             elseif ($Item.Type -eq 'Folder') {
                 Write-Verbose "Fetching Policies for $Item..."
-                $PolicyUri = $ReportPortalUri + "api/$RestApiVersion/Folders({0})/Policies"
-                $PolicyUri = [String]::Format($PolicyUri, $Item.Id)
+                $PolicyUri = Get-RsRestPolicyUri -ReportPortalUri $ReportPortalUri -RestApiVersion $RestApiVersion -Item $Item
                 if ($Credential -ne $null)
                 {
                     $response = Invoke-RestMethod -Uri $PolicyUri -Method Get -WebSession $WebSession -Credential $Credential -Verbose:$false
@@ -149,7 +147,10 @@ function Grant-RsRestItemAccessPolicy
             $response.Policies=$response.Policies+$o
             $response.InheritParentPolicy=$false
 
-            $payloadJson = $response | ConvertTo-Json -Depth 15
+            $payloadJson = @{
+                InheritParentPolicy = $false
+                Policies = @($response.Policies)
+            } | ConvertTo-Json -Depth 15
             Write-Verbose "$payloadJson"
             if ($Credential -ne $null)
             {
