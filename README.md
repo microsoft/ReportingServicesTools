@@ -18,17 +18,60 @@ $PSVersionTable
 
 ## Install
 ```powershell
-Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1)
+Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/ReportingServicesTools/master/Install.ps1 -UseBasicParsing)
 ```
 or
 ```powershell
-Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools)
+Invoke-Expression (Invoke-WebRequest https://aka.ms/rstools -UseBasicParsing)
 ```
 or
 ```powershell
 Install-Module -Name ReportingServicesTools
 ```
 Note: Using Install-Module is the preferred installation method for most users.
+
+The ZIP installer requires Windows PowerShell 3.0 or later and .NET Framework 4.5
+or later. It defaults to
+`Documents\WindowsPowerShell\Modules\ReportingServicesTools`, even when you run
+`Install.ps1` from a local checkout. Its optional `-Path` is a **container**:
+the installer creates or replaces only the `ReportingServicesTools` child directory.
+An explicit container must be empty or contain only that identified module.
+Checkouts, junctions, symbolic links, broad system/user directories and unrecognized
+module directories are rejected. Existing module files absent from the selected
+archive also block an update; move custom content aside before retrying.
+
+The installer downloads and validates a ZIP in a unique staging directory before
+replacing the module. Replacement or import failures restore the previous installation.
+If rollback fails, the error identifies retained recovery files. This changes the
+old installer behavior: it no longer deletes all files in the supplied container
+or installs repository-level files alongside the module.
+
+## Catalog deployment and migration
+
+`Publish-RsProject` accepts the strings `True` and `False` for `OverwriteDatasets` and
+`OverwriteDataSources`, including values piped from `Get-RsDeploymentConfig`.
+With `False`, an existing shared item is skipped without uploading it or changing its
+data-source references. Missing items are still created. With `True`, shared items
+are created or replaced and newly deployed dataset references are configured.
+If omitted, datasets are overwritten and existing data sources are retained, preserving
+the command's previous defaults. Report deployment continues to overwrite reports.
+Lookup failures other than HTTP 404 stop deployment rather than being treated as
+missing items. `-WhatIf` makes no deployment requests.
+
+```powershell
+Get-RsDeploymentConfig -RsProjectFile 'C:\Reports\Reports.rptproj' -ConfigurationToUse Release |
+    Add-Member -PassThru -MemberType NoteProperty -Name ReportPortal -Value 'http://localhost/reports/' |
+    Publish-RsProject -OverwriteDatasets False -OverwriteDataSources False
+```
+
+`Copy-RsSubscription -RsItem` keeps the same explicit destination for every
+subscription in an array or pipeline. Use `-RsFolder` to select destination reports
+by their source names instead.
+
+`Write-RsRestCatalogItem` preserves an `.rsds` file's `Enabled` value. If the element
+is absent, the source defaults to enabled, matching the SOAP upload command.
+Invalid XML Boolean values are rejected before upload.
+
 ## List of commands
 
 The following is a list of commands which are available for you to use once you follow the steps in the Installation
@@ -187,6 +230,14 @@ Install-Module -Name Pester -RequiredVersion 4.10.1
 To execute the tests run (this will execute the CatalogItems test only which doesn't change the local Reporting Services Installation)
 ```powershell
 .\Test.ps1
+```
+
+The focused maintenance regression tests use mocks and temporary fixtures; they do
+not download an installer or contact SQL Server or a report server:
+
+```powershell
+Import-Module Pester -RequiredVersion 4.10.1
+Invoke-Pester -Script .\Tests\Unit -EnableExit
 ```
 
 The database connection option unit tests use mocks and do not require SQL Server or a report server:

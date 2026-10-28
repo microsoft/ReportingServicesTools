@@ -9,6 +9,9 @@ function Write-RsRestCatalogItem
 
         .DESCRIPTION
             This command uploads an item from disk to a report server (using the REST Endpoint).
+            Data sources in .rsds files retain their Enabled value. If Enabled is absent,
+            the source defaults to enabled, matching SOAP uploads. Enabled accepts true/false
+            in any case, or 1/0; other values are rejected.
 
         .PARAMETER Path
             Path to item to upload on disk.
@@ -194,7 +197,12 @@ function Write-RsRestCatalogItem
                     $connectionString = $dataSourceXml.DataSourceDefinition.ConnectString
                     $dataSourceType = $dataSourceXml.DataSourceDefinition.Extension
                     $credentialRetrieval = "none"
-                    $enabled = "true" -like $content.DataSourceDefinition.Enabled
+                    $enabled = $true
+                    if ($null -ne $dataSourceXml.DataSourceDefinition.Enabled)
+                    {
+                        # Report Server writes .rsds Booleans as True/False; XmlConvert accepts only lowercase.
+                        $enabled = [System.Xml.XmlConvert]::ToBoolean(([string]$dataSourceXml.DataSourceDefinition.Enabled).ToLowerInvariant())
+                    }
                 }
                 elseif ($item.Extension -eq '.rds')
                 {
