@@ -217,10 +217,10 @@ Describe "Write-RsCatalogItem" {
         $expectedResources = @(
             @{ Path = (Join-Path $localResourceFolder 'Pixel.gif'); Name = 'Pixel.gif'; MimeType = @('image/gif') },
             @{ Path = (Join-Path $localResourceFolder 'Pixel.bmp'); Name = 'Pixel.bmp'; MimeType = @('image/bmp') },
-            # Some report server versions store PDF resources as application/octet-stream regardless of the MIME type sent.
+            # Some report server versions store PDF and Excel resources as application/octet-stream regardless of the MIME type sent.
             @{ Path = (Join-Path $localResourceFolder 'Document.pdf'); Name = 'Document.pdf'; MimeType = @('application/pdf', 'application/octet-stream') },
-            @{ Path = (Join-Path $testResourcesPath 'NewExcelWorkbook.xlsx'); Name = 'NewExcelWorkbook.xlsx'; MimeType = @('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') },
-            @{ Path = (Join-Path $testResourcesPath 'OldExcelWorkbook.xls'); Name = 'OldExcelWorkbook.xls'; MimeType = @('application/vnd.ms-excel') }
+            @{ Path = (Join-Path $testResourcesPath 'NewExcelWorkbook.xlsx'); Name = 'NewExcelWorkbook.xlsx'; MimeType = @('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/octet-stream') },
+            @{ Path = (Join-Path $testResourcesPath 'OldExcelWorkbook.xls'); Name = 'OldExcelWorkbook.xls'; MimeType = @('application/vnd.ms-excel', 'application/octet-stream') }
         )
         foreach ($expectedResource in $expectedResources)
         {
