@@ -54,6 +54,7 @@ install:
 build: false
 
 before_test:
+- ps: .\build\Invoke-Release.ps1 -Phase Validate
 - cmd: NET USER rsuser1 "%SqlSaPwd%" /ADD /Y
 - ps: |
     write-host "Showing Version of Pester"
@@ -116,6 +117,10 @@ before_test:
     
 test_script:
 - ps: |
+    # Validate the release guard offline before tests that require report server services.
+    $releaseTests = Invoke-Pester -Path .\Tests\Unit\Release.Tests.ps1 -PassThru -ErrorAction Stop
+    if ($releaseTests.FailedCount -gt 0) { throw "Release safety tests found $($releaseTests.FailedCount) issues" }
+
     # Execute the script analyzer
     Write-Host "Starting execution of script analyzer"
     $results = Invoke-ScriptAnalyzer -Path .\ReportingServicesTools\functions -Recurse | where severity -eq "Error"
@@ -203,28 +208,4 @@ test_script:
     }
     
 deploy_script:
-- ps: |
-    # Deploy to Powershell Gallery only where there is a tag which will have the version number
-    $ErrorActionPreference = 'Continue';
-    $deploy = ($env:APPVEYOR_REPO_TAG -eq $true)
-    if ($deploy)
-    {
-      $gitOut = git checkout master 2>&1
-      Write-Host "Starting Deployment tag $env:APPVEYOR_REPO_TAG_NAME"      
-      $moduleName = "ReportingServicesTools"
-      $currentVersion = (Import-PowerShellDataFile .\ReportingServicesTools\$moduleName.psd1).ModuleVersion
-      ((Get-Content .\ReportingServicesTools\ReportingServicesTools.psd1).replace("ModuleVersion = '$($currentVersion)'", "ModuleVersion = '$($env:APPVEYOR_REPO_TAG_NAME)'")) | Set-Content .\ReportingServicesTools\$moduleName.psd1
-      Publish-Module -Path .\ReportingServicesTools -NuGetApiKey $env:galleryPublishingKey
-      
-      git config --global core.safecrlf false
-      git config --global credential.helper store
-      Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-      git config --global user.email "jaimeta@microsoft.com"
-      git config --global user.name "Jaime Tarquino"
-      git add ReportingServicesTools\ReportingServicesTools.psd1  
-      git commit -m "Automatic Version Update from CI"
-      $gitOut = git push 2>&1
-      if ($?) {$out} else {$out.Exception}
-      
-    }
- 
+- ps: .\build\Invoke-Release.ps1 -Phase Publish
