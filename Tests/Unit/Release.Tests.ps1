@@ -84,12 +84,18 @@ Describe 'Tagged release safety (offline)' {
 
     It 'rejects invalid tag <Tag> before publishing' -TestCases @(
         @{ Tag = '' }, @{ Tag = 'v1.2.3.4' }, @{ Tag = '1.2' },
-        @{ Tag = '01.2.3' }, @{ Tag = '1.2.3-beta' }, @{ Tag = '1.2.3.4.5' },
+        @{ Tag = '01.2.3' }, @{ Tag = '0.06.3' }, @{ Tag = '1.2.3-beta' }, @{ Tag = '1.2.3.4.5' },
         @{ Tag = '999999999999.2.3' }, @{ Tag = "1.2.3`n" }
     ) {
         param ($Tag)
         $env:APPVEYOR_REPO_TAG_NAME = $Tag
         { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Invalid release tag'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'explains that legacy zero-padded tags are intentionally invalid' {
+        $env:APPVEYOR_REPO_TAG_NAME = '0.06.3'
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw '*no leading zeroes*0.06.3*not supported*'
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 

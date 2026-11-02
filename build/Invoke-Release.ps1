@@ -40,7 +40,7 @@ $versionPattern = '\A(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9
 $releaseVersion = $null
 if ($tag -cnotmatch $versionPattern -or -not [version]::TryParse($tag, [ref]$releaseVersion))
 {
-    throw "Invalid release tag '$tag'. Use a numeric major.minor.patch[.revision] version without a prefix or prerelease suffix."
+    throw "Invalid release tag '$tag'. Use canonical numeric major.minor.patch[.revision] components without leading zeroes, a prefix, or a prerelease suffix. Legacy zero-padded tags such as 0.06.3 are not supported for releases."
 }
 if ($env:APPVEYOR_REPO_COMMIT -notmatch '\A[0-9a-f]{40}\z')
 {
