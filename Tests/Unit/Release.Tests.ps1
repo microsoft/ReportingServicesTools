@@ -291,20 +291,22 @@ Describe 'Tagged release safety (offline)' {
                 Attributes = [IO.FileAttributes]::ReparsePoint
             }
         } -ParameterFilter {
-            [string]::Equals(
-                $LiteralPath,
-                [IO.Path]::GetDirectoryName($env:RST_RELEASE_TEST_REPARSE_PATH),
-                [StringComparison]::OrdinalIgnoreCase
-            )
+            -not [string]::IsNullOrWhiteSpace($env:RST_RELEASE_TEST_REPARSE_PATH) -and
+                [string]::Equals(
+                    $LiteralPath,
+                    [IO.Path]::GetDirectoryName($env:RST_RELEASE_TEST_REPARSE_PATH),
+                    [StringComparison]::OrdinalIgnoreCase
+                )
         }
         { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'Release package contains a symbolic link or junction'
         { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Release package contains a symbolic link or junction'
         Assert-MockCalled Get-ChildItem -Times 2 -Exactly -Scope It -ParameterFilter {
-            [string]::Equals(
-                $LiteralPath,
-                [IO.Path]::GetDirectoryName($env:RST_RELEASE_TEST_REPARSE_PATH),
-                [StringComparison]::OrdinalIgnoreCase
-            )
+            -not [string]::IsNullOrWhiteSpace($env:RST_RELEASE_TEST_REPARSE_PATH) -and
+                [string]::Equals(
+                    $LiteralPath,
+                    [IO.Path]::GetDirectoryName($env:RST_RELEASE_TEST_REPARSE_PATH),
+                    [StringComparison]::OrdinalIgnoreCase
+                )
         }
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
