@@ -98,7 +98,8 @@ Describe 'Tagged release safety (offline)' {
 
     It 'explains that legacy zero-padded tags are intentionally invalid' {
         $env:APPVEYOR_REPO_TAG_NAME = '0.06.3'
-        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw '*without leading zeroes*0.06.3*not supported*'
+        { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'without leading zeroes'
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Legacy zero-padded tags such as 0.06.3 are not supported for releases.'
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
