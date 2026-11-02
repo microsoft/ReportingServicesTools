@@ -45,6 +45,10 @@ function Get-ReleaseFileInventory
         {
             throw "Release package contains a symbolic link or junction: '$($entry.FullName)'. Use regular package files."
         }
+        if ($entry.Attributes -band [IO.FileAttributes]::Hidden)
+        {
+            throw "Release package contains hidden content: '$($entry.FullName)'. Hidden files and directories are not supported because PowerShellGet omits them from the published package."
+        }
         if ($entry.PSIsContainer)
         {
             Get-ReleaseFileInventory -Directory $entry.FullName
@@ -68,6 +72,11 @@ if ($Phase -eq 'Validate' -and (Test-Path -LiteralPath $inventoryPath))
 }
 
 $tag = $env:APPVEYOR_REPO_TAG_NAME
+$jobId = $env:APPVEYOR_JOB_ID
+if ([string]::IsNullOrWhiteSpace($jobId))
+{
+    throw 'APPVEYOR_JOB_ID must be set to a non-whitespace value for release validation and publishing.'
+}
 $versionPattern = '\A(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?\z'
 $releaseVersion = $null
 if ($tag -cnotmatch $versionPattern -or -not [version]::TryParse($tag, [ref]$releaseVersion))
@@ -149,6 +158,10 @@ foreach ($part in $pathParts)
     if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)
     {
         throw "Release RootModule path contains a symbolic link or junction: '$pathToCheck'. Use regular package files."
+    }
+    if ($item.Attributes -band [IO.FileAttributes]::Hidden)
+    {
+        throw "Release package contains hidden content: '$pathToCheck'. Hidden files and directories are not supported because PowerShellGet omits them from the published package."
     }
 }
 if ($item.PSIsContainer)

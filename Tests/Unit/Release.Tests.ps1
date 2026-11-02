@@ -89,6 +89,19 @@ Describe 'Tagged release safety (offline)' {
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
+    It 'rejects a missing or whitespace job ID and clears stale test inventory: <JobId>' -TestCases @(
+        @{ JobId = $null }, @{ JobId = '' }, @{ JobId = '   ' }
+    ) {
+        param ($JobId)
+        $inventoryPath = Join-Path (Join-Path $script:checkout '.git') 'rst-tested-package.json'
+        Set-Content -LiteralPath $inventoryPath -Value 'stale inventory'
+        $env:APPVEYOR_JOB_ID = $JobId
+        { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'APPVEYOR_JOB_ID must be set'
+        Test-Path -LiteralPath $inventoryPath | Should -BeFalse
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'APPVEYOR_JOB_ID must be set'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
     It 'rejects invalid tag <Tag> before publishing' -TestCases @(
         @{ Tag = '' }, @{ Tag = 'v1.2.3.4' }, @{ Tag = '1.2' },
         @{ Tag = '01.2.3' }, @{ Tag = '0.06.3' }, @{ Tag = '1.2.3-beta' }, @{ Tag = '1.2.3.4.5' },
@@ -258,11 +271,74 @@ Describe 'Tagged release safety (offline)' {
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
+    It 'rejects a non-RootModule package reparse point at <Component>' -TestCases @(
+        @{ Component = 'nested' }, @{ Component = 'extra.psm1' }
+    ) {
+        param ($Component)
+        $nested = Join-Path $script:modulePath 'nested'
+        $null = New-Item -Path $nested -ItemType Directory
+        Set-Content -LiteralPath (Join-Path $nested 'marker.txt') -Value '# Directory content'
+        Set-Content -LiteralPath (Join-Path $script:modulePath 'extra.psm1') -Value '# Extra module'
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        $env:RST_RELEASE_TEST_REPARSE_PATH = [IO.Path]::GetFullPath((Join-Path $script:modulePath $Component))
+        Mock Get-Item { [pscustomobject]@{ Attributes = [IO.FileAttributes]::ReparsePoint } } -ParameterFilter {
+            $LiteralPath -eq $env:RST_RELEASE_TEST_REPARSE_PATH
+        }
+        { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'Release package contains a symbolic link or junction'
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Release package contains a symbolic link or junction'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
     It 'does not block a normal RootModule after reparse mock tests' {
         [string]::IsNullOrEmpty($env:RST_RELEASE_TEST_REPARSE_PATH) | Should -BeTrue
         $null = New-Item -Path (Join-Path $script:modulePath 'nested') -ItemType Directory
         Set-Content -LiteralPath (Join-Path $script:modulePath 'nested/root.psm1') -Value '# Regular root'
         Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'nested/root.psm1'; ModuleVersion = '1.2.3.4'; GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects hidden package <Kind> before tests because PowerShellGet omits it' -TestCases @(
+        @{ Kind = 'file' }, @{ Kind = 'directory' }
+    ) {
+        param ($Kind)
+        if ($Kind -eq 'directory') {
+            $hiddenPath = Join-Path $script:modulePath 'hidden-content'
+            $null = New-Item -Path $hiddenPath -ItemType Directory
+            Set-Content -LiteralPath (Join-Path $hiddenPath 'content.txt') -Value '# Hidden directory content'
+            [IO.Directory]::SetAttributes($hiddenPath, [IO.File]::GetAttributes($hiddenPath) -bor [IO.FileAttributes]::Hidden)
+        }
+        else {
+            $hiddenPath = Join-Path $script:modulePath 'hidden-content.txt'
+            Set-Content -LiteralPath $hiddenPath -Value '# Hidden file content'
+            [IO.File]::SetAttributes($hiddenPath, [IO.File]::GetAttributes($hiddenPath) -bor [IO.FileAttributes]::Hidden)
+        }
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'Hidden files and directories are not supported because PowerShellGet omits them'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects a package file made hidden after pre-test validation before publishing' {
+        $file = Join-Path $script:modulePath 'ordinary-content.txt'
+        Set-Content -LiteralPath $file -Value '# Regular package file'
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
+        [IO.File]::SetAttributes($file, [IO.File]::GetAttributes($file) -bor [IO.FileAttributes]::Hidden)
+        @(Invoke-FixtureGit -Arguments @('status', '--porcelain', '--untracked-files=no')).Count | Should -Be 0
+        @(Invoke-FixtureGit -Arguments @('status', '--porcelain', '--untracked-files=all', '--ignored', '--', 'ReportingServicesTools')).Count | Should -Be 0
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Hidden files and directories are not supported because PowerShellGet omits them'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'allows a system-only package file through the byte inventory' {
+        $file = Join-Path $script:modulePath 'system-content.txt'
+        Set-Content -LiteralPath $file -Value '# System attribute alone does not hide this file'
+        [IO.File]::SetAttributes($file, [IO.File]::GetAttributes($file) -bor [IO.FileAttributes]::System)
         $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
         $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
         & $releaseScript -Phase Validate -RepositoryPath $script:checkout
