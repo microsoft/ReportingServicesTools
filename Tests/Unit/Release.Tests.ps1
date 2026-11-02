@@ -19,9 +19,10 @@ Describe 'Tagged release safety (offline)' {
     BeforeEach {
         $script:releaseSetupComplete = $false
         $script:savedEnvironment = @{}
-        foreach ($name in @('APPVEYOR_REPO_TAG', 'APPVEYOR_REPO_TAG_NAME', 'APPVEYOR_REPO_COMMIT', 'galleryPublishingKey')) {
+        foreach ($name in @('APPVEYOR_REPO_TAG', 'APPVEYOR_REPO_TAG_NAME', 'APPVEYOR_REPO_COMMIT', 'galleryPublishingKey', 'RST_RELEASE_TEST_REPARSE_PATH')) {
             $script:savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name)
         }
+        $env:RST_RELEASE_TEST_REPARSE_PATH = $null
         $script:checkout = Join-Path $TestDrive ([guid]::NewGuid().ToString('N'))
         $script:modulePath = Join-Path $script:checkout 'ReportingServicesTools'
         $null = New-Item -Path $script:modulePath -ItemType Directory -Force
@@ -248,11 +249,22 @@ Describe 'Tagged release safety (offline)' {
         Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'nested/root.psm1'; ModuleVersion = '1.2.3.4' }"
         $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
         $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
-        $script:reparsePath = [IO.Path]::GetFullPath((Join-Path $script:modulePath $Component))
+        $env:RST_RELEASE_TEST_REPARSE_PATH = [IO.Path]::GetFullPath((Join-Path $script:modulePath $Component))
         Mock Get-Item { [pscustomobject]@{ Attributes = [IO.FileAttributes]::ReparsePoint } } -ParameterFilter {
-            $LiteralPath -eq $script:reparsePath
+            $LiteralPath -eq $env:RST_RELEASE_TEST_REPARSE_PATH
         }
         { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'symbolic link or junction'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'does not block a normal RootModule after reparse mock tests' {
+        [string]::IsNullOrEmpty($env:RST_RELEASE_TEST_REPARSE_PATH) | Should -BeTrue
+        $null = New-Item -Path (Join-Path $script:modulePath 'nested') -ItemType Directory
+        Set-Content -LiteralPath (Join-Path $script:modulePath 'nested/root.psm1') -Value '# Regular root'
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'nested/root.psm1'; ModuleVersion = '1.2.3.4'; GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
