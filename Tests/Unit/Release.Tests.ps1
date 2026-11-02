@@ -322,6 +322,18 @@ Describe 'Tagged release safety (offline)' {
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
+    It 'rejects a hidden module package root before tests' {
+        $attributes = [IO.Directory]::GetAttributes($script:modulePath)
+        try {
+            [IO.Directory]::SetAttributes($script:modulePath, $attributes -bor [IO.FileAttributes]::Hidden)
+            { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'Hidden files and directories are not supported because PowerShellGet omits them'
+        }
+        finally {
+            [IO.Directory]::SetAttributes($script:modulePath, $attributes)
+        }
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
     It 'rejects a package file made hidden after pre-test validation before publishing' {
         $file = Join-Path $script:modulePath 'ordinary-content.txt'
         Set-Content -LiteralPath $file -Value '# Regular package file'
