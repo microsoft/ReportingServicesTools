@@ -70,7 +70,9 @@ Describe 'Tagged release safety (offline)' {
         & $releaseScript -Phase Validate -RepositoryPath $script:checkout
         & $releaseScript -Phase Publish -RepositoryPath $script:checkout
         Assert-MockCalled Publish-Module -Times 1 -Exactly -Scope It -ParameterFilter {
-            $Path -eq $script:modulePath -and $NuGetApiKey -eq 'offline-test-key' -and $ErrorAction -eq 'Stop'
+            $Path -eq $script:modulePath -and $NuGetApiKey -eq 'offline-test-key' -and
+                $PSBoundParameters.ContainsKey('ErrorAction') -and
+                $PSBoundParameters['ErrorAction'] -eq [System.Management.Automation.ActionPreference]::Stop
         }
         (Invoke-FixtureGit -Arguments @('rev-parse', 'HEAD')) | Should -Be $env:APPVEYOR_REPO_COMMIT
         @(Invoke-FixtureGit -Arguments @('status', '--porcelain')).Count | Should -Be 0
@@ -232,7 +234,10 @@ Describe 'Tagged release safety (offline)' {
     It 'propagates a non-terminating publish failure as a terminating error, without committing or retrying' {
         Mock Publish-Module { Write-Error 'Simulated Gallery rejection' }
         { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Simulated Gallery rejection'
-        Assert-MockCalled Publish-Module -Times 1 -Exactly -Scope It -ParameterFilter { $ErrorAction -eq 'Stop' }
+        Assert-MockCalled Publish-Module -Times 1 -Exactly -Scope It -ParameterFilter {
+            $PSBoundParameters.ContainsKey('ErrorAction') -and
+                $PSBoundParameters['ErrorAction'] -eq [System.Management.Automation.ActionPreference]::Stop
+        }
         (Invoke-FixtureGit -Arguments @('rev-parse', 'HEAD')) | Should -Be $env:APPVEYOR_REPO_COMMIT
         @(Invoke-FixtureGit -Arguments @('status', '--porcelain')).Count | Should -Be 0
     }
