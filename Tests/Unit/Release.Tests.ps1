@@ -1,5 +1,6 @@
 $repository = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $releaseScript = Join-Path $repository 'build/Invoke-Release.ps1'
+$assertScript = Join-Path $repository 'build/Assert-PesterResult.ps1'
 
 Describe 'Tagged release safety (offline)' {
     # Pester 4 does not retain functions declared in BeforeAll for BeforeEach.
@@ -515,5 +516,92 @@ Describe 'Tagged release safety (offline)' {
         $configuration.IndexOf('before_test:') | Should -BeLessThan $configuration.IndexOf('test_script:')
         $configuration.IndexOf('test_script:') | Should -BeLessThan $configuration.IndexOf('deploy_script:')
         $configuration | Should -Not -Match 'git checkout|git commit|git push|Publish-Module|Set-Content'
+    }
+
+    It 'requires real passing results from the focused and broader test suites' {
+        $configuration = Get-Content -LiteralPath (Join-Path $repository 'appveyor.yml') -Raw
+        $focused = [regex]::Escape("& .\build\Assert-PesterResult.ps1 -Result `$releaseTests -Name 'Release safety tests' -RequireAllPassed")
+        $broader = [regex]::Escape("& .\build\Assert-PesterResult.ps1 -Result `$suiteResults.ToArray() -Name 'Pester suite'")
+        $configuration | Should -Match $focused
+        $configuration | Should -Match ($broader + '\r?\n')
+        $configuration | Should -Not -Match ($broader + ' -RequireAllPassed')
+        $configuration | Should -Match 'if \(\$null -eq \$resultsIT\) \{ throw'
+        $configuration | Should -Not -Match 'releaseTests\.FailedCount'
+        $configuration.IndexOf('-Name ''Release safety tests''') | Should -BeLessThan $configuration.IndexOf('Invoke-ScriptAnalyzer')
+    }
+}
+
+Describe 'Pester result gate (offline)' {
+    function New-PesterResult {
+        param ([int]$Passed = 0, [int]$Failed = 0, [int]$Skipped = 0, [int]$Pending = 0, [int]$Inconclusive = 0)
+        [pscustomobject]@{
+            TotalCount        = $Passed + $Failed + $Skipped + $Pending + $Inconclusive
+            PassedCount       = $Passed
+            FailedCount       = $Failed
+            SkippedCount      = $Skipped
+            PendingCount      = $Pending
+            InconclusiveCount = $Inconclusive
+        }
+    }
+
+    It 'accepts a nonempty focused suite where every test passed' {
+        { & $assertScript -Result (New-PesterResult -Passed 3) -Name 'Focused' -RequireAllPassed } | Should -Not -Throw
+    }
+
+    It 'rejects a focused suite that discovered no tests' {
+        { & $assertScript -Result (New-PesterResult) -Name 'Focused' -RequireAllPassed } | Should -Throw 'Focused ran no tests'
+    }
+
+    It 'rejects a focused suite whose only test was <Kind>' -TestCases @(
+        @{ Kind = 'skipped'; Result = (New-PesterResult -Skipped 1) }
+        @{ Kind = 'pending'; Result = (New-PesterResult -Pending 1) }
+        @{ Kind = 'inconclusive'; Result = (New-PesterResult -Inconclusive 1) }
+    ) {
+        param ($Kind, $Result)
+        { & $assertScript -Result $Result -Name 'Focused' -RequireAllPassed } | Should -Throw 'Focused did not pass any tests'
+    }
+
+    It 'rejects a focused suite with passing and <Kind> tests' -TestCases @(
+        @{ Kind = 'skipped'; Result = (New-PesterResult -Passed 2 -Skipped 1) }
+        @{ Kind = 'pending'; Result = (New-PesterResult -Passed 2 -Pending 1) }
+        @{ Kind = 'inconclusive'; Result = (New-PesterResult -Passed 2 -Inconclusive 1) }
+    ) {
+        param ($Kind, $Result)
+        { & $assertScript -Result $Result -Name 'Focused' -RequireAllPassed } | Should -Throw 'Focused must pass every test'
+    }
+
+    It 'rejects a focused suite whose counts do not add up to all passed' {
+        $result = New-PesterResult -Passed 2
+        $result.TotalCount = 3
+        { & $assertScript -Result $result -Name 'Focused' -RequireAllPassed } | Should -Throw 'Focused must pass every test'
+    }
+
+    It 'rejects failing results for <Mode>' -TestCases @(
+        @{ Mode = 'the focused suite'; Strict = $true }
+        @{ Mode = 'the broader suite'; Strict = $false }
+    ) {
+        param ($Mode, $Strict)
+        { & $assertScript -Result (New-PesterResult -Passed 5 -Failed 1) -Name 'Suite' -RequireAllPassed:$Strict } | Should -Throw 'Suite found 1 failed tests'
+    }
+
+    It 'rejects a missing or incomplete result' {
+        { & $assertScript -Result $null -Name 'Suite' } | Should -Throw 'did not return a Pester result'
+        { & $assertScript -Result @() -Name 'Suite' } | Should -Throw 'did not return a Pester result'
+        { & $assertScript -Result ([pscustomobject]@{ TotalCount = 1; PassedCount = 1 }) -Name 'Suite' } | Should -Throw 'without FailedCount'
+    }
+
+    It 'allows legitimate skips in the broader suite when tests passed' {
+        $results = @((New-PesterResult -Passed 4 -Skipped 2), (New-PesterResult -Skipped 3 -Pending 1))
+        { & $assertScript -Result $results -Name 'Suite' } | Should -Not -Throw
+    }
+
+    It 'rejects a broader suite that ran no tests or passed none' {
+        { & $assertScript -Result @((New-PesterResult), (New-PesterResult)) -Name 'Suite' } | Should -Throw 'Suite ran no tests'
+        { & $assertScript -Result @((New-PesterResult -Skipped 2), (New-PesterResult -Pending 1)) -Name 'Suite' } | Should -Throw 'Suite did not pass any tests'
+    }
+
+    It 'aggregates failures across broader suite files' {
+        $results = @((New-PesterResult -Passed 4), (New-PesterResult -Failed 2 -Skipped 1))
+        { & $assertScript -Result $results -Name 'Suite' } | Should -Throw 'Suite found 2 failed tests'
     }
 }

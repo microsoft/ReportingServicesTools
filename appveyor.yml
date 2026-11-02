@@ -120,7 +120,7 @@ test_script:
     # Validate the release guard offline before tests that require report server services.
     Import-Module Pester -RequiredVersion 4.10.1 -ErrorAction Stop
     $releaseTests = Invoke-Pester -Path .\Tests\Unit\Release.Tests.ps1 -PassThru -ErrorAction Stop
-    if ($releaseTests.FailedCount -gt 0) { throw "Release safety tests found $($releaseTests.FailedCount) issues" }
+    & .\build\Assert-PesterResult.ps1 -Result $releaseTests -Name 'Release safety tests' -RequireAllPassed
 
     # Execute the script analyzer
     Write-Host "Starting execution of script analyzer"
@@ -175,6 +175,7 @@ test_script:
     $testFiles = @(Get-CiTestFile -Path ".\Tests")
     if ($testFiles.Count -eq 0) { throw "No Pester test files found" }
     $failedCount = 0
+    $suiteResults = New-Object System.Collections.ArrayList
     try
     {
         foreach ($testFile in $testFiles)
@@ -182,6 +183,8 @@ test_script:
             $testTimer = [System.Diagnostics.Stopwatch]::StartNew()
             $resultsIT = Invoke-Pester -Path $testFile.FullName -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru -ErrorAction Stop
             $testTimer.Stop()
+            if ($null -eq $resultsIT) { throw "Pester file $($testFile.FullName) returned no result" }
+            $null = $suiteResults.Add($resultsIT)
             Write-Host "Pester file $($testFile.FullName) completed in $($testTimer.Elapsed.TotalSeconds) seconds"
             $wcIT = New-Object 'System.Net.WebClient'
             try
@@ -201,6 +204,7 @@ test_script:
         }
         Write-Host "Completed execution of Pester Tests"
         if ($failedCount -gt 0) { throw "Pester found $failedCount issues" }
+        & .\build\Assert-PesterResult.ps1 -Result $suiteResults.ToArray() -Name 'Pester suite'
     }
     finally
     {
