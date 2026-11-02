@@ -282,11 +282,30 @@ Describe 'Tagged release safety (offline)' {
         $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
         $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
         $env:RST_RELEASE_TEST_REPARSE_PATH = [IO.Path]::GetFullPath((Join-Path $script:modulePath $Component))
-        Mock Get-Item { [pscustomobject]@{ Attributes = [IO.FileAttributes]::ReparsePoint } } -ParameterFilter {
-            $LiteralPath -eq $env:RST_RELEASE_TEST_REPARSE_PATH
+        Mock Get-ChildItem {
+            $isDirectory = Test-Path -LiteralPath $env:RST_RELEASE_TEST_REPARSE_PATH -PathType Container
+            [pscustomobject]@{
+                Name = [IO.Path]::GetFileName($env:RST_RELEASE_TEST_REPARSE_PATH)
+                FullName = $env:RST_RELEASE_TEST_REPARSE_PATH
+                PSIsContainer = $isDirectory
+                Attributes = [IO.FileAttributes]::ReparsePoint
+            }
+        } -ParameterFilter {
+            [string]::Equals(
+                $LiteralPath,
+                [IO.Path]::GetDirectoryName($env:RST_RELEASE_TEST_REPARSE_PATH),
+                [StringComparison]::OrdinalIgnoreCase
+            )
         }
         { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'Release package contains a symbolic link or junction'
         { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Release package contains a symbolic link or junction'
+        Assert-MockCalled Get-ChildItem -Times 2 -Exactly -Scope It -ParameterFilter {
+            [string]::Equals(
+                $LiteralPath,
+                [IO.Path]::GetDirectoryName($env:RST_RELEASE_TEST_REPARSE_PATH),
+                [StringComparison]::OrdinalIgnoreCase
+            )
+        }
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
