@@ -2,22 +2,22 @@ $repository = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $releaseScript = Join-Path $repository 'build/Invoke-Release.ps1'
 
 Describe 'Tagged release safety (offline)' {
-    BeforeAll {
-        function Invoke-FixtureGit {
-            param ([string[]]$Arguments)
-            $output = & git -C $script:checkout @Arguments 2>&1
-            if ($LASTEXITCODE -ne 0) { throw "Fixture git failed: $output" }
-            $output
-        }
+    # Pester 4 does not retain functions declared in BeforeAll for BeforeEach.
+    function Invoke-FixtureGit {
+        param ([string[]]$Arguments)
+        $output = & git -C $script:checkout @Arguments 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "Fixture git failed: $output" }
+        $output
+    }
 
-        function Save-FixtureCommit {
-            $null = Invoke-FixtureGit -Arguments @('add', '--all')
-            $null = Invoke-FixtureGit -Arguments @('-c', 'user.name=Release Test', '-c', 'user.email=release@example.invalid', 'commit', '--quiet', '-m', 'Fixture')
-            Invoke-FixtureGit -Arguments @('rev-parse', 'HEAD')
-        }
+    function Save-FixtureCommit {
+        $null = Invoke-FixtureGit -Arguments @('add', '--all')
+        $null = Invoke-FixtureGit -Arguments @('-c', 'user.name=Release Test', '-c', 'user.email=release@example.invalid', 'commit', '--quiet', '-m', 'Fixture')
+        Invoke-FixtureGit -Arguments @('rev-parse', 'HEAD')
     }
 
     BeforeEach {
+        $script:releaseSetupComplete = $false
         $script:savedEnvironment = @{}
         foreach ($name in @('APPVEYOR_REPO_TAG', 'APPVEYOR_REPO_TAG_NAME', 'APPVEYOR_REPO_COMMIT', 'galleryPublishingKey')) {
             $script:savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name)
@@ -39,13 +39,16 @@ Describe 'Tagged release safety (offline)' {
         Mock Find-Module { throw 'Gallery lookup is forbidden in release regression tests.' }
         Mock Invoke-WebRequest { throw 'Network access is forbidden in release regression tests.' }
         Mock Invoke-RestMethod { throw 'Network access is forbidden in release regression tests.' }
+        $script:releaseSetupComplete = $true
     }
 
     AfterEach {
         try {
-            Assert-MockCalled Find-Module -Times 0 -Exactly -Scope It
-            Assert-MockCalled Invoke-WebRequest -Times 0 -Exactly -Scope It
-            Assert-MockCalled Invoke-RestMethod -Times 0 -Exactly -Scope It
+            if ($script:releaseSetupComplete) {
+                Assert-MockCalled Find-Module -Times 0 -Exactly -Scope It
+                Assert-MockCalled Invoke-WebRequest -Times 0 -Exactly -Scope It
+                Assert-MockCalled Invoke-RestMethod -Times 0 -Exactly -Scope It
+            }
         }
         finally {
             foreach ($name in $script:savedEnvironment.Keys) {
@@ -95,7 +98,7 @@ Describe 'Tagged release safety (offline)' {
 
     It 'explains that legacy zero-padded tags are intentionally invalid' {
         $env:APPVEYOR_REPO_TAG_NAME = '0.06.3'
-        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw '*no leading zeroes*0.06.3*not supported*'
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw '*without leading zeroes*0.06.3*not supported*'
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
