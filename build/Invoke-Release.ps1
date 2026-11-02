@@ -65,7 +65,7 @@ if ($trackedChanges.Count -gt 0 -or $packageChanges.Count -gt 0)
     throw "Release source differs from the tagged commit (including untracked or ignored package files). Use a clean checkout and rerun tests. Changes: $(($trackedChanges + $packageChanges) -join '; ')"
 }
 
-$modulePath = Join-Path $RepositoryPath 'ReportingServicesTools'
+$modulePath = [IO.Path]::GetFullPath((Join-Path $RepositoryPath 'ReportingServicesTools'))
 $manifestPath = Join-Path $modulePath 'ReportingServicesTools.psd1'
 $manifest = Import-PowerShellDataFile -LiteralPath $manifestPath -ErrorAction Stop
 if ($manifest.ModuleVersion -cne $tag)
@@ -75,6 +75,53 @@ if ($manifest.ModuleVersion -cne $tag)
 if ($manifest.PrivateData.PSData.Prerelease)
 {
     throw 'Prerelease metadata is not supported by this numeric-tag release flow. Commit a stable manifest before tagging.'
+}
+
+# Test-ModuleManifest on Windows PowerShell can accept a nonexistent RootModule.
+$rootModule = $manifest.RootModule
+if ($rootModule -isnot [string] -or [string]::IsNullOrWhiteSpace($rootModule))
+{
+    throw 'Release RootModule must name an existing file inside the module package; it cannot be absent or empty.'
+}
+if ([IO.Path]::IsPathRooted($rootModule) -or $rootModule.Contains(':'))
+{
+    throw "Release RootModule '$rootModule' must be a relative file path inside the module package."
+}
+if ($rootModule -match '(^|[\\/])\.\.([\\/]|$)')
+{
+    throw "Release RootModule '$rootModule' resolves outside the module package or uses parent traversal. Use a package-relative path without '..' components."
+}
+$rootPath = [IO.Path]::GetFullPath([IO.Path]::Combine($modulePath, $rootModule))
+$packagePrefix = $modulePath + [IO.Path]::DirectorySeparatorChar
+$pathComparison = [StringComparison]::Ordinal
+if ([IO.Path]::DirectorySeparatorChar -eq '\')
+{
+    $pathComparison = [StringComparison]::OrdinalIgnoreCase
+}
+if (-not $rootPath.StartsWith($packagePrefix, $pathComparison))
+{
+    throw "Release RootModule '$rootModule' resolves outside the module package."
+}
+
+# Inspect each component before descending so a junction cannot escape containment.
+$pathToCheck = $modulePath
+$pathParts = @('') + $rootPath.Substring($packagePrefix.Length).Split([IO.Path]::DirectorySeparatorChar)
+foreach ($part in $pathParts)
+{
+    if ($part) { $pathToCheck = Join-Path $pathToCheck $part }
+    if (-not (Test-Path -LiteralPath $pathToCheck))
+    {
+        throw "Release RootModule file is missing: '$rootModule'. Commit the file inside the module package before tagging."
+    }
+    $item = Get-Item -LiteralPath $pathToCheck -Force -ErrorAction Stop
+    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)
+    {
+        throw "Release RootModule path contains a symbolic link or junction: '$pathToCheck'. Use regular package files."
+    }
+}
+if ($item.PSIsContainer)
+{
+    throw "Release RootModule '$rootModule' must be a file, not a directory."
 }
 $null = Test-ModuleManifest -Path $manifestPath -ErrorAction Stop
 

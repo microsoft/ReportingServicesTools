@@ -172,11 +172,95 @@ Describe 'Tagged release safety (offline)' {
         (Import-PowerShellDataFile $script:manifestPath).ModuleVersion | Should -Be '1.2.3.4'
     }
 
-    It 'rejects invalid package metadata before publishing' {
+    It 'rejects a missing RootModule file before publishing' {
         Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'missing.psm1'; ModuleVersion = '1.2.3.4' }"
         $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
         $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
-        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw
+        { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'Release RootModule file is missing'
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Release RootModule file is missing'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects an absent or empty RootModule: <Entry>' -TestCases @(
+        @{ Entry = '' }, @{ Entry = "RootModule = '';" }, @{ Entry = "RootModule = '   ';" }
+    ) {
+        param ($Entry)
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ $Entry ModuleVersion = '1.2.3.4' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Release RootModule must name an existing file'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects RootModule traversal outside the package: <Root>' -TestCases @(
+        @{ Root = '../outside.psm1' },
+        @{ Root = '..\outside.psm1' },
+        @{ Root = '../ReportingServicesTools-other/outside.psm1' },
+        @{ Root = 'nested/../../outside.psm1' }
+    ) {
+        param ($Root)
+        $outsideDirectory = Join-Path $script:checkout 'ReportingServicesTools-other'
+        $null = New-Item -Path $outsideDirectory -ItemType Directory
+        Set-Content -LiteralPath (Join-Path $outsideDirectory 'outside.psm1') -Value '# Outside package'
+        Set-Content -LiteralPath (Join-Path $script:checkout 'outside.psm1') -Value '# Outside package'
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = '$Root'; ModuleVersion = '1.2.3.4' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'resolves outside the module package'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects absolute RootModule paths even if they name an existing package file' {
+        $absoluteRoot = Join-Path $script:modulePath 'ReportingServicesTools.psm1'
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = '$absoluteRoot'; ModuleVersion = '1.2.3.4' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'must be a relative file path'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects a directory as RootModule' {
+        $null = New-Item -Path (Join-Path $script:modulePath 'nested') -ItemType Directory
+        Set-Content -LiteralPath (Join-Path $script:modulePath 'nested/marker.txt') -Value '# Tracked directory'
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'nested'; ModuleVersion = '1.2.3.4' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'must be a file, not a directory'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'accepts a regular RootModule in a package subdirectory' {
+        $null = New-Item -Path (Join-Path $script:modulePath 'nested') -ItemType Directory
+        Set-Content -LiteralPath (Join-Path $script:modulePath 'nested/root.psm1') -Value '# Valid nested root'
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'nested/root.psm1'; ModuleVersion = '1.2.3.4'; GUID = '9d139310-ce45-41ce-8e8b-d76335aa1789' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects a RootModule path with a reparse point at <Component>' -TestCases @(
+        @{ Component = 'nested' }, @{ Component = 'nested/root.psm1' }
+    ) {
+        param ($Component)
+        $null = New-Item -Path (Join-Path $script:modulePath 'nested') -ItemType Directory
+        Set-Content -LiteralPath (Join-Path $script:modulePath 'nested/root.psm1') -Value '# Fixture'
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'nested/root.psm1'; ModuleVersion = '1.2.3.4' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        $script:reparsePath = [IO.Path]::GetFullPath((Join-Path $script:modulePath $Component))
+        Mock Get-Item { [pscustomobject]@{ Attributes = [IO.FileAttributes]::ReparsePoint } } -ParameterFilter {
+            $LiteralPath -eq $script:reparsePath
+        }
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'symbolic link or junction'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'rejects invalid manifest metadata even with a valid RootModule file' {
+        Set-Content -LiteralPath $script:manifestPath -Value "@{ RootModule = 'ReportingServicesTools.psm1'; ModuleVersion = '1.2.3.4'; GUID = 'not-a-guid' }"
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'GUID'
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
 
