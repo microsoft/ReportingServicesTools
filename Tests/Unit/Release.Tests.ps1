@@ -330,7 +330,7 @@ Describe 'Tagged release safety (offline)' {
             $hiddenPath = Join-Path $script:modulePath 'hidden-content'
             $null = New-Item -Path $hiddenPath -ItemType Directory
             Set-Content -LiteralPath (Join-Path $hiddenPath 'content.txt') -Value '# Hidden directory content'
-            [IO.Directory]::SetAttributes($hiddenPath, [IO.File]::GetAttributes($hiddenPath) -bor [IO.FileAttributes]::Hidden)
+            [IO.File]::SetAttributes($hiddenPath, [IO.File]::GetAttributes($hiddenPath) -bor [IO.FileAttributes]::Hidden)
         }
         else {
             $hiddenPath = Join-Path $script:modulePath 'hidden-content.txt'
@@ -344,13 +344,13 @@ Describe 'Tagged release safety (offline)' {
     }
 
     It 'rejects a hidden module package root before tests' {
-        $attributes = [IO.Directory]::GetAttributes($script:modulePath)
+        $attributes = [IO.File]::GetAttributes($script:modulePath)
         try {
-            [IO.Directory]::SetAttributes($script:modulePath, $attributes -bor [IO.FileAttributes]::Hidden)
+            [IO.File]::SetAttributes($script:modulePath, $attributes -bor [IO.FileAttributes]::Hidden)
             { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'Hidden files and directories are not supported because PowerShellGet omits them'
         }
         finally {
-            [IO.Directory]::SetAttributes($script:modulePath, $attributes)
+            [IO.File]::SetAttributes($script:modulePath, $attributes)
         }
         Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
     }
