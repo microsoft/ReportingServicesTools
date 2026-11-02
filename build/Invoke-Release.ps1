@@ -35,6 +35,38 @@ function Invoke-ReleaseGit
     $output
 }
 
+function Get-ReleaseFileInventory
+{
+    param ([string]$Directory)
+
+    foreach ($entry in (Get-ChildItem -LiteralPath $Directory -Force -ErrorAction Stop | Sort-Object Name))
+    {
+        if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint)
+        {
+            throw "Release package contains a symbolic link or junction: '$($entry.FullName)'. Use regular package files."
+        }
+        if ($entry.PSIsContainer)
+        {
+            Get-ReleaseFileInventory -Directory $entry.FullName
+        }
+        else
+        {
+            [ordered]@{
+                Path = $entry.FullName.Substring($packagePrefix.Length)
+                SHA256 = (Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256 -ErrorAction Stop).Hash
+            }
+        }
+    }
+}
+
+# Keep the pre-test inventory outside the published package and Git's worktree checks.
+$gitDirectory = Invoke-ReleaseGit -Arguments @('rev-parse', '--absolute-git-dir')
+$inventoryPath = Join-Path $gitDirectory 'rst-tested-package.json'
+if ($Phase -eq 'Validate' -and (Test-Path -LiteralPath $inventoryPath))
+{
+    Remove-Item -LiteralPath $inventoryPath -Force -ErrorAction Stop
+}
+
 $tag = $env:APPVEYOR_REPO_TAG_NAME
 $versionPattern = '\A(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?\z'
 $releaseVersion = $null
@@ -125,12 +157,32 @@ if ($item.PSIsContainer)
 }
 $null = Test-ModuleManifest -Path $manifestPath -ErrorAction Stop
 
+$inventory = [ordered]@{
+    Schema = 1
+    Commit = $headCommit
+    Tag = $tag
+    JobId = $env:APPVEYOR_JOB_ID
+    Files = @(Get-ReleaseFileInventory -Directory $modulePath)
+} | ConvertTo-Json -Depth 6 -Compress
+
 Write-Host "Validated release $tag from tested commit $headCommit."
+if ($Phase -eq 'Validate')
+{
+    [IO.File]::WriteAllText($inventoryPath, $inventory)
+}
 if ($Phase -eq 'Publish')
 {
     if ([string]::IsNullOrWhiteSpace($env:galleryPublishingKey))
     {
         throw 'galleryPublishingKey is required to publish the validated tag release.'
+    }
+    if (-not (Test-Path -LiteralPath $inventoryPath -PathType Leaf))
+    {
+        throw 'Pre-test release byte inventory is missing. Run validation before tests in this build before publishing.'
+    }
+    if (-not [string]::Equals([IO.File]::ReadAllText($inventoryPath), $inventory, [StringComparison]::Ordinal))
+    {
+        throw 'Release package bytes or build identity differ from the pre-test inventory. Rebuild and rerun tests; Git status alone does not detect normalized line-ending changes.'
     }
     Publish-Module -Path $modulePath -NuGetApiKey $env:galleryPublishingKey -ErrorAction Stop
 }

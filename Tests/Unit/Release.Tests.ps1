@@ -19,10 +19,11 @@ Describe 'Tagged release safety (offline)' {
     BeforeEach {
         $script:releaseSetupComplete = $false
         $script:savedEnvironment = @{}
-        foreach ($name in @('APPVEYOR_REPO_TAG', 'APPVEYOR_REPO_TAG_NAME', 'APPVEYOR_REPO_COMMIT', 'galleryPublishingKey', 'RST_RELEASE_TEST_REPARSE_PATH')) {
+        foreach ($name in @('APPVEYOR_REPO_TAG', 'APPVEYOR_REPO_TAG_NAME', 'APPVEYOR_REPO_COMMIT', 'APPVEYOR_JOB_ID', 'galleryPublishingKey', 'RST_RELEASE_TEST_REPARSE_PATH')) {
             $script:savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name)
         }
         $env:RST_RELEASE_TEST_REPARSE_PATH = $null
+        $env:APPVEYOR_JOB_ID = 'offline-release-job'
         $script:checkout = Join-Path $TestDrive ([guid]::NewGuid().ToString('N'))
         $script:modulePath = Join-Path $script:checkout 'ReportingServicesTools'
         $null = New-Item -Path $script:modulePath -ItemType Directory -Force
@@ -329,6 +330,7 @@ Describe 'Tagged release safety (offline)' {
 
     It 'propagates a non-terminating publish failure as a terminating error, without committing or retrying' {
         Mock Publish-Module { Write-Error 'Simulated Gallery rejection' }
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
         { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Simulated Gallery rejection'
         Assert-MockCalled Publish-Module -Times 1 -Exactly -Scope It -ParameterFilter {
             $PSBoundParameters.ContainsKey('ErrorAction') -and
@@ -336,6 +338,65 @@ Describe 'Tagged release safety (offline)' {
         }
         (Invoke-FixtureGit -Arguments @('rev-parse', 'HEAD')) | Should -Be $env:APPVEYOR_REPO_COMMIT
         @(Invoke-FixtureGit -Arguments @('status', '--porcelain')).Count | Should -Be 0
+    }
+
+    It 'requires a pre-test byte inventory before publishing' {
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Pre-test release byte inventory is missing'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'binds the byte inventory to the current build job' {
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
+        $env:APPVEYOR_JOB_ID = 'another-release-job'
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'differ from the pre-test inventory'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'invalidates an earlier inventory if a new pre-test validation fails' {
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
+        $root = Join-Path $script:modulePath 'ReportingServicesTools.psm1'
+        $original = [IO.File]::ReadAllBytes($root)
+        Add-Content -LiteralPath $root -Value '# Dirty source'
+        { & $releaseScript -Phase Validate -RepositoryPath $script:checkout } | Should -Throw 'source differs'
+        [IO.File]::WriteAllBytes($root, $original)
+        { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'Pre-test release byte inventory is missing'
+        Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+    }
+
+    It 'checks raw package bytes even when Git normalizes line endings: <Change>' -TestCases @(
+        @{ Change = $false }, @{ Change = $true }
+    ) {
+        param ($Change)
+        $rawFile = Join-Path $script:modulePath 'raw.txt'
+        [IO.File]::WriteAllText($rawFile, "line1`r`nline2`n")
+        # Normalize only this disposable fixture's text file, never the real checkout.
+        Set-Content -LiteralPath (Join-Path $script:checkout '.gitattributes') -Value 'ReportingServicesTools/raw.txt text'
+        $env:APPVEYOR_REPO_COMMIT = Save-FixtureCommit
+        $null = Invoke-FixtureGit -Arguments @('tag', '-f', '1.2.3.4')
+        $null = Invoke-FixtureGit -Arguments @('config', '--local', 'core.autocrlf', 'true')
+        $null = Invoke-FixtureGit -Arguments @('config', '--local', 'core.safecrlf', 'false')
+        $beforeHash = (Get-FileHash -LiteralPath $rawFile -Algorithm SHA256).Hash
+        & $releaseScript -Phase Validate -RepositoryPath $script:checkout
+        if ($Change) {
+            [IO.File]::WriteAllText($rawFile, "line1`nline2`r`n")
+            (Get-FileHash -LiteralPath $rawFile -Algorithm SHA256).Hash | Should -Not -Be $beforeHash
+        }
+        # Use precisely the production Git checks, without the fixture helper's -c overrides.
+        $tracked = @(& git -C $script:checkout status --porcelain --untracked-files=no)
+        $LASTEXITCODE | Should -Be 0
+        $package = @(& git -C $script:checkout status --porcelain --untracked-files=all --ignored -- ReportingServicesTools)
+        $LASTEXITCODE | Should -Be 0
+        $tracked.Count | Should -Be 0
+        $package.Count | Should -Be 0
+        if ($Change) {
+            { & $releaseScript -Phase Publish -RepositoryPath $script:checkout } | Should -Throw 'differ from the pre-test inventory'
+            Assert-MockCalled Publish-Module -Times 0 -Exactly -Scope It
+        }
+        else {
+            Mock Publish-Module {}
+            & $releaseScript -Phase Publish -RepositoryPath $script:checkout
+            Assert-MockCalled Publish-Module -Times 1 -Exactly -Scope It
+        }
     }
 
     It 'wires validation before tests and publishes only in the deployment stage' {
