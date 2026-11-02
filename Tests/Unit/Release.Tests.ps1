@@ -5,7 +5,7 @@ Describe 'Tagged release safety (offline)' {
     # Pester 4 does not retain functions declared in BeforeAll for BeforeEach.
     function Invoke-FixtureGit {
         param ([string[]]$Arguments)
-        $output = & git -C $script:checkout @Arguments 2>&1
+        $output = & git -c core.autocrlf=false -c core.safecrlf=false -C $script:checkout @Arguments 2>&1
         if ($LASTEXITCODE -ne 0) { throw "Fixture git failed: $output" }
         $output
     }
