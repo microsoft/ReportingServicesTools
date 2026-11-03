@@ -1,17 +1,21 @@
 # Copyright (c) 2021 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+. "$PSScriptRoot\..\..\Common\Get-RsTestSession.ps1"
+
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
 Describe "Test-RsRestItemDataSource" {
+    $restSessionFixture = @{}
     $session = $null
     $rsFolderPath = ""
     $datasourcesReport = ""
     $sqlPowerBIReport = ""
 
     BeforeEach {
-        $session = New-RsRestSession -ReportPortalUri $reportPortalUri
+        $fixtureSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
+        $session = $fixtureSession
 
         # creating test folder
         $folderName = 'SUT_TestRsRestItemDataSource_' + [guid]::NewGuid()
@@ -91,7 +95,7 @@ Describe "Test-RsRestItemDataSource" {
         $rsSession = $null
 
         BeforeEach {
-            $rsSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+            $rsSession = $fixtureSession
         }
 
         It "tests data sources for power bi reports, and expects failure responses" {

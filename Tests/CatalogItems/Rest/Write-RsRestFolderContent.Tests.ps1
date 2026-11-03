@@ -1,6 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+. "$PSScriptRoot\..\..\Common\Get-RsTestSession.ps1"
+
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
@@ -28,12 +30,14 @@ function VerifyCatalogItemExists()
 }
 
 Describe "Write-RsRestFolderContent" {
+    $restSessionFixture = @{}
     $rsFolderPath = ""
     $localFolderPath = (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
 
     BeforeEach {
+        $fixtureSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
         $folderName = 'SUT_WriteRsRestFolderContent_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName
+        New-RsRestFolder -WebSession $fixtureSession -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
     }
 
@@ -78,7 +82,7 @@ Describe "Write-RsRestFolderContent" {
         $webSession = $null
 
         BeforeEach {
-            $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+            $webSession = $fixtureSession
         }
 
         It "Uploads all the resources in a folder" {
