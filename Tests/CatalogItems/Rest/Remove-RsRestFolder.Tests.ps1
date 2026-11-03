@@ -1,6 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+. "$PSScriptRoot\..\..\Common\Get-RsTestSession.ps1"
+
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
@@ -28,17 +30,19 @@ function VerifyCatalogItemDoesNotExists()
 }
 
 Describe "Remove-RsRestFolder" {
+    $restSessionFixture = @{}
     $rsFolderPath = ""
 
     BeforeEach {
+        $fixtureSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
         # creating a new folder
         $folderName = "SUT_RemoveRsRestFolder_" + [Guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -FolderName $folderName -RsFolder /
+        New-RsRestFolder -WebSession $fixtureSession -FolderName $folderName -RsFolder /
         $rsFolderPath = "/$folderName"
 
         # uploading resources to the folder
         $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $rsFolderPath
+        Write-RsRestFolderContent -WebSession $fixtureSession -Path $localResourcesPath -RsFolder $rsFolderPath
     }
 
     Context "ReportPortalUri parameter" {
@@ -52,7 +56,7 @@ Describe "Remove-RsRestFolder" {
         $webSession = $null
 
         BeforeEach {
-            $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+            $webSession = $fixtureSession
         }
 
         It "Should delete a folder" {

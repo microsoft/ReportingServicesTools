@@ -1,6 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+. "$PSScriptRoot\..\..\Common\Get-RsTestSession.ps1"
+
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
@@ -21,11 +23,13 @@ function VerifyFileWasDownloaded()
 }
 
 Describe "Out-RsRestFolderContent" {
+    $restSessionFixture = @{}
     $rsFolderPath = ""
     $destinationPath = ""
 
     BeforeEach {
-        $session = New-RsRestSession -ReportPortalUri $reportPortalUri
+        $fixtureSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
+        $session = $fixtureSession
 
         # Create a folder on Report Server to upload some files to
         $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
@@ -84,7 +88,7 @@ Describe "Out-RsRestFolderContent" {
         $webSession = $null
 
         BeforeEach {
-            $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+            $webSession = $fixtureSession
         }
 
         It "Downloads all resources from a folder" {

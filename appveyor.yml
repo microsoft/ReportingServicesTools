@@ -119,7 +119,7 @@ test_script:
 - ps: |
     # Validate the release guard offline before tests that require report server services.
     Import-Module Pester -RequiredVersion 4.10.1 -ErrorAction Stop
-    $releaseTests = Invoke-Pester -Path .\Tests\Unit\Release.Tests.ps1 -PassThru -ErrorAction Stop
+    $releaseTests = Invoke-Pester -Path @('.\Tests\Unit\Release.Tests.ps1', '.\Tests\Unit\TestSession.Tests.ps1') -PassThru -ErrorAction Stop
     & .\build\Assert-PesterResult.ps1 -Result $releaseTests -Name 'Release safety tests' -RequireAllPassed
 
     # Execute the script analyzer
@@ -176,16 +176,27 @@ test_script:
     if ($testFiles.Count -eq 0) { throw "No Pester test files found" }
     $failedCount = 0
     $suiteResults = New-Object System.Collections.ArrayList
+    $sessionCallCount = 0
+    $suiteTimer = [System.Diagnostics.Stopwatch]::StartNew()
     try
     {
         foreach ($testFile in $testFiles)
         {
             $testTimer = [System.Diagnostics.Stopwatch]::StartNew()
-            $resultsIT = Invoke-Pester -Path $testFile.FullName -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru -ErrorAction Stop
+            $fileSessionStart = $sessionCallCount
+            $resultsIT = Invoke-Pester -Path $testFile.FullName -OutputFormat NUnitXml -OutputFile TestsResultsIT.xml -PassThru -ErrorAction Stop 4>&1 | ForEach-Object {
+                if ($_ -is [System.Management.Automation.VerboseRecord])
+                {
+                    if ($_.Message -match '\AMaking call to .*/api/v[12]\.0/me to create a session\.\.\.\z') { $sessionCallCount++ }
+                    Write-Verbose $_.Message
+                }
+                else { $_ }
+            }
             $testTimer.Stop()
             if ($null -eq $resultsIT) { throw "Pester file $($testFile.FullName) returned no result" }
             $null = $suiteResults.Add($resultsIT)
             Write-Host "Pester file $($testFile.FullName) completed in $($testTimer.Elapsed.TotalSeconds) seconds"
+            Write-Host "Pester file session calls: $($sessionCallCount - $fileSessionStart)"
             $wcIT = New-Object 'System.Net.WebClient'
             try
             {
@@ -208,6 +219,8 @@ test_script:
     }
     finally
     {
+        $suiteTimer.Stop()
+        Write-Host "Discovered suite duration seconds: $($suiteTimer.Elapsed.TotalSeconds); REST session calls: $sessionCallCount"
         Write-Host "Dumping Server Logs"
         Get-ChildItem "C:\Program Files\Microsoft Power BI Report Server\PBIRS\LogFiles\*" -Include *.log -ErrorAction Continue | Get-Content -ErrorAction Continue
     }

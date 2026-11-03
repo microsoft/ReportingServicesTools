@@ -1,6 +1,8 @@
 # Copyright (c) 2021 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+. "$PSScriptRoot\..\..\Common\Get-RsTestSession.ps1"
+
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
@@ -19,36 +21,38 @@ function VerifyCatalogItemExists()
         [string]
         $folderPath,
 
-        [string]
-        $reportPortalUri
+        [object]
+        $WebSession
     )
 
-    $item = (Get-RsRestItem -reportPortalUri $reportPortalUri -RsItem "$($folderPath)/$($itemName)" ) | Where-Object { $_.Type -eq $itemType -and $_.Name -eq $itemName }
+    $item = (Get-RsRestItem -WebSession $WebSession -RsItem "$($folderPath)/$($itemName)" ) | Where-Object { $_.Type -eq $itemType -and $_.Name -eq $itemName }
     $item | Should Not BeNullOrEmpty
 }
 
 Describe "New-RsRestCacheRefreshPlan" {
+    $restSessionFixture = @{}
     $rsFolderPath = ""
     $localPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
 
     BeforeEach {
+        $fixtureSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
         $folderName = 'SUT_WriteRsRestCatalogItem_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName -Verbose
+        New-RsRestFolder -WebSession $fixtureSession -RsFolder / -FolderName $folderName -Verbose
         $rsFolderPath = '/' + $folderName
         $itemPath = $localPath + '\ReportCatalog.pbix'
-        Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path $itemPath -RsFolder $rsFolderPath -Verbose
-        VerifyCatalogItemExists -itemName 'ReportCatalog' -itemType 'PowerBIReport' -folderPath $rsFolderPath -reportPortalUri $reportPortalUri
+        Write-RsRestCatalogItem -WebSession $fixtureSession -Path $itemPath -RsFolder $rsFolderPath -Verbose
+        VerifyCatalogItemExists -itemName 'ReportCatalog' -itemType 'PowerBIReport' -folderPath $rsFolderPath -WebSession $fixtureSession
 
-        $dataSources = Get-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri
+        $dataSources = Get-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -WebSession $fixtureSession
         $dataSources[0].DataModelDataSource.AuthType = 'UsernamePassword'
         $dataSources[0].DataModelDataSource.Username = 'PBIRS'
         $dataSources[0].DataModelDataSource.Secret = 'password'
-        Set-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
+        Set-RsRestItemDataSource -RsItem "$($rsFolderPath)/ReportCatalog" -WebSession $fixtureSession -DataSources $dataSources -RsItemType 'PowerBIReport'
 
     }
 
     AfterEach {
-        Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $rsFolderPath -Confirm:$false
+        Remove-RsRestCatalogItem -WebSession $fixtureSession -RsItem $rsFolderPath -Confirm:$false
     }
 
     Context "ReportPortalUri parameter" {

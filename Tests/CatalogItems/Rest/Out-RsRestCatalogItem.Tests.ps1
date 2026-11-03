@@ -1,6 +1,8 @@
 # Copyright (c) 2016 Microsoft Corporation. All Rights Reserved.
 # Licensed under the MIT License (MIT)
 
+. "$PSScriptRoot\..\..\Common\Get-RsTestSession.ps1"
+
 $reportPortalUri = if ($env:PesterPortalUrl -eq $null) { 'http://localhost/reports' } else { $env:PesterPortalUrl }
 $reportServerUri = if ($env:PesterServerUrl -eq $null) { 'http://localhost/reportserver' } else { $env:PesterServerUrl }
 
@@ -22,18 +24,20 @@ function VerifyFileWasDownloaded()
 }
 
 Describe "Out-RsRestCatalogItem" {
+    $restSessionFixture = @{}
     $rsFolderPath = ""
     $localFolderPath = ""
 
     BeforeEach {
+        $fixtureSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
         # create new folder in RS
         $folderName = 'SUT_OutRsRestCatalogItem_' + [guid]::NewGuid()
-        New-RsRestFolder -ReportPortalUri $reportPortalUri -RsFolder / -FolderName $folderName
+        New-RsRestFolder -WebSession $fixtureSession -RsFolder / -FolderName $folderName
         $rsFolderPath = '/' + $folderName
 
         # Upload the catalog items that are going to be downloaded
         $localResourcesPath =   (Get-Item -Path ".\").FullName  + '\Tests\CatalogItems\testResources'
-        Write-RsRestFolderContent -ReportPortalUri $reportPortalUri -Path $localResourcesPath -RsFolder $rsFolderPath
+        Write-RsRestFolderContent -WebSession $fixtureSession -Path $localResourcesPath -RsFolder $rsFolderPath
 
         # Create a local folder to download the catalog items
         $localFolderName = 'SutOutRsRestCatalogItemTest' + [guid]::NewGuid()
@@ -104,7 +108,7 @@ Describe "Out-RsRestCatalogItem" {
         $webSession = $null
 
         BeforeEach {
-            $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+            $webSession = $fixtureSession
         }
 
         It "Should download a RDL file" {
