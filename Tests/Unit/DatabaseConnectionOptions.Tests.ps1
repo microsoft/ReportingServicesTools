@@ -11,6 +11,66 @@ InModuleScope ReportingServicesTools {
             [switch]$TrustServerCertificate, $HostNameInCertificate)
     }
 
+    function Get-RsTestWmiMethodParameters
+    {
+        # Read local Windows metadata only; never invoke the method or a Report Server setter.
+        $processClass = New-Object System.Management.ManagementClass('Win32_Process')
+        try
+        {
+            return $processClass.GetMethodParameters('Create')
+        }
+        finally
+        {
+            $processClass.Dispose()
+        }
+    }
+
+    if (-not ('RsTestFailingPropertyCollection' -as [type]))
+    {
+        Add-Type -TypeDefinition @'
+public class RsTestFailingPropertyCollection
+{
+    private readonly string failingName;
+    private readonly System.Exception error;
+    public RsTestFailingPropertyCollection(string failingName, System.Exception error)
+    {
+        this.failingName = failingName;
+        this.error = error;
+    }
+    public object this[string name]
+    {
+        get
+        {
+            if (name == failingName) { throw error; }
+            return name;
+        }
+    }
+}
+'@
+    }
+
+    if (-not ('RsTestWmiPropertyCollectionProxy' -as [type]))
+    {
+        Add-Type -ReferencedAssemblies System.Management -TypeDefinition @'
+public class RsTestWmiPropertyCollectionProxy
+{
+    private readonly System.Management.PropertyDataCollection inner;
+    public RsTestWmiPropertyCollectionProxy(System.Management.PropertyDataCollection inner)
+    {
+        this.inner = inner;
+    }
+    public object this[string name]
+    {
+        get
+        {
+            if (name == "Encrypt" || name == "EncryptMode") { return name; }
+            return inner[name];
+        }
+    }
+}
+'@
+    }
+
     foreach ($commandName in @('Set-RsDatabase', 'Set-RsDatabaseCredentials'))
     {
         Describe "$commandName catalog connection options" {
@@ -121,29 +181,135 @@ InModuleScope ReportingServicesTools {
                 $script:methodParameters.Count | Should Be 0
             }
 
-            It 'Treats a throwing WMI property lookup as an unsupported input' {
-                $script:methodParameters = @{}
-                if (-not ('RsTestThrowingPropertyCollection' -as [type]))
+            It 'Retains the five-argument legacy call when real WMI metadata has no Encrypt' {
+                $metadata = Get-RsTestWmiMethodParameters
+                try
                 {
-                    Add-Type -ReferencedAssemblies System.Management -TypeDefinition @'
-public class RsTestThrowingPropertyCollection
-{
-    private readonly string[] names;
-    public RsTestThrowingPropertyCollection(string[] names) { this.names = names; }
-    public object this[string name]
-    {
-        get
-        {
-            if (System.Array.IndexOf(names, name) < 0) { throw new System.Management.ManagementException("Not found"); }
-            return name;
-        }
-    }
-}
-'@
+                    $lookupError = $null
+                    try
+                    {
+                        $null = $metadata.Properties.get_Item('Encrypt')
+                    }
+                    catch
+                    {
+                        $lookupError = $_.Exception
+                    }
+                    ($lookupError -is [System.Management.Automation.MethodInvocationException]) | Should Be $true
+                    ($lookupError.InnerException -is [System.Management.ManagementException]) | Should Be $true
+                    $lookupError.InnerException.ErrorCode | Should Be ([System.Management.ManagementStatus]::NotFound)
+                    $script:methodParameters = $metadata
+                    & $commandName @script:arguments
+                    $script:wmi.Calls.Count | Should Be 1
+                    $script:wmi.Calls[0].Kind | Should Be 'Legacy'
+                    $script:wmi.Calls[0].Arguments.Count | Should Be 5
                 }
-                $properties = [RsTestThrowingPropertyCollection]::new([string[]]@('Encrypt', 'EncryptMode', 'MultiSubnetFailover'))
-                $script:methodParameters | Add-Member NoteProperty Properties $properties
-                { & $commandName @script:arguments -DatabaseTrustServerCertificate $true } | Should Throw 'does not support DatabaseTrustServerCertificate'
+                finally
+                {
+                    $metadata.Dispose()
+                }
+            }
+
+            It 'Rejects runtime options for real WMI metadata without Encrypt before SQL or setters' -TestCases @(
+                @{ Options = @{ DatabaseEncryptMode = 'Mandatory' } }
+                @{ Options = @{ DatabaseMultiSubnetFailover = $false } }
+                @{ Options = @{ DatabaseTrustServerCertificate = $false } }
+            ) {
+                param ($Options)
+                $metadata = Get-RsTestWmiMethodParameters
+                try
+                {
+                    $script:methodParameters = $metadata
+                    { & $commandName @script:arguments @Options } | Should Throw 'does not support runtime database encryption'
+                    Assert-MockCalled Invoke-Sqlcmd -Times 0 -Scope It
+                    $script:wmi.Calls.Count | Should Be 0
+                }
+                finally
+                {
+                    $metadata.Dispose()
+                }
+            }
+
+            It 'Treats real WMI NotFound as an unsupported input before SQL or setters' {
+                $metadata = Get-RsTestWmiMethodParameters
+                try
+                {
+                    $properties = [RsTestWmiPropertyCollectionProxy]::new($metadata.Properties)
+                    $script:methodParameters.Properties = $properties
+                    Test-RsWmiMethodParameter -Parameters $script:methodParameters -Name 'Encrypt' | Should Be $true
+                    Test-RsWmiMethodParameter -Parameters $script:methodParameters -Name 'EncryptMode' | Should Be $true
+                    $lookupError = $null
+                    try
+                    {
+                        $null = $properties.get_Item('TrustServerCertificate')
+                    }
+                    catch
+                    {
+                        $lookupError = $_.Exception
+                    }
+                    ($lookupError -is [System.Management.Automation.MethodInvocationException]) | Should Be $true
+                    ($lookupError.InnerException -is [System.Management.ManagementException]) | Should Be $true
+                    $lookupError.InnerException.ErrorCode | Should Be ([System.Management.ManagementStatus]::NotFound)
+                    { & $commandName @script:arguments -DatabaseTrustServerCertificate $true } | Should Throw 'does not support DatabaseTrustServerCertificate'
+                    Assert-MockCalled Invoke-Sqlcmd -Times 0 -Scope It
+                    $script:wmi.Calls.Count | Should Be 0
+                }
+                finally
+                {
+                    $metadata.Dispose()
+                }
+            }
+
+            It 'Propagates unexpected <Name> lookup failures before SQL or either setter' -TestCases @(
+                @{ Name = 'Encrypt'; Options = @{} }
+                @{ Name = 'Encrypt'; Options = @{ DatabaseEncryptMode = 'Mandatory' } }
+                @{ Name = 'EncryptMode'; Options = @{} }
+                @{ Name = 'EncryptMode'; Options = @{ DatabaseEncryptMode = 'Mandatory' } }
+                @{ Name = 'MultiSubnetFailover'; Options = @{ DatabaseMultiSubnetFailover = $false } }
+                @{ Name = 'TrustServerCertificate'; Options = @{ DatabaseTrustServerCertificate = $false } }
+            ) {
+                param ($Name, $Options)
+                $lookupError = New-Object System.InvalidOperationException('Unexpected metadata lookup failure')
+                $script:methodParameters.Properties = [RsTestFailingPropertyCollection]::new($Name, $lookupError)
+                $caught = $null
+                try
+                {
+                    & $commandName @script:arguments @Options
+                }
+                catch
+                {
+                    $caught = $_.Exception
+                }
+                $caught | Should Not BeNullOrEmpty
+                while ($caught -is [System.Management.Automation.MethodInvocationException])
+                {
+                    $caught = $caught.InnerException
+                }
+                [object]::ReferenceEquals($caught, $lookupError) | Should Be $true
+                Assert-MockCalled Invoke-Sqlcmd -Times 0 -Scope It
+                $script:wmi.Calls.Count | Should Be 0
+            }
+
+            It 'Does not mistake a ManagementException message for NotFound' {
+                $lookupError = New-Object System.Management.ManagementException('Not found')
+                $lookupError.ErrorCode | Should Be ([System.Management.ManagementStatus]::Failed)
+                $script:methodParameters.Properties = [RsTestFailingPropertyCollection]::new('Encrypt', $lookupError)
+                { & $commandName @script:arguments } | Should Throw 'Not found'
+                Assert-MockCalled Invoke-Sqlcmd -Times 0 -Scope It
+                $script:wmi.Calls.Count | Should Be 0
+            }
+
+            It 'Propagates disposed WMI property collection failures before SQL or setters' {
+                $metadata = Get-RsTestWmiMethodParameters
+                try
+                {
+                    $script:methodParameters.Properties = $metadata.Properties
+                }
+                finally
+                {
+                    $metadata.Dispose()
+                }
+                { & $commandName @script:arguments } | Should Throw
+                Assert-MockCalled Invoke-Sqlcmd -Times 0 -Scope It
                 $script:wmi.Calls.Count | Should Be 0
             }
 

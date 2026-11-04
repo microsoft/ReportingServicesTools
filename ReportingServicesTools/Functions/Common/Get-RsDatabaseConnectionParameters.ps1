@@ -12,14 +12,26 @@ function Test-RsWmiMethodParameter
         $Name
     )
 
-    # A real WMI PropertyDataCollection throws ManagementException for a missing name.
     try
     {
-        return $null -ne $Parameters.Properties[$Name]
+        return $null -ne $Parameters.Properties.get_Item($Name)
     }
     catch
     {
-        return $false
+        $exception = $_.Exception
+        while ($exception -is [System.Management.Automation.MethodInvocationException] -and
+            $null -ne $exception.InnerException)
+        {
+            $exception = $exception.InnerException
+        }
+
+        if ($exception -is [System.Management.ManagementException] -and
+            $exception.ErrorCode -eq [System.Management.ManagementStatus]::NotFound)
+        {
+            return $false
+        }
+
+        throw
     }
 }
 
