@@ -38,7 +38,7 @@ Describe "Test-RsRestItemDataSource" {
 
     Context "ReportPortalUri parameter" {
         It "fetches data sources for paginated reports" {
-            $datasources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport -Verbose
+            $datasources = Get-RsRestItemDataSource -WebSession $fixtureSession -RsItem $datasourcesReport -Verbose
             $datasources.Count | Should Be 2
             $datasources[0].DataSourceType | Should Be "SQL"
             $datasources[0].DataSourceSubType | Should BeNullOrEmpty 
@@ -60,7 +60,7 @@ Describe "Test-RsRestItemDataSource" {
         }
 
         It "tests data sources for power bi reports, and expects failure responses" {
-            $datasources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $datasources = Get-RsRestItemDataSource -WebSession $fixtureSession -RsItem $sqlPowerBIReport -Verbose
             $datasources.GetType() | Should BeOfType System.Object
             $datasources.DataSourceSubType | Should Be "DataModel"
             $datasources.ConnectionString | Should Be "localhost;ReportServer"
@@ -72,16 +72,16 @@ Describe "Test-RsRestItemDataSource" {
         }
 
         It "tests data sources for power bi reports, and expects success responses" {
-            $datasources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $datasources = Get-RsRestItemDataSource -WebSession $fixtureSession -RsItem $sqlPowerBIReport -Verbose
             $datasources.GetType() | Should BeOfType System.Object
             $datasources.DataSourceSubType | Should Be "DataModel"
             $datasources.ConnectionString | Should Be "localhost;ReportServer"
 
-            $dataSources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $dataSources = Get-RsRestItemDataSource -WebSession $fixtureSession -RsItem $sqlPowerBIReport -Verbose
             $dataSources[0].DataModelDataSource.AuthType = 'UsernamePassword'
             $dataSources[0].DataModelDataSource.Username = 'sa'
             $dataSources[0].DataModelDataSource.Secret = 'i<3ReportingServices'
-            Set-RsRestItemDataSource -RsItem $sqlPowerBIReport -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
+            Set-RsRestItemDataSource -RsItem $sqlPowerBIReport -WebSession $fixtureSession -DataSources $dataSources -RsItemType 'PowerBIReport'
 
             $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
             $TestResponse.ReportName | Should be "SqlPowerBIReport"
@@ -92,10 +92,8 @@ Describe "Test-RsRestItemDataSource" {
     }
 
     Context "WebSession parameter" {
-        $rsSession = $null
-
-        BeforeEach {
-            $rsSession = $fixtureSession
+        BeforeAll {
+            $rsSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
         }
 
         It "tests data sources for power bi reports, and expects failure responses" {
@@ -137,11 +135,11 @@ Describe "Test-RsRestItemDataSource" {
             $datasources.DataSourceSubType | Should Be "DataModel"
             $datasources.ConnectionString | Should Be "localhost;ReportServer"
 
-            $dataSources = Get-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
+            $dataSources = Get-RsRestItemDataSource -WebSession $fixtureSession -RsItem $sqlPowerBIReport -Verbose
             $dataSources[0].DataModelDataSource.AuthType = 'UsernamePassword'
             $dataSources[0].DataModelDataSource.Username = 'sa'
             $dataSources[0].DataModelDataSource.Secret = 'i<3ReportingServices'
-            Set-RsRestItemDataSource -RsItem $sqlPowerBIReport -ReportPortalUri $reportPortalUri -DataSources $dataSources -RsItemType 'PowerBIReport'
+            Set-RsRestItemDataSource -RsItem $sqlPowerBIReport -WebSession $fixtureSession -DataSources $dataSources -RsItemType 'PowerBIReport'
 
             $TestResponse = Test-RsRestItemDataSource -ReportPortalUri $reportPortalUri -RsItem $sqlPowerBIReport -Verbose
             $TestResponse.ReportName | Should be "SqlPowerBIReport"

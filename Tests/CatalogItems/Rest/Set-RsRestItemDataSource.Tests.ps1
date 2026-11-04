@@ -219,9 +219,9 @@ Describe "Set-RsRestItemDataSource" {
 
         It "Updates linked datasource" {
             # uploading datasourceReport.rdl
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\linkedDatasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\linkedDatasources\dsMaster.rsds" -RsFolder $rsFolderPath
-            Write-RsRestCatalogItem -ReportPortalUri $reportPortalUri -Path "$localPath\linkedDatasources\dsModel.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $fixtureSession -Path "$localPath\linkedDatasources\datasourcesReportLinkedDS.rdl" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $fixtureSession -Path "$localPath\linkedDatasources\dsMaster.rsds" -RsFolder $rsFolderPath
+            Write-RsRestCatalogItem -WebSession $fixtureSession -Path "$localPath\linkedDatasources\dsModel.rsds" -RsFolder $rsFolderPath
             $datasourcesReport =  "$rsFolderPath/datasourcesReportLinkedDS"
 
             $datasources = Get-RsRestItemDataSource -WebSession $fixtureSession -RsItem $datasourcesReport
@@ -244,9 +244,9 @@ Describe "Set-RsRestItemDataSource" {
             $fetchedDataSources[0].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
             $fetchedDataSources[1].Id | Should -Not -Be "00000000-0000-0000-0000-000000000000"
             # remove test items
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem $datasourcesReport -Confirm:$false
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/DSmaster" -Confirm:$false
-            Remove-RsRestCatalogItem -ReportPortalUri $reportPortalUri -RsItem "$rsFolderPath/DSmodel" -Confirm:$false
+            Remove-RsRestCatalogItem -WebSession $fixtureSession -RsItem $datasourcesReport -Confirm:$false
+            Remove-RsRestCatalogItem -WebSession $fixtureSession -RsItem "$rsFolderPath/DSmaster" -Confirm:$false
+            Remove-RsRestCatalogItem -WebSession $fixtureSession -RsItem "$rsFolderPath/DSmodel" -Confirm:$false
         }
     }
 
@@ -288,14 +288,16 @@ Describe "Set-RsRestItemDataSource" {
 
     Context "WebSession parameter - Paginated Reports" {
         $datasourcesReport = ""
-        $rsSession = $null
+
+        BeforeAll {
+            $rsSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
+        }
 
         BeforeEach {
             # uploading datasourceReport.rdl
             Write-RsRestCatalogItem -WebSession $session -Path "$localPath\datasources\datasourcesReport.rdl" -RsFolder $rsFolderPath
             $datasourcesReport =  "$rsFolderPath/datasourcesReport"
 
-            $rsSession = $fixtureSession
         }
 
         It "Updates datasource connection string" {
@@ -452,6 +454,10 @@ Describe "Set-RsRestItemDataSource" {
 
     Context "WebSession parameter - Power BI Reports" {
         $sqlPowerBIReport = ""
+
+        BeforeAll {
+            $rsSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
+        }
 
         BeforeEach {
             # uploading SqlPowerBIReport.pbix

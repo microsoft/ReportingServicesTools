@@ -132,7 +132,9 @@ Describe "Write-RsRestCatalogItem" {
     }
 
     Context "WebSession parameter" {
-        $webSession = New-RsRestSession -ReportPortalUri $reportPortalUri
+        BeforeAll {
+            $webSession = Get-RsTestSession -Fixture $restSessionFixture -ReportPortalUri $reportPortalUri
+        }
 
         It "Should upload a local RDL file" {
             $itemPath = Join-Path -Path $localPath -ChildPath emptyReport.rdl
