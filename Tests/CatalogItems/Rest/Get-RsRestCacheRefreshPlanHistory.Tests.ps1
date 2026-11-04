@@ -60,9 +60,9 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
     Context "ReportPortalUri parameter" {
         
         It "Should retrieve history of all CacheRefreshPlan plan for a PBIX report" {
-            Start-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            Start-RsRestCacheRefreshPlan -WebSession $fixtureSession -RsReport "$($rsFolderPath)/ReportCatalog"
 
-            $plan = Get-RsCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            $plan = Get-RsCacheRefreshPlan -WebSession $fixtureSession -RsReport "$($rsFolderPath)/ReportCatalog"
             $plan | Should Not BeNullOrEmpty
             $plan.LastStatus | Should Not Be 'New Scheduled Refresh Plan'
 
@@ -71,7 +71,7 @@ Describe "Get-RsRestCacheRefreshPlanHistory" {
             })
             @($someHistory).count | Should be 1
             
-            Start-RsRestCacheRefreshPlan -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
+            Start-RsRestCacheRefreshPlan -WebSession $fixtureSession -RsReport "$($rsFolderPath)/ReportCatalog"
             $moreHistory = @(Wait-RsTestRefreshHistory -ExpectedCount 2 -GetHistory {
                 Get-RsRestCacheRefreshPlanHistory -ReportPortalUri $reportPortalUri -RsReport "$($rsFolderPath)/ReportCatalog"
             })
